@@ -1,0 +1,157 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    tags:
+      - '*.*.*' 
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Obtener información del tag
+        id: tag_info
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "commit_message=$(git log -1 --pretty=%B | head -n 1)" >> $GITHUB_OUTPUT
+          echo "author=$(git log -1 --pretty=%an)" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=$TAG_NAME
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Tag: $TAG_NAME, Version: $VERSION"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar tests (validación final)
+        run: npm run test:ci
+
+      - name: Verificar lint
+        run: npm run lint
+
+      - name: Build de producción
+        run: npm run build -- --configuration production
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+
+      - name: Verificar archivos generados
+        run: |
+          echo "=== Archivos generados en dist ==="
+          ls -lah dist/
+          
+          if [ -d "dist/meddi-supply/browser" ]; then
+            echo "✅ Build exitoso"
+            
+            # Verificar tamaño de bundles
+            echo ""
+            echo "=== Tamaño de bundles principales ==="
+            find dist/meddi-supply/browser -name "main*.js" -type f -exec ls -lh {} \; | awk '{print $9, $5}'
+            find dist/meddi-supply/browser -name "polyfills*.js" -type f -exec ls -lh {} \; | awk '{print $9, $5}'
+            find dist/meddi-supply/browser -name "runtime*.js" -type f -exec ls -lh {} \; | awk '{print $9, $5}'
+            
+            # Tamaño total
+            echo ""
+            echo "=== Tamaño total de dist ==="
+            du -sh dist/meddi-supply/browser/
+          else
+            echo "❌ ERROR: No se generó la carpeta dist/meddi-supply/browser"
+            echo "Contenido de dist:"
+            ls -la dist/
+            exit 1
+          fi
+
+      - name: Crear archivo de metadata
+        run: |
+          # Crear archivo con información del deploy
+          cat > dist/meddi-supply/browser/deploy-info.json << EOF
+          {
+            "version": "${{ steps.tag_info.outputs.version }}",
+            "tag": "${{ steps.tag_info.outputs.tag }}",
+            "commit": "${{ steps.tag_info.outputs.sha_short }}",
+            "author": "${{ steps.tag_info.outputs.author }}",
+            "date": "${{ steps.tag_info.outputs.date }}",
+            "repository": "${{ github.repository }}"
+          }
+          EOF
+          
+          echo "✅ Metadata creada"
+          cat dist/meddi-supply/browser/deploy-info.json
+
+      - name: Instalar Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Verificar configuración de Firebase
+        run: |
+          echo "=== Verificando configuración de Firebase ==="
+          if [ -f "firebase.json" ]; then
+            echo "✅ firebase.json encontrado"
+            cat firebase.json
+          else
+            echo "❌ ERROR: firebase.json no encontrado"
+            exit 1
+          fi
+          
+          if [ -f ".firebaserc" ]; then
+            echo "✅ .firebaserc encontrado"
+            cat .firebaserc
+          else
+            echo "❌ ERROR: .firebaserc no encontrado"
+            exit 1
+          fi
+          
+          echo ""
+          echo "=== Verificando directorio de hosting ==="
+          if [ -d "dist/meddi-supply/browser" ]; then
+            echo "✅ Directorio de hosting encontrado"
+            ls -la dist/meddi-supply/browser/
+          else
+            echo "❌ ERROR: Directorio de hosting no encontrado"
+            exit 1
+          fi
+
+      - name: Deploy a Firebase Hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          firebase deploy \
+            --only hosting \
+            --token "$FIREBASE_TOKEN" \
+            --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+            --message "Deploy ${{ steps.tag_info.outputs.tag }} - ${{ steps.tag_info.outputs.commit_message }}"
+
+      - name: Obtener URL de la app
+        id: firebase_url
+        run: |
+          PROJECT_ID="${{ secrets.FIREBASE_PROJECT_ID }}"
+          URL="https://${PROJECT_ID}.web.app"
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "La app está disponible en: $URL"
+
+      - name: Notificar éxito
+        if: success()
+        run: |
+          echo "✅ Deploy exitoso a Firebase Hosting"
+          echo "🌐 URL: ${{ steps.firebase_url.outputs.url }}"
+          echo "🔖 Version: ${{ steps.tag_info.outputs.version }}"
+          echo "📦 Artefactos guardados por 30 días"
+
+      - name: Notificar fallo
+        if: failure()
+        run: |
+          echo "❌ El deploy ha fallado"
+          echo "Revisa los logs para más información"
