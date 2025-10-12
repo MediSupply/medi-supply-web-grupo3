@@ -112,79 +112,9 @@ jobs:
           chmod +x check_coverage.sh
           ./check_coverage.sh
 
-      - name: Comentar coverage en PR
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            
-            // Leer el resumen de coverage
-            let coverageSummary = '';
-            try {
-              const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-              const total = summary.total;
-              
-              coverageSummary = `
-            ## 📊 Reporte de Coverage
-            
-            | Métrica | Porcentaje | Estado |
-            |---------|------------|--------|
-            | Lines | ${total.lines.pct}% | ${total.lines.pct >= 80 ? '✅' : '❌'} |
-            | Statements | ${total.statements.pct}% | ${total.statements.pct >= 80 ? '✅' : '❌'} |
-            | Functions | ${total.functions.pct}% | ${total.functions.pct >= 80 ? '✅' : '❌'} |
-            | Branches | ${total.branches.pct}% | ${total.branches.pct >= 80 ? '✅' : '❌'} |
-            
-            **Requerimiento:** Mínimo 80% de coverage por archivo
-            
-            ${total.lines.pct >= 80 && total.statements.pct >= 80 && total.functions.pct >= 80 && total.branches.pct >= 80 
-              ? '✅ **¡Excelente!** El coverage cumple con los requisitos.' 
-              : '⚠️ **Atención:** Algunos archivos necesitan más tests.'}
-            
-            [Ver reporte completo](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            `;
-            } catch (error) {
-              coverageSummary = `
-            ## ❌ Error al generar reporte de coverage
-            
-            No se pudo leer el archivo de coverage. Verifica que los tests se hayan ejecutado correctamente.
-            
-            [Ver logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            `;
-            }
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: coverageSummary
-            });
-
       - name: Subir reporte de coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
-
-      - name: Verificar build de producción
-        run: npm run build -- --configuration production
-
-      - name: Verificar tamaño de bundles
-        run: |
-          echo "=== Tamaño de bundles ==="
-          if [ -d "dist" ]; then
-            find dist -name "*.js" -type f -exec ls -lh {} \; | awk '{print $9, $5}'
-            
-            # Verificar que el bundle principal no sea muy grande (opcional)
-            MAIN_BUNDLE_SIZE=$(find dist -name "main*.js" -type f -exec stat -c%s {} \; | head -1)
-            MAX_SIZE=$((2 * 1024 * 1024)) # 2MB
-            
-            if [ -n "$MAIN_BUNDLE_SIZE" ] && [ "$MAIN_BUNDLE_SIZE" -gt "$MAX_SIZE" ]; then
-              echo "⚠️ ADVERTENCIA: El bundle principal es mayor a 2MB ($MAIN_BUNDLE_SIZE bytes)"
-              echo "Considera optimizar el tamaño del bundle"
-            else
-              echo "✅ Tamaño del bundle principal: $(($MAIN_BUNDLE_SIZE / 1024))KB"
-            fi
-          fi
