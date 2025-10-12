@@ -1,0 +1,190 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    name: Tests and Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar herramientas adicionales
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc jq
+
+      - name: Verificar formato de código
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: Ejecutar ESLint
+        run: npm run lint
+
+      - name: Ejecutar tests unitarios con coverage
+        run: npm run test:ci
+
+      - name: Generar reporte de coverage
+        run: |
+          echo "=== Coverage Summary ==="
+          cat coverage/coverage-summary.json | jq '.total'
+
+      - name: Verificar coverage mínimo del 80%
+        run: |
+          # Crear script para verificar coverage por archivo
+          cat > check_coverage.sh << 'EOF'
+          #!/bin/bash
+          
+          COVERAGE_FILE="coverage/coverage-summary.json"
+          MIN_COVERAGE=80
+          FAILED_FILES=""
+          
+          if [ ! -f "$COVERAGE_FILE" ]; then
+            echo "❌ ERROR: No se encontró el archivo de coverage"
+            exit 1
+          fi
+          
+          echo "Verificando coverage por archivo (mínimo ${MIN_COVERAGE}%)..."
+          echo ""
+          
+          # Obtener coverage total
+          TOTAL_LINES=$(cat $COVERAGE_FILE | jq '.total.lines.pct')
+          TOTAL_STATEMENTS=$(cat $COVERAGE_FILE | jq '.total.statements.pct')
+          TOTAL_FUNCTIONS=$(cat $COVERAGE_FILE | jq '.total.functions.pct')
+          TOTAL_BRANCHES=$(cat $COVERAGE_FILE | jq '.total.branches.pct')
+          
+          echo "📊 Coverage General:"
+          echo "  Lines:      ${TOTAL_LINES}%"
+          echo "  Statements: ${TOTAL_STATEMENTS}%"
+          echo "  Functions:  ${TOTAL_FUNCTIONS}%"
+          echo "  Branches:   ${TOTAL_BRANCHES}%"
+          echo ""
+          
+          # Verificar cada archivo
+          FILES=$(cat $COVERAGE_FILE | jq -r 'to_entries | .[] | select(.key != "total") | .key')
+          
+          while IFS= read -r file; do
+            # Ignorar archivos de configuración, spec, y node_modules
+            if [[ $file =~ \.spec\.ts$ ]] || \
+               [[ $file =~ node_modules ]] || \
+               [[ $file =~ \.config\.ts$ ]] || \
+               [[ $file =~ test\.ts$ ]] || \
+               [[ $file =~ environment ]]; then
+              continue
+            fi
+            
+            LINE_PCT=$(cat $COVERAGE_FILE | jq -r ".\"$file\".lines.pct")
+            
+            if [ "$LINE_PCT" != "null" ] && [ ! -z "$LINE_PCT" ]; then
+              echo "  $file: ${LINE_PCT}%"
+              
+              if (( $(echo "$LINE_PCT < $MIN_COVERAGE" | bc -l) )); then
+                FAILED_FILES="${FAILED_FILES}\n  ❌ $file: ${LINE_PCT}% (mínimo: ${MIN_COVERAGE}%)"
+              fi
+            fi
+          done <<< "$FILES"
+          
+          if [ -n "$FAILED_FILES" ]; then
+            echo ""
+            echo "❌ Los siguientes archivos no cumplen con el coverage mínimo del ${MIN_COVERAGE}%:"
+            echo -e "$FAILED_FILES"
+            exit 1
+          else
+            echo ""
+            echo "✅ Todos los archivos cumplen con el coverage mínimo del ${MIN_COVERAGE}%"
+          fi
+          EOF
+          
+          chmod +x check_coverage.sh
+          ./check_coverage.sh
+
+      - name: Comentar coverage en PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Leer el resumen de coverage
+            let coverageSummary = '';
+            try {
+              const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = summary.total;
+              
+              coverageSummary = `
+            ## 📊 Reporte de Coverage
+            
+            | Métrica | Porcentaje | Estado |
+            |---------|------------|--------|
+            | Lines | ${total.lines.pct}% | ${total.lines.pct >= 80 ? '✅' : '❌'} |
+            | Statements | ${total.statements.pct}% | ${total.statements.pct >= 80 ? '✅' : '❌'} |
+            | Functions | ${total.functions.pct}% | ${total.functions.pct >= 80 ? '✅' : '❌'} |
+            | Branches | ${total.branches.pct}% | ${total.branches.pct >= 80 ? '✅' : '❌'} |
+            
+            **Requerimiento:** Mínimo 80% de coverage por archivo
+            
+            ${total.lines.pct >= 80 && total.statements.pct >= 80 && total.functions.pct >= 80 && total.branches.pct >= 80 
+              ? '✅ **¡Excelente!** El coverage cumple con los requisitos.' 
+              : '⚠️ **Atención:** Algunos archivos necesitan más tests.'}
+            
+            [Ver reporte completo](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            } catch (error) {
+              coverageSummary = `
+            ## ❌ Error al generar reporte de coverage
+            
+            No se pudo leer el archivo de coverage. Verifica que los tests se hayan ejecutado correctamente.
+            
+            [Ver logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: coverageSummary
+            });
+
+      - name: Subir reporte de coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Verificar build de producción
+        run: npm run build -- --configuration production
+
+      - name: Verificar tamaño de bundles
+        run: |
+          echo "=== Tamaño de bundles ==="
+          if [ -d "dist" ]; then
+            find dist -name "*.js" -type f -exec ls -lh {} \; | awk '{print $9, $5}'
+            
+            # Verificar que el bundle principal no sea muy grande (opcional)
+            MAIN_BUNDLE_SIZE=$(find dist -name "main*.js" -type f -exec stat -c%s {} \; | head -1)
+            MAX_SIZE=$((2 * 1024 * 1024)) # 2MB
+            
+            if [ -n "$MAIN_BUNDLE_SIZE" ] && [ "$MAIN_BUNDLE_SIZE" -gt "$MAX_SIZE" ]; then
+              echo "⚠️ ADVERTENCIA: El bundle principal es mayor a 2MB ($MAIN_BUNDLE_SIZE bytes)"
+              echo "Considera optimizar el tamaño del bundle"
+            else
+              echo "✅ Tamaño del bundle principal: $(($MAIN_BUNDLE_SIZE / 1024))KB"
+            fi
+          fi
