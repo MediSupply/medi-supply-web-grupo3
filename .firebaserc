@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "medi-supply-web-grupo3"
+  },
+  "targets": {
+    "medisupply-163cd": {
+      "hosting": {
+        "qa": ["medisupply-163cd"],
+        "prod": ["medisupply"]
+      }
+    }
   }
 }

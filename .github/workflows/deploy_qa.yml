@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+' 
+      - '[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+' 
 
 jobs:
   deploy:
@@ -129,7 +129,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           firebase deploy \
-            --only hosting:prod \
+            --only hosting:qa \
             --token "$FIREBASE_TOKEN" \
             --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
             --message "Deploy ${{ steps.tag_info.outputs.tag }} - ${{ steps.tag_info.outputs.commit_message }}"
