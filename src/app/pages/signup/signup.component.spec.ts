@@ -5,12 +5,12 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
-import { RegistrarUsuarioComponent } from './registrar-usuario.component';
+import { SignUpComponent } from './signup.component';
 import { AuthService } from '../../services/auth.service';
 
-describe('RegistrarUsuarioComponent', () => {
-  let component: RegistrarUsuarioComponent;
-  let fixture: ComponentFixture<RegistrarUsuarioComponent>;
+describe('SignUpComponent', () => {
+  let component: SignUpComponent;
+  let fixture: ComponentFixture<SignUpComponent>;
   let authService: jasmine.SpyObj<AuthService>;
   let debugElement: DebugElement;
 
@@ -18,15 +18,11 @@ describe('RegistrarUsuarioComponent', () => {
     const authServiceSpy = jasmine.createSpyObj('AuthService', ['signup']);
 
     await TestBed.configureTestingModule({
-      imports: [
-        RegistrarUsuarioComponent,
-        HttpClientTestingModule,
-        FormsModule,
-      ],
+      imports: [SignUpComponent, HttpClientTestingModule, FormsModule],
       providers: [{ provide: AuthService, useValue: authServiceSpy }],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RegistrarUsuarioComponent);
+    fixture = TestBed.createComponent(SignUpComponent);
     component = fixture.componentInstance;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     debugElement = fixture.debugElement;
@@ -55,7 +51,7 @@ describe('RegistrarUsuarioComponent', () => {
       component.user.email = 'email-invalido';
       const form = { invalid: false } as any;
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.mensaje).toBe(
         'El correo electrónico no tiene un formato válido ⚠️'
@@ -68,7 +64,7 @@ describe('RegistrarUsuarioComponent', () => {
       const form = { invalid: false } as any;
       authService.signup.and.returnValue(of({}));
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(authService.signup).toHaveBeenCalledWith(component.user);
     });
@@ -80,7 +76,7 @@ describe('RegistrarUsuarioComponent', () => {
       component.user.password = 'sololetras';
       const form = { invalid: false } as any;
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.mensaje).toBe(
         'La contraseña debe tener al menos 8 caracteres e incluir letras y números ⚠️'
@@ -92,7 +88,7 @@ describe('RegistrarUsuarioComponent', () => {
       component.user.password = 'abc123';
       const form = { invalid: false } as any;
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.mensaje).toBe(
         'La contraseña debe tener al menos 8 caracteres e incluir letras y números ⚠️'
@@ -105,7 +101,7 @@ describe('RegistrarUsuarioComponent', () => {
       const form = { invalid: false } as any;
       authService.signup.and.returnValue(of({}));
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(authService.signup).toHaveBeenCalledWith(component.user);
     });
@@ -119,7 +115,7 @@ describe('RegistrarUsuarioComponent', () => {
       const mockResponse = { id: 1, message: 'Usuario creado' };
       authService.signup.and.returnValue(of(mockResponse));
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(authService.signup).toHaveBeenCalledWith(component.user);
       expect(component.cargando).toBeFalse();
@@ -133,7 +129,7 @@ describe('RegistrarUsuarioComponent', () => {
       // Usar un observable que no se resuelva inmediatamente
       authService.signup.and.returnValue(NEVER);
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.cargando).toBeTrue();
     });
@@ -147,7 +143,7 @@ describe('RegistrarUsuarioComponent', () => {
       const error = { status: 409 };
       authService.signup.and.returnValue(throwError(() => error));
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe(
@@ -162,7 +158,7 @@ describe('RegistrarUsuarioComponent', () => {
       const error = { status: 500 };
       authService.signup.and.returnValue(throwError(() => error));
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
       expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('Error al registrar el usuario ❌');
@@ -175,11 +171,9 @@ describe('RegistrarUsuarioComponent', () => {
       component.user.password = 'password123';
       const form = { invalid: true } as any;
 
-      component.registrarUsuario(form);
+      component.signup(form);
 
-      expect(component.mensaje).toBe(
-        'Por favor completa/valida todos los campos obligatorios ⚠️'
-      );
+      expect(component.mensaje).toBe('Todos los campos son obligatorios');
     });
   });
 

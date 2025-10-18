@@ -4,13 +4,13 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-registrar-usuario',
+  selector: 'app-signup',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './registrar-usuario.component.html',
-  styleUrl: './registrar-usuario.component.scss',
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.scss',
 })
-export class RegistrarUsuarioComponent {
+export class SignUpComponent {
   user = {
     name: '',
     email: '',
@@ -28,7 +28,7 @@ export class RegistrarUsuarioComponent {
 
   constructor(private authService: AuthService) {}
 
-  registrarUsuario(form: NgForm) {
+  signup(form: NgForm) {
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.user.email);
     if (!emailValido) {
       this.mensaje = 'El correo electrónico no tiene un formato válido ⚠️';
@@ -45,8 +45,7 @@ export class RegistrarUsuarioComponent {
     }
 
     if (form.invalid) {
-      this.mensaje =
-        'Por favor completa/valida todos los campos obligatorios ⚠️';
+      this.mensaje = 'Todos los campos son obligatorios';
       return;
     }
 
