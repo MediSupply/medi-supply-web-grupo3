@@ -1,0 +1,214 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      
+      <!-- Header del Formulario -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <div class="row align-items-center">
+            <div class="col">
+              <h4 class="mb-0">
+                <i class="fas fa-pills me-2"></i>
+                {{ isEditMode() ? 'Consulta Producto' : 'Cargar Producto' }}
+              </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+            
+            <!-- Sección 1: Información Básica -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Información Básica
+                </h5>
+              </div>
+              
+              <!-- Nombre -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Nombre del Producto</mat-label>
+                  <input matInput formControlName="name" placeholder="Ej: Acetaminofén 500mg">
+                  <mat-icon matSuffix>medication</mat-icon>
+                  <mat-error>{{ getFieldError('name') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Categoría -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Categoría</mat-label>
+                  <mat-select formControlName="category">
+                    <mat-option value="">Selecciona una categoría</mat-option>
+                    <mat-option *ngFor="let category of categories" [value]="category">
+                      {{ category }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getFieldError('category') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Descripción</mat-label>
+                  <textarea matInput formControlName="description" 
+                           placeholder="Descripción detallada del producto..."
+                           rows="3"></textarea>
+                  <mat-error>{{ getFieldError('description') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Sección 2: Inventario y Precio -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="fas fa-boxes me-2"></i>
+                  Inventario y Precio
+                </h5>
+              </div>
+              
+              <!-- Precio -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Precio</mat-label>
+                  <input matInput type="number" formControlName="price" 
+                         placeholder="0" min="0" step="0.01">
+                  <span matPrefix>$&nbsp;</span>
+                  <mat-error>{{ getFieldError('price') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Cantidad -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Cantidad en Stock</mat-label>
+                  <input matInput type="number" formControlName="amount" 
+                         placeholder="0" min="0">
+                  <mat-error>{{ getFieldError('amount') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Sección 3: Información Técnica -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="fas fa-flask me-2"></i>
+                  Información Técnica
+                </h5>
+              </div>
+              
+              <!-- Lote -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Número de Lote</mat-label>
+                  <input matInput formControlName="batch" 
+                         placeholder="Ej: LOT-AC202312">
+                  <mat-error>{{ getFieldError('batch') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Fecha de Vencimiento -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Fecha de Vencimiento</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="expirationDate">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error>{{ getFieldError('expirationDate') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Condiciones -->
+              <div class="col-12 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Condiciones de Almacenamiento</mat-label>
+                  <textarea matInput formControlName="conditions" 
+                           placeholder="Ej: Almacenar en lugar fresco y seco..."
+                           rows="2"></textarea>
+                  <mat-error>{{ getFieldError('conditions') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Sección 4: Proveedor -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">
+                  <i class="fas fa-truck me-2"></i>
+                  Información del Proveedor
+                </h5>
+              </div>
+              
+              <!-- Proveedor -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Proveedor</mat-label>
+                  <mat-select formControlName="provider">
+                    <mat-option value="">Selecciona un proveedor</mat-option>
+                    <mat-option *ngFor="let provider of providers" [value]="provider">
+                      {{ provider }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getFieldError('provider') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Tiempo de Entrega -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Tiempo de Entrega</mat-label>
+                  <input matInput formControlName="deliveryTime" 
+                         placeholder="Ej: 24 horas">
+                  <mat-error>{{ getFieldError('deliveryTime') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="d-flex gap-2 justify-content-end">
+                  <button type="button" mat-button (click)="onCancel()" 
+                          [disabled]="loading()" class="px-4">
+                    <mat-icon>cancel</mat-icon>
+                    Cancelar
+                  </button>
+
+                  <button type="button" mat-button (click)="onReset()" 
+                          [disabled]="loading() || productForm.pristine" class="px-4">
+                    <mat-icon>clear</mat-icon>
+                    Limpiar
+                  </button>
+
+                  <button type="submit" mat-raised-button color="primary" 
+                          [disabled]="loading() || productForm.invalid"
+                          class="px-4 submit-button">
+                    <div class="d-flex align-items-center gap-2">
+                      <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+                      <span>{{ isEditMode() ? 'Actualizar' : 'Guardar' }} Producto</span>
+                      <mat-progress-spinner *ngIf="loading()" 
+                                           diameter="16" mode="indeterminate"
+                                           class="button-spinner">
+                      </mat-progress-spinner>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
