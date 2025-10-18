@@ -1,7 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -11,13 +14,12 @@ describe('AuthService', () => {
     name: 'Juan Pérez',
     email: 'juan@ejemplo.com',
     password: 'password123',
-    role: 'USER'
+    role: 'USER',
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -28,7 +30,7 @@ describe('AuthService', () => {
   });
 
   it('debería realizar una petición POST a /auth/signup', () => {
-    service.signup(mockUser).subscribe((response) => {
+    service.signup(mockUser).subscribe(response => {
       expect(response).toBeTruthy();
       expect(response.message).toBe('Usuario creado correctamente');
     });
