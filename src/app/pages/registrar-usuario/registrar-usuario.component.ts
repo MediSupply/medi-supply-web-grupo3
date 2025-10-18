@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './registrar-usuario.component.html',
-  styleUrl: './registrar-usuario.component.scss'
+  styleUrl: './registrar-usuario.component.scss',
 })
 export class RegistrarUsuarioComponent {
   user = {
@@ -20,7 +20,7 @@ export class RegistrarUsuarioComponent {
 
   loginData = {
     correo: '',
-    password: ''
+    password: '',
   };
 
   mensaje = '';
@@ -35,14 +35,18 @@ export class RegistrarUsuarioComponent {
       return;
     }
 
-    const passwordValida = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(this.user.password);
+    const passwordValida = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(
+      this.user.password
+    );
     if (!passwordValida) {
-      this.mensaje = 'La contraseña debe tener al menos 8 caracteres e incluir letras y números ⚠️';
+      this.mensaje =
+        'La contraseña debe tener al menos 8 caracteres e incluir letras y números ⚠️';
       return;
     }
 
     if (form.invalid) {
-      this.mensaje = 'Por favor completa/valida todos los campos obligatorios ⚠️';
+      this.mensaje =
+        'Por favor completa/valida todos los campos obligatorios ⚠️';
       return;
     }
 
@@ -68,8 +72,7 @@ export class RegistrarUsuarioComponent {
         }
 
         console.error('Error:', err);
-      }
+      },
     });
   }
-
 }
