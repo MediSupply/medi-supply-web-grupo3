@@ -126,7 +126,7 @@ describe('LoginComponent', () => {
       component.login(form);
 
       expect(component.cargando).toBeFalse();
-      expect(component.mensaje).toBe('Contraseño incorrecta');
+      expect(component.mensaje).toBe('Contraseña incorrecta');
     });
 
     it('debería manejar otros errores de registro', () => {

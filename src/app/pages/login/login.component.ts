@@ -20,6 +20,7 @@ export class LoginComponent {
 
   mensaje = '';
   cargando = false;
+  showPassword = false;
 
   constructor(
     private authService: AuthService,
@@ -33,6 +34,10 @@ export class LoginComponent {
     }
   }
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   login(form: NgForm) {
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.user.email);
     if (!emailValido) {
@@ -41,8 +46,7 @@ export class LoginComponent {
     }
 
     if (form.invalid) {
-      this.mensaje =
-        'Todos los campos son obligatorios';
+      this.mensaje = 'Todos los campos son obligatorios';
       return;
     }
 
@@ -62,7 +66,7 @@ export class LoginComponent {
         if (err.status === 404) {
           this.mensaje = 'El usuario no existe';
         } else if (err.status === 401) {
-          this.mensaje = 'Contraseño incorrecta';
+          this.mensaje = 'Contraseña incorrecta';
         } else {
           this.mensaje = 'Error al iniciar sesion';
         }

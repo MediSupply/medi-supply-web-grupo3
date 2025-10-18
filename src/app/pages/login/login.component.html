@@ -15,15 +15,18 @@
       />
     </div>
 
-    <div class="input-group">
+    <div class="input-group" style="position: relative; width: 100%">
       <label for="password">Contraseña</label>
       <input
-        type="password"
+        [type]="showPassword ? 'text' : 'password'"
         id="password"
         name="password"
         [(ngModel)]="user.password"
         required
       />
+      <i class="icon-input" (click)="togglePassword()">
+        {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+      </i>
     </div>
 
     <button type="submit">Iniciar sesión</button>
