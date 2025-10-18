@@ -12,10 +12,10 @@ import { CommonModule } from '@angular/common';
 })
 export class RegistrarUsuarioComponent {
   user = {
-    name: 'Juan Pérez',
-    email: 'juan@ejemplo.com',
-    password: 'password123',
-    role: 'USER',
+    name: '',
+    email: '',
+    password: '',
+    role: '',
   };
 
   loginData = {
@@ -66,25 +66,7 @@ export class RegistrarUsuarioComponent {
         } else {
           this.mensaje = 'Error al registrar el usuario ❌';
         }
-        
-        console.error('Error:', err);
-      }
-    });
-  }
 
-  iniciarSesion() {
-    this.cargando = true;
-    this.mensaje = '';
-
-    this.authService.login(this.loginData.correo, this.loginData.password).subscribe({
-      next: (response:any) => {
-        this.cargando = false;
-        this.mensaje = 'Inicio de sesión exitoso ✅';
-        console.log('Respuesta del servidor:', response);
-      },
-      error: (err:any) => {
-        this.cargando = false;
-        this.mensaje = 'Error al iniciar sesión ❌';
         console.error('Error:', err);
       }
     });
