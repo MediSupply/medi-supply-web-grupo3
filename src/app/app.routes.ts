@@ -2,6 +2,6 @@ import { Routes } from '@angular/router';
 import { SignUpComponent } from './pages/signup/signup.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'registro', pathMatch: 'full' },
+  { path: '', redirectTo: 'signup', pathMatch: 'full' },
   { path: 'signup', component: SignUpComponent },
 ];
