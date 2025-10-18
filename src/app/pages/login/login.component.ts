@@ -42,7 +42,7 @@ export class LoginComponent {
 
     if (form.invalid) {
       this.mensaje =
-        'Por favor completa/valida todos los campos obligatorios ⚠️';
+        'Todos los campos son obligatorios';
       return;
     }
 
