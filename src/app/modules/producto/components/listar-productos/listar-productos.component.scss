@@ -88,6 +88,27 @@
     min-height: 100vh;
   }
 
+    /* ✅ CENTRADO VERTICAL PARA TODA LA TABLA */
+  .mat-mdc-table {
+    .mat-mdc-header-cell {
+      background-color: #69A7FF !important;
+      color: white !important;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 16px;
+      border-bottom: none !important;
+      text-align: center !important; 
+      vertical-align: middle !important; 
+    }
+
+    .mat-mdc-cell {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e9ecef;
+      min-height: 60px !important; 
+    }
+
+  }
+
   .header-actions {
     display: flex;
     align-items: center;
