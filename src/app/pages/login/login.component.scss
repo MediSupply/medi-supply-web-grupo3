@@ -145,6 +145,18 @@ button {
   &:hover {
     background-color: darken(grey, 5%);
   }
+
+  .button-login {
+    margin-top: 40px;
+  }
+
+  .button-register {
+    background-color: grey;
+
+    &:hover {
+      background-color: darken(grey, 5%);
+    }
+  }
 }
 
 /* Mensaje */

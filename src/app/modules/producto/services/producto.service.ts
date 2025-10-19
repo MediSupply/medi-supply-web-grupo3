@@ -9,7 +9,7 @@ interface ProductsResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductoService {
   private http = inject(HttpClient);
@@ -27,35 +27,37 @@ export class ProductoService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    this.http.get<ProductsResponse>(this.dataUrl)
+    this.http
+      .get<ProductsResponse>(this.dataUrl)
       .pipe(
         map(response => response.products),
         tap({
-          next: (products) => {
+          next: products => {
             this.productsSignal.set(products);
             this.loadingSignal.set(false);
           },
-          error: (error) => {
+          error: error => {
             this.errorSignal.set('Error cargando productos: ' + error.message);
             this.loadingSignal.set(false);
             this.productsSignal.set([]);
-          }
+          },
         })
       )
       .subscribe();
   }
 
-
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<ProductsResponse>(this.dataUrl)
+    return this.http
+      .get<ProductsResponse>(this.dataUrl)
       .pipe(map(response => response.products));
   }
 
   createProduct(newProduct: Omit<Product, 'id'>): void {
     const currentProducts = this.productsSignal();
-    const newId = currentProducts.length > 0 
-      ? Math.max(...currentProducts.map(p => p.id)) + 1 
-      : 1;
+    const newId =
+      currentProducts.length > 0
+        ? Math.max(...currentProducts.map(p => p.id)) + 1
+        : 1;
     const product: Product = { id: newId, ...newProduct };
     this.productsSignal.set([...currentProducts, product]);
   }

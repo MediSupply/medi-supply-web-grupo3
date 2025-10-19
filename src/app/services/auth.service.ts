@@ -67,5 +67,6 @@ export class AuthService {
   // 🚪 Cerrar sesión
   logout(): void {
     localStorage.removeItem('jwt_token');
+    this.router.navigate(['/login']);
   }
 }
