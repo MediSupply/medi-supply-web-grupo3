@@ -9,6 +9,10 @@ export const routes: Routes = [
     path: 'producto',
     loadComponent: () => import('./modules/producto/components/cargar-producto/cargar-producto.component').then(m => m.CargarProductoComponent)
 },
+{
+    path: 'registro',
+    loadComponent: () => import('./modules/registro/componentes/dashboard-registro/dashboard-registro.component').then(m => m.DashboardRegistroComponent)
+},
 { path: '', redirectTo: '/productos', pathMatch: 'full' },
   /*{ 
     path: '**', 

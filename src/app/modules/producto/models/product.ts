@@ -1,3 +1,7 @@
+
+import { Category } from "./category";
+import { Provider } from "./provider";
+
 export interface Product {
     id: number;
     name: string;
@@ -6,7 +10,7 @@ export interface Product {
     amount: number;
     category: string;
     conditions: string;
-    expirationDate: Date;
+    expirationDate: string;
     batch: string;
     provider: string;
     deliveryTime: string;

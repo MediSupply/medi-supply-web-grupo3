@@ -14,8 +14,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Product } from '../../models/product';
-import { Category } from '../../models/category';
 
 @Component({
   selector: 'app-cargar-producto',
@@ -40,8 +38,6 @@ import { Category } from '../../models/category';
 })
 export class CargarProductoComponent implements OnInit{
   private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
 
   productForm!: FormGroup;
   loading = signal<boolean>(false);
@@ -52,7 +48,7 @@ export class CargarProductoComponent implements OnInit{
   categorySelected: string = '';
   providerSelected: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private snackBar: MatSnackBar,) {}
 
   providers = [
     {id:"1", value:"Genfar S.A."},
@@ -83,54 +79,53 @@ export class CargarProductoComponent implements OnInit{
   ];
 
 
-  ngOnInit(product? : Product
-  ) {
+  ngOnInit() {
     this.checkEditMode();
-    this.initForm(this.product);
+    this.initForm();
   }
 
-  private initForm(product:Product): void {
+  private initForm(): void {
     this.productForm = this.fb.group({
-      name: [product?.name || '', [
+      name: [this.product?.name || '', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100)
       ]],
-      description: [product?.description || '', [
+      description: [this.product?.description || '', [
         Validators.required,
         Validators.minLength(10),
         Validators.maxLength(500)
       ]],
-      price: [product?.price || '', [
+      price: [this.product?.price || '', [
         Validators.required,
         Validators.min(0),
         Validators.max(1000000),
         this.positiveNumberValidator
       ]],
-      amount: [product?.amount || '', [
+      amount: [this.product?.amount || '', [
         Validators.required,
         Validators.min(0),
         Validators.max(10000),
         Validators.pattern('^[0-9]*$')
       ]],
       category: [this.categorySelected, Validators.required],
-      conditions: [product?.conditions || '', [
+      conditions: [this.product?.conditions || '', [
         Validators.required,
         Validators.minLength(5),
         Validators.maxLength(200)
       ]],
-      expirationDate: [product?.expirationDate || '', [
+      expirationDate: [this.product?.expirationDate || '', [
         Validators.required,
         this.futureDateValidator
       ]],
-      batch: [product?.batch || '', [
+      batch: [this.product?.batch || '', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),
         Validators.pattern('^[A-Za-z0-9-]*$')
       ]],
       provider: [this.providerSelected, Validators.required],
-      deliveryTime: [product?.deliveryTime || '', Validators.required]
+      deliveryTime: [this.product?.deliveryTime || '', Validators.required]
     });
     if (this.isEditMode) {
       this.productForm.disable();
@@ -155,7 +150,7 @@ export class CargarProductoComponent implements OnInit{
     return selectedDate >= today ? null : { pastDate: true };
   }
   
-  private checkEditMode(): void {
+  public checkEditMode(): void {
     this.product = history.state.product;
     const state = history.state;
     state.action === 'edit' ? this.isEditMode=true: this.isEditMode=false;
@@ -200,40 +195,26 @@ export class CargarProductoComponent implements OnInit{
     return !!(field?.invalid && field.touched);
   }
 
-  onSubmit(): void {
-    if (this.productForm.valid) {
-      this.loading.set(true);
-      console.log("guardando")
-    }
+onSubmit() {
+  if (this.productForm.valid) {
+    this.loading.set(true);
+    console.log('guardando');
+    // Lógica de guardado...
+  } else {
+    this.markAllFieldsAsTouched();
   }
+}
 
-  private markAllFieldsAsTouched(): void {
-    Object.keys(this.productForm.controls).forEach(key => {
-      this.productForm.get(key)?.markAsTouched();
-    });
-    
-    this.snackBar.open(
-      'Por favor completa todos los campos requeridos correctamente',
-      'Cerrar',
-      { duration: 4000 }
-    );
-  }
-
-    onCancel(): void {
-    /*if (this.productForm.dirty) {
-      const confirm = window.confirm('¿Estás seguro de que quieres cancelar? Los cambios no guardados se perderán.');
-      if (!confirm) return;
+markAllFieldsAsTouched(): void {
+  Object.keys(this.productForm.controls).forEach(key => {
+    const control = this.productForm.get(key);
+    if (control) {
+      control.markAsTouched();
     }
-    */
+  });
+}
+
+  onCancel(): void {
     this.router.navigate(['/productos']);
-  }
-
-  onReset(): void {
-    if (this.productForm.dirty) {
-      const confirm = window.confirm('¿Estás seguro de que quieres limpiar el formulario?');
-      if (!confirm) return;
-    }
-    
-    this.productForm.reset();
   }
 }
