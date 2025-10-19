@@ -88,13 +88,13 @@ export class ListarProductosComponent implements OnInit, AfterViewInit{
     });
   }
 
-  editProduct(){
+  editProduct(product: Product){
+    console.log(product)
     this.router.navigate(['/producto'], {
-      queryParams: {
-        action: 'new',
-        source: 'productos'
-      }
-      // state: { data: {} }
+      state: { 
+        product: product,
+        action: 'edit'
+     } 
     });
   }
 }

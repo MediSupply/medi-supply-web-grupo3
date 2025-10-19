@@ -14,6 +14,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Product } from '../../models/product';
+import { Category } from '../../models/category';
 
 @Component({
   selector: 'app-cargar-producto',
@@ -38,92 +40,101 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class CargarProductoComponent implements OnInit{
   private fb = inject(FormBuilder);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
 
   productForm!: FormGroup;
   loading = signal<boolean>(false);
-  isEditMode = signal<boolean>(false);
+  isEditMode: boolean = false;
   productId = signal<number | null>(null);
 
+  product : any;
+  categorySelected: string = '';
+  providerSelected: string = '';
+
+  constructor(private router: Router) {}
+
   providers = [
-    'Genfar S.A.',
-    'Bayer S.A.',
-    'Pfizer S.A.S.',
-    'Sanofi Aventis',
-    'AstraZeneca',
-    'Novartis S.A.',
-    'Merck S.A.',
-    'MSD Colombia',
-    'GlaxoSmithKline',
-    'Roche S.A.',
-    'Aspen Pharma'
+    {id:"1", value:"Genfar S.A."},
+    {id:"2", value:"Bayer S.A."},
+    {id:"3", value:"Pfizer S.A.S."},
+    {id:"4", value:"Sanofi Aventis"},
+    {id:"5", value:"AstraZeneca"},
+    {id:"6", value:"Novartis S.A."},
+    {id:"7", value:"Merck S.A."},
+    {id:"8", value:"MSD Colombia"},
+    {id:"9", value:"GlaxoSmithKline"},
+    {id:"10", value:"Roche S.A."},
+    {id:"11", value:"Aspen Pharma"}
   ];
   categories = [
-    'Analgésicos',
-    'Antiinflamatorios',
-    'Antibióticos',
-    'Antialérgicos',
-    'Gastrointestinales',
-    'Cardiovasculares',
-    'Antidiabéticos',
-    'Respiratorios',
-    'Psicotrópicos',
-    'Antidepresivos',
-    'Hormonales',
-    'Anticoagulantes'
+    {id:"1", value:"Analgésicos"},
+    {id:"2", value:"Antiinflamatorios"},
+    {id:"3", value:"Antibióticos"},
+    {id:"4", value:"Antialérgicos"},
+    {id:"5", value:"Gastrointestinales"},
+    {id:"6", value:"Cardiovasculares"},
+    {id:"7", value:"Antidiabéticos"},
+    {id:"8", value:"Respiratorios"},
+    {id:"9", value:"Psicotrópicos"},
+    {id:"10", value:"Antidepresivos"},
+    {id:"11", value:"Hormonales"},
+    {id:"12", value:"Anticoagulantes"}
   ];
 
 
-  ngOnInit() {
-    this.initForm();
+  ngOnInit(product? : Product
+  ) {
     this.checkEditMode();
+    this.initForm(this.product);
   }
 
-    private initForm(): void {
+  private initForm(product:Product): void {
     this.productForm = this.fb.group({
-      name: ['', [
+      name: [product?.name || '', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100)
       ]],
-      description: ['', [
+      description: [product?.description || '', [
         Validators.required,
         Validators.minLength(10),
         Validators.maxLength(500)
       ]],
-      price: ['', [
+      price: [product?.price || '', [
         Validators.required,
         Validators.min(0),
         Validators.max(1000000),
         this.positiveNumberValidator
       ]],
-      amount: ['', [
+      amount: [product?.amount || '', [
         Validators.required,
         Validators.min(0),
         Validators.max(10000),
         Validators.pattern('^[0-9]*$')
       ]],
-      category: ['', Validators.required],
-      conditions: ['', [
+      category: [this.categorySelected, Validators.required],
+      conditions: [product?.conditions || '', [
         Validators.required,
         Validators.minLength(5),
         Validators.maxLength(200)
       ]],
-      expirationDate: ['', [
+      expirationDate: [product?.expirationDate || '', [
         Validators.required,
         this.futureDateValidator
       ]],
-      batch: ['', [
+      batch: [product?.batch || '', [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(50),
         Validators.pattern('^[A-Za-z0-9-]*$')
       ]],
-      provider: ['', Validators.required],
-      deliveryTime: ['', Validators.required]
+      provider: [this.providerSelected, Validators.required],
+      deliveryTime: [product?.deliveryTime || '', Validators.required]
     });
+    if (this.isEditMode) {
+      this.productForm.disable();
+    }
   }
 
   private positiveNumberValidator(control: AbstractControl) {
@@ -145,16 +156,27 @@ export class CargarProductoComponent implements OnInit{
   }
   
   private checkEditMode(): void {
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.isEditMode.set(true);
-        this.productId.set(+params['id']);
-        this.loadProductData(this.productId()!);
+    this.product = history.state.product;
+    const state = history.state;
+    state.action === 'edit' ? this.isEditMode=true: this.isEditMode=false;
+    if(this.isEditMode){
+      if (this.product?.category) {
+        this.categorySelected = this.product.category.id.toString();
+        const categoryExists = this.categories.find(cat => cat.id === this.categorySelected);
       }
-    });
-  }
+      else{
+        this.categorySelected = ''
+      }
+      if (this.product?.provider) {
+        this.providerSelected = this.product.provider.id.toString();
+        const categoryExists = this.categories.find(cat => cat.id === this.providerSelected);
+      }
+      else{
+        this.providerSelected = ''
+      }
+    }
 
-  private loadProductData(id: number): void {}
+  }
 
   getFieldError(fieldName: string): string {
     const field = this.productForm.get(fieldName);
