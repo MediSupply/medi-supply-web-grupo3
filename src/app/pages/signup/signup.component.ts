@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
@@ -91,5 +91,9 @@ export class SignUpComponent {
           console.error('Error:', err);
         },
       });
+  }
+
+  toLogin() {
+    this.router.navigate(['/login']);
   }
 }
