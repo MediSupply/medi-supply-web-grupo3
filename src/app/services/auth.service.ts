@@ -16,7 +16,13 @@ export class AuthService {
   ) {}
 
   signup(usuario: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/signup`, usuario);
+    return this.http.post(`${this.baseUrl}/auth/signup`, usuario).pipe(
+      tap((response: any) => {
+        if (response.token) {
+          localStorage.setItem('jwt_token', response.token);
+        }
+      })
+    );;
   }
 
   login(email: string, password: string): Observable<any> {
@@ -25,7 +31,6 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem('jwt_token', response.token);
-          console.log('Token guardado en localStorage:', response.token);
         }
       })
     );
