@@ -31,7 +31,7 @@ describe('CargarProductoComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        CargarProductoComponent, // Componente standalone
+        CargarProductoComponent,
         ReactiveFormsModule,
         NoopAnimationsModule,
         MatFormFieldModule,
@@ -40,7 +40,6 @@ describe('CargarProductoComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule
-        // REMOVER MatSnackBarModule de aquí
       ],
       providers: [
         { provide: Router, useValue: routerSpy },
@@ -56,7 +55,7 @@ describe('CargarProductoComponent', () => {
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     
     mockHistoryState({});
-    fixture.detectChanges(); // Ejecuta ngOnInit
+    fixture.detectChanges();
   });
 
   afterEach(() => {

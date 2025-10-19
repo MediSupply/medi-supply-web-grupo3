@@ -1,4 +1,4 @@
-export interface Pais{
+export interface Pais {
   id: number;
-  value:string;
+  value: string;
 }

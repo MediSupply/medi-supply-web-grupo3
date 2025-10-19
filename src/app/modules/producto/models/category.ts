@@ -1,4 +1,4 @@
-export interface Category{
+export interface Category {
   id: string;
-  value:string;
+  value: string;
 }

@@ -6,11 +6,11 @@
       "description": "Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre",
       "price": 8500,
       "amount": 150,
-      "category": {"id":1, "value":"Analgésicos"},
+      "category": { "id": 1, "value": "Analgésicos" },
       "conditions": "Almacenar en lugar fresco y seco. Temperatura menor a 30°C",
       "expirationDate": "2025-12-15",
       "batch": "LOT-AC202312",
-      "provider":  {"id":1, "value":"Genfar S.A."},
+      "provider": { "id": 1, "value": "Genfar S.A." },
       "deliveryTime": "24-48 horas"
     },
     {
@@ -19,11 +19,11 @@
       "description": "Antiinflamatorio no esteroideo para dolor, inflamación y fiebre",
       "price": 12000,
       "amount": 85,
-      "category": {"id":2, "value":"Antiinflamatorios"},
+      "category": { "id": 2, "value": "Antiinflamatorios" },
       "conditions": "Proteger de la luz. Mantener en envase original",
       "expirationDate": "2026-03-20",
       "batch": "LOT-IB202401",
-      "provider":  {"id":2, "value":"Bayer S.A."},
+      "provider": { "id": 2, "value": "Bayer S.A." },
       "deliveryTime": "48-72 horas"
     },
     {
@@ -32,11 +32,11 @@
       "description": "Antibiótico de amplio espectro para infecciones bacterianas",
       "price": 18500,
       "amount": 60,
-      "category": {"id":3, "value":"Antibióticos"},
+      "category": { "id": 3, "value": "Antibióticos" },
       "conditions": "Refrigerar entre 2°C y 8°C después de reconstituir",
       "expirationDate": "2024-11-30",
       "batch": "LOT-AM202402",
-      "provider":  {"id":3, "value":"Pfizer S.A.S."},
+      "provider": { "id": 3, "value": "Pfizer S.A.S." },
       "deliveryTime": "72 horas"
     },
     {
@@ -45,11 +45,11 @@
       "description": "Antihistamínico para el alivio de síntomas de alergia estacional",
       "price": 9500,
       "amount": 120,
-      "category": {"id":4, "value":"Antialérgicos"},
+      "category": { "id": 4, "value": "Antialérgicos" },
       "conditions": "Ambiente seco. Temperatura ambiente",
       "expirationDate": "2026-06-10",
       "batch": "LOT-LO202312",
-      "provider":  {"id":4, "value":"Sanofi Aventis"},
+      "provider": { "id": 4, "value": "Sanofi Aventis" },
       "deliveryTime": "24 horas"
     },
     {
@@ -58,11 +58,11 @@
       "description": "Inhibidor de bomba de protones para acidez y reflujo gástrico",
       "price": 14200,
       "amount": 95,
-      "category": {"id":5, "value":"Gastrointestinales"},
+      "category": { "id": 5, "value": "Gastrointestinales" },
       "conditions": "Proteger de la humedad. Envase bien cerrado",
       "expirationDate": "2025-09-25",
       "batch": "LOT-OM202403",
-      "provider":  {"id":5, "value":"AstraZeneca"},
+      "provider": { "id": 5, "value": "AstraZeneca" },
       "deliveryTime": "48 horas"
     },
     {
@@ -71,11 +71,11 @@
       "description": "Estatina para reducir el colesterol LDL y triglicéridos en sangre",
       "price": 22500,
       "amount": 45,
-      "category": {"id":6, "value":"Cardiovasculares"},
+      "category": { "id": 6, "value": "Cardiovasculares" },
       "conditions": "Temperatura controlada. Evitar congelación",
       "expirationDate": "2026-01-15",
       "batch": "LOT-AT202404",
-      "provider":  {"id":6, "value":"Novartis S.A."},
+      "provider": { "id": 6, "value": "Novartis S.A." },
       "deliveryTime": "5-7 días"
     },
     {
@@ -84,11 +84,11 @@
       "description": "Antidiabético oral para el control de la glucosa en diabetes tipo 2",
       "price": 11200,
       "amount": 110,
-      "category": {"id":7, "value":"Antidiabéticos"},
+      "category": { "id": 7, "value": "Antidiabéticos" },
       "conditions": "Ambiente seco. Lejos de fuentes de calor",
       "expirationDate": "2025-08-30",
       "batch": "LOT-ME202405",
-      "provider":  {"id":7, "value":"Merck S.A."},
+      "provider": { "id": 7, "value": "Merck S.A." },
       "deliveryTime": "48-72 horas"
     },
     {
@@ -97,11 +97,11 @@
       "description": "Antihipertensivo para el control de la presión arterial alta",
       "price": 16300,
       "amount": 75,
-      "category": {"id":6, "value":"Cardiovasculares"},
+      "category": { "id": 6, "value": "Cardiovasculares" },
       "conditions": "Temperatura ambiente estable",
       "expirationDate": "2026-04-18",
       "batch": "LOT-LO202406",
-      "provider":  {"id":8, "value":"MSD Colombia"},
+      "provider": { "id": 8, "value": "MSD Colombia" },
       "deliveryTime": "72 horas"
     },
     {
@@ -110,11 +110,11 @@
       "description": "Broncodilatador para el alivio rápido del asma y broncoespasmo",
       "price": 28900,
       "amount": 35,
-      "category": {"id":8, "value":"Respiratorios"},
+      "category": { "id": 8, "value": "Respiratorios" },
       "conditions": "No exponer a temperaturas extremas. Proteger de golpes",
       "expirationDate": "2025-05-22",
       "batch": "LOT-SA202407",
-      "provider":  {"id":9, "value":"GlaxoSmithKline"},
+      "provider": { "id": 9, "value": "GlaxoSmithKline" },
       "deliveryTime": "24-48 horas"
     },
     {
@@ -123,11 +123,11 @@
       "description": "Ansiolítico y relajante muscular para trastornos de ansiedad",
       "price": 18900,
       "amount": 40,
-      "category": {"id":9, "value":"Psicotrópicos"},
+      "category": { "id": 9, "value": "Psicotrópicos" },
       "conditions": "Controlado. Requiere receta médica. Ambiente seco",
       "expirationDate": "2025-11-10",
       "batch": "LOT-DI202408",
-      "provider":  {"id":10, "value":"Roche S.A."},
+      "provider": { "id": 10, "value": "Roche S.A." },
       "deliveryTime": "5-7 días"
     },
     {
@@ -136,11 +136,11 @@
       "description": "Antibiótico fluoroquinolona para infecciones bacterianas graves",
       "price": 21500,
       "amount": 55,
-      "category": {"id":3, "value":"Antibióticos"},
+      "category": { "id": 3, "value": "Antibióticos" },
       "conditions": "Proteger de la luz. Temperatura ambiente",
       "expirationDate": "2026-02-28",
       "batch": "LOT-CI202409",
-      "provider":  {"id":2, "value":"Bayer S.A."},
+      "provider": { "id": 2, "value": "Bayer S.A." },
       "deliveryTime": "48 horas"
     },
     {
@@ -149,11 +149,11 @@
       "description": "Anticonvulsivo y ansiolítico para epilepsia y trastornos de pánico",
       "price": 17600,
       "amount": 30,
-      "category": {"id":9, "value":"Psicotrópicos"},
+      "category": { "id": 9, "value": "Psicotrópicos" },
       "conditions": "Controlado. Receta médica obligatoria. Ambiente fresco",
       "expirationDate": "2025-10-05",
       "batch": "LOT-CL202410",
-      "provider":  {"id":3, "value":"Pfizer S.A.S."},
+      "provider": { "id": 3, "value": "Pfizer S.A.S." },
       "deliveryTime": "5-7 días"
     },
     {
@@ -162,11 +162,11 @@
       "description": "Antidepresivo ISRS para trastornos depresivos y de ansiedad",
       "price": 19800,
       "amount": 65,
-      "category": {"id":10, "value":"Antidepresivos"},
+      "category": { "id": 10, "value": "Antidepresivos" },
       "conditions": "Ambiente seco. Temperatura menor a 25°C",
       "expirationDate": "2026-07-12",
       "batch": "LOT-SE202411",
-      "provider":  {"id":6, "value":"Novartis S.A."},
+      "provider": { "id": 6, "value": "Novartis S.A." },
       "deliveryTime": "72 horas"
     },
     {
@@ -175,11 +175,11 @@
       "description": "Hormona tiroidea para el tratamiento del hipotiroidismo",
       "price": 12400,
       "amount": 80,
-      "category": {"id":11, "value":"Hormonales"},
+      "category": { "id": 11, "value": "Hormonales" },
       "conditions": "Refrigerar. No congelar. Proteger de la luz",
       "expirationDate": "2024-12-20",
       "batch": "LOT-LE202412",
-      "provider":  {"id":4, "value":"Sanofi Aventis"},
+      "provider": { "id": 4, "value": "Sanofi Aventis" },
       "deliveryTime": "24-48 horas"
     },
     {
@@ -188,11 +188,11 @@
       "description": "Anticoagulante oral para prevenir trombosis y embolias",
       "price": 14300,
       "amount": 50,
-      "category": {"id":12, "value":"Anticoagulantes"},
+      "category": { "id": 12, "value": "Anticoagulantes" },
       "conditions": "Ambiente seco. Control estricto de temperatura",
       "expirationDate": "2025-03-15",
       "batch": "LOT-WA202413",
-      "provider":  {"id":11, "value":"Aspen Pharma"},
+      "provider": { "id": 11, "value": "Aspen Pharma" },
       "deliveryTime": "48-72 horas"
     }
   ]

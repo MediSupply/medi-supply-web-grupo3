@@ -1,10 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, computed, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
+import { AuthService } from '../../../services/auth.service';
 
 interface MenuItem {
   id: string;
@@ -18,11 +26,18 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule,  MatIconModule, MatExpansionModule, MatListModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatListModule,
+  ],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
   private router = inject(Router);
   private routerSubscription!: Subscription;
   logoError = signal(false);
@@ -31,13 +46,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     {
       id: 'producto',
       label: 'Productos',
-      icon: 'home', 
-      path: '/productos',
+      icon: 'home',
+      path: '/dashboard/productos',
       /*children: [
         { id: 'registro-ventas', label: 'Listar Productos', icon: '💰', path: '/registro/ventas' },
         { id: 'registro-compras', label: 'Cargar Producto', icon: '🛒', path: '/registro/compras' },
       ],*/
-      isExpanded: false
+      isExpanded: false,
     },
     {
       id: 'registro',
@@ -51,22 +66,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
       label: 'Plan de Ventas',
       icon: 'folder',
       path: '/plan',
-      isExpanded: false
+      isExpanded: false,
     },
     {
       id: 'reportes',
       label: 'Reportes',
       icon: 'insert_drive_file',
       path: '/reporte',
-      isExpanded: false
+      isExpanded: false,
     },
     {
       id: 'rutas',
       label: 'Rutas',
       icon: 'add_circle_outline',
       path: '/rutas',
-      isExpanded: false
-    }
+      isExpanded: false,
+    },
   ]);
 
   ngOnInit() {
@@ -82,9 +97,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private setupRouterListener(): void {
     this.routerSubscription = this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd)
-      )
+      .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.autoExpandMenus();
       });
@@ -93,10 +106,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private updateActiveItem(url: string): void {
     // Buscar el item que coincide con la URL actual
     const allItems = this.getAllMenuItems();
-    const activeItem = allItems.find(item => 
-      url === item.path || url.startsWith(item.path + '/')
+    const activeItem = allItems.find(
+      item => url === item.path || url.startsWith(item.path + '/')
     );
-    
+
     if (activeItem) {
       this.activeItemId.set(activeItem.id);
     } else {
@@ -106,14 +119,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private getAllMenuItems(): MenuItem[] {
     const allItems: MenuItem[] = [];
-    
+
     this.menuItems().forEach(item => {
       allItems.push(item);
       if (item.children) {
         allItems.push(...item.children);
       }
     });
-    
+
     return allItems;
   }
 
@@ -122,9 +135,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleSubmenu(item: MenuItem): void {
-    this.menuItems.update(items => 
-      items.map(menuItem => 
-        menuItem.id === item.id 
+    this.menuItems.update(items =>
+      items.map(menuItem =>
+        menuItem.id === item.id
           ? { ...menuItem, isExpanded: !menuItem.isExpanded }
           : menuItem
       )
@@ -133,18 +146,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   isActive(item: MenuItem): boolean {
     const currentUrl = this.router.url;
-    
+
     if (item.children) {
       return item.children.some(child => currentUrl.startsWith(child.path));
     }
-    
+
     return currentUrl.startsWith(item.path);
   }
 
-   setActiveItem(item: MenuItem): void {
+  setActiveItem(item: MenuItem): void {
     this.activeItemId.set(item.id);
-    
-    this.menuItems.update(items => 
+
+    this.menuItems.update(items =>
       items.map(menuItem => {
         if (menuItem.id !== item.id && menuItem.children) {
           return { ...menuItem, isExpanded: false };
@@ -156,11 +169,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private autoExpandMenus(): void {
     const currentUrl = this.router.url;
-    
-    this.menuItems.update(items => 
+
+    this.menuItems.update(items =>
       items.map(item => {
         if (item.children) {
-          const shouldExpand = item.children.some(child => 
+          const shouldExpand = item.children.some(child =>
             currentUrl.startsWith(child.path)
           );
           return { ...item, isExpanded: shouldExpand };
@@ -173,5 +186,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   onLogoError(event: Event): void {
     console.warn('Avatar no encontrado, usando placeholder');
     this.logoError.set(true);
+  }
+
+  logOut() {
+    this.authService.logout();
   }
 }

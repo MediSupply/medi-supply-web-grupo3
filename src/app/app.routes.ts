@@ -1,22 +1,22 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './pages/login/login.component';
+import { SignUpComponent } from './pages/signup/signup.component';
+import { ListarProductosComponent } from './modules/producto/components/listar-productos/listar-productos.component';
+import { CargarProductoComponent } from './modules/producto/components/cargar-producto/cargar-producto.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
-{
-    path: 'productos',
-    loadComponent: () => import('./modules/producto/components/listar-productos/listar-productos.component').then(m => m.ListarProductosComponent)
-},
-{
-    path: 'producto',
-    loadComponent: () => import('./modules/producto/components/cargar-producto/cargar-producto.component').then(m => m.CargarProductoComponent)
-},
-{
-    path: 'registro',
-    loadComponent: () => import('./modules/registro/componentes/dashboard-registro/dashboard-registro.component').then(m => m.DashboardRegistroComponent)
-},
-{ path: '', redirectTo: '/productos', pathMatch: 'full' },
-  /*{ 
-    path: '**', 
-    loadComponent: () => import('./shared/components/not-found/not-found.component')
-      .then(m => m.NotFoundComponent) 
-  }*/
+  // { path: '**', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'signup', component: SignUpComponent },
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    children: [
+      { path: '', redirectTo: 'productos', pathMatch: 'full' },
+      { path: 'productos', component: ListarProductosComponent },
+      { path: 'producto', component: CargarProductoComponent },
+    ],
+  },
 ];
