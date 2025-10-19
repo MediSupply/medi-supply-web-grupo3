@@ -1,14 +1,21 @@
-import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProductoService } from '../../services/producto.service';
 import { Product } from '../../models/product';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -16,7 +23,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-listar-productos',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     RouterModule,
     MatTableModule,
     MatPaginatorModule,
@@ -26,22 +34,31 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatDialogModule],
+    MatDialogModule,
+  ],
   templateUrl: './listar-productos.component.html',
-  styleUrl: './listar-productos.component.scss'
+  styleUrl: './listar-productos.component.scss',
 })
-export class ListarProductosComponent implements OnInit, AfterViewInit{
+export class ListarProductosComponent implements OnInit, AfterViewInit {
   private productService = inject(ProductoService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
-  
-  displayedColumns = signal<string[]>(['id', 'name', 'description', 'price', 'amount','actions']);
+  private route = inject(ActivatedRoute);
+
+  displayedColumns = signal<string[]>([
+    'id',
+    'name',
+    'description',
+    'price',
+    'amount',
+    'actions',
+  ]);
   dataSource = new MatTableDataSource<Product>();
   loading = signal<boolean>(true);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-    
+
   ngOnInit(): void {
     this.loadProducts();
   }
@@ -53,9 +70,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit{
 
   loadProducts(): void {
     this.loading.set(true);
-    
+
     this.productService.getAllProducts().subscribe({
-      next: (products) => {
+      next: products => {
         this.dataSource.data = products;
         this.loading.set(false);
         setTimeout(() => {
@@ -63,10 +80,10 @@ export class ListarProductosComponent implements OnInit, AfterViewInit{
           this.dataSource.sort = this.sort;
         });
       },
-      error: (error) => {
+      error: error => {
         console.error('Error loading products:', error);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -78,23 +95,25 @@ export class ListarProductosComponent implements OnInit, AfterViewInit{
     }
   }
 
-  addProduct(){
-      this.router.navigate(['/producto'], {
+  addProduct() {
+    this.router.navigate(['../producto'], {
+      relativeTo: this.route,
       queryParams: {
         action: 'new',
-        source: 'productos'
-      }
+        source: 'productos',
+      },
       // state: { data: {} }
     });
   }
 
-  editProduct(product: Product){
-    console.log(product)
-    this.router.navigate(['/producto'], {
-      state: { 
+  editProduct(product: Product) {
+    console.log(product);
+    this.router.navigate(['../producto'], {
+      relativeTo: this.route,
+      state: {
         product: product,
-        action: 'edit'
-     } 
+        action: 'edit',
+      },
     });
   }
 }
