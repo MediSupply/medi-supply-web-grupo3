@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:5001'; // Según tu colección Postman
+  private baseUrl = environment.baseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   signup(usuario: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/signup`, usuario);
@@ -34,5 +39,6 @@ export class AuthService {
   // 🚪 Cerrar sesión
   logout(): void {
     localStorage.removeItem('jwt_token');
+    this.router.navigate(['/login']);
   }
 }

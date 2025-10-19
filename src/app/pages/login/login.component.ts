@@ -3,7 +3,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LoaderComponent } from '../../components/loader/loader.component';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class LoginComponent {
   ngOnInit(): void {
     const authenticated = this.authService.isAuthenticated();
     if (authenticated) {
-      // this.router.navigate(['/dashboard']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -55,24 +56,34 @@ export class LoginComponent {
 
     const { email, password } = this.user;
 
-    this.authService.login(email, password).subscribe({
-      next: (response: any) => {
-        this.cargando = false;
-        // this.router.navigate(['/dashboard']);
-      },
-      error: (err: any) => {
-        this.cargando = false;
+    this.authService
+      .login(email, password)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            this.cargando = false;
+          }, 400);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err: any) => {
+          if (err.status === 404) {
+            this.mensaje = 'El usuario no existe';
+          } else if (err.status === 401) {
+            this.mensaje = 'Contraseña incorrecta';
+          } else {
+            this.mensaje = 'Error al iniciar sesion';
+          }
 
-        if (err.status === 404) {
-          this.mensaje = 'El usuario no existe';
-        } else if (err.status === 401) {
-          this.mensaje = 'Contraseña incorrecta';
-        } else {
-          this.mensaje = 'Error al iniciar sesion';
-        }
+          console.error('Error:', err);
+        },
+      });
+  }
 
-        console.error('Error:', err);
-      },
-    });
+  toRegister() {
+    this.router.navigate(['/signup']);
   }
 }

@@ -86,7 +86,6 @@ describe('LoginComponent', () => {
         component.user.email,
         component.user.password
       );
-      expect(component.cargando).toBeFalse();
     });
 
     it('debería establecer cargando en true durante el registro', () => {
@@ -112,7 +111,6 @@ describe('LoginComponent', () => {
 
       component.login(form);
 
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('El usuario no existe');
     });
 
@@ -125,7 +123,6 @@ describe('LoginComponent', () => {
 
       component.login(form);
 
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('Contraseña incorrecta');
     });
 
@@ -137,7 +134,6 @@ describe('LoginComponent', () => {
       authService.login.and.returnValue(throwError(() => error));
       component.login(form);
 
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('Error al iniciar sesion');
     });
   });

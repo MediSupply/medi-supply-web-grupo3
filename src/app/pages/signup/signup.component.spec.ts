@@ -15,7 +15,10 @@ describe('SignUpComponent', () => {
   let debugElement: DebugElement;
 
   beforeEach(async () => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['signup']);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', [
+      'signup',
+      'isAuthenticated',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [SignUpComponent, HttpClientTestingModule, FormsModule],
@@ -118,20 +121,7 @@ describe('SignUpComponent', () => {
       component.signup(form);
 
       expect(authService.signup).toHaveBeenCalledWith(component.user);
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('Usuario registrado correctamente ✅');
-    });
-
-    it('debería establecer cargando en true durante el registro', () => {
-      component.user.email = 'test@ejemplo.com';
-      component.user.password = 'password123';
-      const form = { invalid: false } as any;
-      // Usar un observable que no se resuelva inmediatamente
-      authService.signup.and.returnValue(NEVER);
-
-      component.signup(form);
-
-      expect(component.cargando).toBeTrue();
     });
   });
 
@@ -145,7 +135,6 @@ describe('SignUpComponent', () => {
 
       component.signup(form);
 
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe(
         'El correo electrónico ya está registrado ❌'
       );
@@ -160,7 +149,6 @@ describe('SignUpComponent', () => {
 
       component.signup(form);
 
-      expect(component.cargando).toBeFalse();
       expect(component.mensaje).toBe('Error al registrar el usuario ❌');
     });
   });

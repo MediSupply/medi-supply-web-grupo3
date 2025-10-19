@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  baseUrl: 'http://localhost:5001',
   appVersion: '1.0.0',
-  enableDebug: true
+  enableDebug: true,
 };

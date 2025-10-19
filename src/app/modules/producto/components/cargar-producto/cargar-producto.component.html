@@ -1,7 +1,6 @@
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10 col-xl-8">
-
       <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white py-3">
           <div class="row align-items-center">
@@ -17,25 +16,39 @@
 
       <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-          <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
-            
-            <div class="row mb-4">         
+          <form
+            [formGroup]="productForm"
+            (ngSubmit)="onSubmit()"
+            class="needs-validation"
+            novalidate
+          >
+            <div class="row mb-4">
               <!-- Nombre -->
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Nombre del Producto</mat-label>
-                  <input matInput formControlName="name" placeholder="Ej: Acetaminofén 500mg">
+                  <input
+                    matInput
+                    formControlName="name"
+                    placeholder="Ej: Acetaminofén 500mg"
+                  />
                   <mat-error>{{ getFieldError('name') }}</mat-error>
                 </mat-form-field>
               </div>
 
               <!-- Categoría -->
               <div class="col-md-6 mb-3">
-                <mat-form-field appearance="outline" class="w-100 custom-select-field">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-100 custom-select-field"
+                >
                   <mat-label>Categoría</mat-label>
                   <mat-select formControlName="category">
                     <mat-option value="">Selecciona una categoría</mat-option>
-                    <mat-option *ngFor="let category of categories" [value]="category.id">
+                    <mat-option
+                      *ngFor="let category of categories"
+                      [value]="category.id"
+                    >
                       {{ category.value }}
                     </mat-option>
                   </mat-select>
@@ -47,7 +60,11 @@
               <div class="col-12 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Descripción</mat-label>
-                  <input matInput formControlName="description" placeholder="Descripción del producto">
+                  <input
+                    matInput
+                    formControlName="description"
+                    placeholder="Descripción del producto"
+                  />
                   <mat-error>{{ getFieldError('description') }}</mat-error>
                 </mat-form-field>
               </div>
@@ -58,8 +75,14 @@
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio</mat-label>
-                  <input matInput type="number" formControlName="price" 
-                         placeholder="0" min="0" step="0.01">
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="price"
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
+                  />
                   <span matPrefix>$&nbsp;</span>
                   <mat-error>{{ getFieldError('price') }}</mat-error>
                 </mat-form-field>
@@ -69,20 +92,28 @@
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Cantidad en Stock</mat-label>
-                  <input matInput type="number" formControlName="amount" 
-                         placeholder="0" min="0">
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="amount"
+                    placeholder="0"
+                    min="0"
+                  />
                   <mat-error>{{ getFieldError('amount') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
 
-            <div class="row mb-4">            
+            <div class="row mb-4">
               <!-- Lote -->
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Número de Lote</mat-label>
-                  <input matInput formControlName="batch" 
-                         placeholder="Ej: LOT-AC202312">
+                  <input
+                    matInput
+                    formControlName="batch"
+                    placeholder="Ej: LOT-AC202312"
+                  />
                   <mat-error>{{ getFieldError('batch') }}</mat-error>
                 </mat-form-field>
               </div>
@@ -91,8 +122,15 @@
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Fecha de Vencimiento</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="expirationDate">
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    formControlName="expirationDate"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                   <mat-error>{{ getFieldError('expirationDate') }}</mat-error>
                 </mat-form-field>
@@ -102,22 +140,31 @@
               <div class="col-12 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Condiciones de Almacenamiento</mat-label>
-                  <input matInput formControlName="conditions" placeholder="Ej: Almacenar en lugar fresco y seco">
+                  <input
+                    matInput
+                    formControlName="conditions"
+                    placeholder="Ej: Almacenar en lugar fresco y seco"
+                  />
                   <mat-error>{{ getFieldError('conditions') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
 
             <div class="row mb-4">
-          
               <!-- Proveedor -->
               <div class="col-md-6 mb-3">
-                <mat-form-field appearance="outline" class="w-100 custom-select-field">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-100 custom-select-field"
+                >
                   <mat-label>Proveedor</mat-label>
                   <mat-select formControlName="provider">
                     <mat-option value="0">Selecciona un proveedor</mat-option>
-                    <mat-option *ngFor="let provider of providers" [value]="provider.id">
-                        {{ provider.value }}
+                    <mat-option
+                      *ngFor="let provider of providers"
+                      [value]="provider.id"
+                    >
+                      {{ provider.value }}
                     </mat-option>
                   </mat-select>
                   <mat-error>{{ getFieldError('provider') }}</mat-error>
@@ -128,8 +175,11 @@
               <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Tiempo de Entrega</mat-label>
-                  <input matInput formControlName="deliveryTime" 
-                         placeholder="Ej: 24 horas">
+                  <input
+                    matInput
+                    formControlName="deliveryTime"
+                    placeholder="Ej: 24 horas"
+                  />
                   <mat-error>{{ getFieldError('deliveryTime') }}</mat-error>
                 </mat-form-field>
               </div>
@@ -139,26 +189,33 @@
             <div class="row mt-4">
               <div class="col-12">
                 <div class="d-flex gap-2 justify-content-end">
-                  <button type="button" mat-button (click)="onCancel()" 
-                          [disabled]="loading()" class="px-4">
+                  <button
+                    type="button"
+                    mat-button
+                    (click)="onCancel()"
+                    [disabled]="loading()"
+                    class="px-4"
+                  >
                     <mat-icon>arrow_back</mat-icon>
                     Volver a lista de productos registrados
                   </button>
 
-                  <button *ngIf="!isEditMode" class="action-btn_add" mat-raised-button
-                        [disabled]="loading() || productForm.invalid"
-                        type="submit">
+                  <button
+                    *ngIf="!isEditMode"
+                    class="action-btn_add"
+                    mat-raised-button
+                    [disabled]="loading() || productForm.invalid"
+                    type="submit"
+                  >
                     <mat-icon>save</mat-icon>
                     Guardar producto
-                </button>
+                  </button>
                 </div>
               </div>
             </div>
-
           </form>
         </div>
       </div>
-
     </div>
   </div>
 </div>
