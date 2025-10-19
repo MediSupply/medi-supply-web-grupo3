@@ -53,7 +53,6 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem('jwt_token', response.token);
-          console.log('Token guardado en localStorage:', response.token);
         }
       })
     );
