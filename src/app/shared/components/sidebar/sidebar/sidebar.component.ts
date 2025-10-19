@@ -43,7 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       id: 'registro',
       label: 'Registro',
       icon: 'person_add',
-      path: '/producto',
+      path: '/registro',
       isExpanded: false
     },
     {
