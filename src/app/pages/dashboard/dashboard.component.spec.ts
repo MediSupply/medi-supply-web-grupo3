@@ -28,7 +28,10 @@ describe('DashboardComponent', () => {
 
   afterEach(() => {
     // Restaurar window.innerWidth original
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1024,
+    });
   });
 
   it('should create', () => {
@@ -48,14 +51,20 @@ describe('DashboardComponent', () => {
   });
 
   it('isMobile should return true if viewport < 768', () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 500 });
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 500,
+    });
     component['checkViewport']();
     expect(component.isMobile()).toBeTrue();
     expect(component.sidebarOpen()).toBeFalse();
   });
 
   it('isMobile should return false if viewport >= 768', () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1024,
+    });
     component['checkViewport']();
     expect(component.isMobile()).toBeFalse();
     expect(component.sidebarOpen()).toBeTrue();
@@ -89,7 +98,7 @@ describe('DashboardComponent', () => {
     const spy = spyOn(component as any, 'isAuthPage').and.returnValue(false);
     // Crear un nuevo computed para test (opcional)
     expect(component.showHeader()).toBeTrue();
-  
+
     // Cambiar el retorno del spy
     spy.and.returnValue(true);
     // Recomputa manualmente el computed usando signals

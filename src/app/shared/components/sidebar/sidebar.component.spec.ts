@@ -20,18 +20,20 @@ describe('SidebarComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [SidebarComponent, RouterTestingModule.withRoutes([])],
-      providers: [
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
+      providers: [{ provide: AuthService, useValue: authServiceSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
 
-    spyOnProperty(router, 'events', 'get').and.returnValue(routerEvents$.asObservable());
+    spyOnProperty(router, 'events', 'get').and.returnValue(
+      routerEvents$.asObservable()
+    );
 
-    urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/productos');
+    urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue(
+      '/dashboard/productos'
+    );
 
     fixture.detectChanges();
   });
@@ -51,7 +53,9 @@ describe('SidebarComponent', () => {
       icon: 'folder',
       path: '/parent',
       isExpanded: true,
-      children: [{ id: 'child', label: 'Child', icon: 'file', path: '/parent/child' }]
+      children: [
+        { id: 'child', label: 'Child', icon: 'file', path: '/parent/child' },
+      ],
     };
     component.menuItems.set([parent]);
     component.setActiveItem(parent);
@@ -114,7 +118,9 @@ describe('SidebarComponent', () => {
       icon: 'folder',
       path: '/parent',
       isExpanded: false,
-      children: [{ id: 'child', label: 'Child', icon: 'file', path: '/parent/child' }]
+      children: [
+        { id: 'child', label: 'Child', icon: 'file', path: '/parent/child' },
+      ],
     };
     component.menuItems.set([parentItem]);
 
@@ -131,7 +137,9 @@ describe('SidebarComponent', () => {
       icon: 'folder',
       path: '/parent',
       isExpanded: false,
-      children: [{ id: 'child', label: 'Child', icon: 'file', path: '/parent/child' }]
+      children: [
+        { id: 'child', label: 'Child', icon: 'file', path: '/parent/child' },
+      ],
     };
     component.menuItems.set([parentItem]);
     urlSpy.and.returnValue('/parent/child');
@@ -148,7 +156,9 @@ describe('SidebarComponent', () => {
       icon: 'folder',
       path: '/parent',
       isExpanded: false,
-      children: [{ id: 'child', label: 'Child', icon: 'file', path: '/parent/child' }]
+      children: [
+        { id: 'child', label: 'Child', icon: 'file', path: '/parent/child' },
+      ],
     };
     component.menuItems.set([parentItem]);
     urlSpy.and.returnValue('/otra-ruta');
@@ -165,7 +175,10 @@ describe('SidebarComponent', () => {
   });
 
   it('ngOnDestroy desuscribe routerSubscription', () => {
-    const unsubscribeSpy = spyOn((component as any).routerSubscription, 'unsubscribe');
+    const unsubscribeSpy = spyOn(
+      (component as any).routerSubscription,
+      'unsubscribe'
+    );
     component.ngOnDestroy();
     expect(unsubscribeSpy).toHaveBeenCalled();
   });
