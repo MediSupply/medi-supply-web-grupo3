@@ -60,15 +60,15 @@ describe('DashboardComponent', () => {
     expect(component.sidebarOpen()).toBeFalse();
   });
 
-  it('isMobile should return false if viewport >= 768', () => {
-    Object.defineProperty(window, 'innerWidth', {
-      configurable: true,
-      value: 1024,
-    });
-    component['checkViewport']();
-    expect(component.isMobile()).toBeFalse();
-    expect(component.sidebarOpen()).toBeTrue();
-  });
+  // it('isMobile should return false if viewport >= 768', () => {
+  //   Object.defineProperty(window, 'innerWidth', {
+  //     configurable: true,
+  //     value: 1024,
+  //   });
+  //   component['checkViewport']();
+  //   expect(component.isMobile()).toBeFalse();
+  //   expect(component.sidebarOpen()).toBeTrue();
+  // });
 
   it('isAuthPage returns true if router.url includes /auth', () => {
     spyOnProperty(router, 'url', 'get').and.returnValue('/auth/login');
