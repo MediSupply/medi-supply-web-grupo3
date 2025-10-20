@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
-import { Pais } from '../../modules/producto/models/pais';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +29,7 @@ export class DashboardComponent {
   private routerSubscription!: Subscription;
   toppings = new FormControl('');
 
-  paises: Pais[] = [
+  paises = [
     { id: 0, value: 'Colombia' },
     { id: 1, value: 'Chile' },
     { id: 2, value: 'Peru' },
