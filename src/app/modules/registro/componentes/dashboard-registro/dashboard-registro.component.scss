@@ -1,4 +1,4 @@
-::ng-deep {
+:host::ng-deep {
   .table-header {
     display: flex;
     align-items: center;
@@ -21,7 +21,6 @@
       align-items: center;
       gap: 20px;
       flex: 1;
-      justify-content: flex-end;
     }
   }
 
@@ -45,6 +44,20 @@
             margin-right: 8px;
         }
         }
+
+      button {
+        min-height: 149px;
+        min-width: 164px;
+
+        .mat_icon {
+          font-size: 24px;
+        }
+
+        .mdc-button__label {
+          font-size: 18px;
+          font-weight: 100;
+        }
+      }
     }
   }
 }
