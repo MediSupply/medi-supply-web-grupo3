@@ -1,7 +1,6 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { ListarProductosComponent } from './listar-productos.component';
-<<<<<<< HEAD
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,11 +15,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
 import { of, Subject, throwError } from 'rxjs';
-=======
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
->>>>>>> 39a93f11baacada9104c82a1f73cc3e21687b6b9
 
 describe('ListarProductosComponent', () => {
     let component: ListarProductosComponent;
@@ -81,7 +75,6 @@ describe('ListarProductosComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ListarProductosComponent,
-<<<<<<< HEAD
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -97,13 +90,6 @@ describe('ListarProductosComponent', () => {
         ]
     })
     .compileComponents();
-=======
-        HttpClientTestingModule,
-        RouterTestingModule,
-        NoopAnimationsModule,
-      ],
-    }).compileComponents();
->>>>>>> 39a93f11baacada9104c82a1f73cc3e21687b6b9
 
     fixture = TestBed.createComponent(ListarProductosComponent);
 

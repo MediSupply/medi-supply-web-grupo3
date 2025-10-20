@@ -9,7 +9,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-registro',
@@ -30,11 +30,13 @@ import { RouterModule } from '@angular/router';
 })
 export class DashboardRegistroComponent {
 
-  addSeller(){
+  constructor(private router: Router) {}
 
+  addSeller(){
+    
   }
 
   addSupplier(){
-
+    this.router.navigate(['/dashboard/registro-proveedor']);
   }
 }

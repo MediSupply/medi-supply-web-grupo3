@@ -1,0 +1,80 @@
+<div class="form-container">
+  <h2>Registro de Proveedor</h2>
+  
+  <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()" class="proveedor-form">
+    
+    <!-- Nombre proveedor -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del proveedor</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ingrese el nombre del proveedor">
+      <mat-error>{{ getFieldError('nombre') }}</mat-error>
+    </mat-form-field>
+
+    <!-- NIT -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>NIT</mat-label>
+      <input matInput formControlName="nit" placeholder="Ingrese el NIT">
+      <mat-error>{{ getFieldError('nit') }}</mat-error>
+    </mat-form-field>
+
+    <!-- País -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>País</mat-label>
+      <mat-select formControlName="pais">
+        <mat-option value="">Seleccione un país</mat-option>
+        <mat-option *ngFor="let pais of paises" [value]="pais.id">
+          {{ pais.value }}
+        </mat-option>
+      </mat-select>
+      <mat-error>{{ getFieldError('pais') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Dirección -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dirección</mat-label>
+      <input matInput formControlName="direccion" placeholder="Ingrese la dirección completa" rows="3">
+      <mat-error>{{ getFieldError('direccion') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Teléfono -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Teléfono</mat-label>
+      <input matInput formControlName="telefono" placeholder="Ingrese el teléfono" type="tel">
+      <mat-error>{{ getFieldError('telefono') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Correo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correo electrónico</mat-label>
+      <input matInput formControlName="correo" placeholder="Ingrese el correo electrónico" type="email">
+      <mat-error>{{ getFieldError('correo') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Contraseña -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="contrasena" placeholder="Ingrese la contraseña">
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error>{{ getFieldError('contrasena') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Botones de acción -->
+    <div class="form-actions">
+      <button
+        type="button"
+        mat-button
+        (click)="onCancel()"
+        class="action-btn_cancel"
+        >
+        Cancelar
+      </button>
+      <button type="submit" mat-raised-button color="primary" class="action-btn_add">
+        <mat-icon>save</mat-icon>
+        Registrar Proveedor
+      </button>
+    </div>
+
+  </form>
+</div>

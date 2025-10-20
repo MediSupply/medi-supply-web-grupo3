@@ -93,6 +93,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+    if(this.dataSource.filteredData.length === 0){
+       alert('Producto no encontrado');
+    }
   }
 
   addProduct() {
