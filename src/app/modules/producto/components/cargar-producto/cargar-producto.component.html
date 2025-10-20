@@ -194,22 +194,15 @@
                     mat-button
                     (click)="onCancel()"
                     [disabled]="loading()"
-                    class="px-4"
+                    class="action-btn_cancel"
                   >
                     <mat-icon>arrow_back</mat-icon>
                     Volver a lista de productos registrados
                   </button>
-
-                  <button
-                    *ngIf="!isEditMode"
-                    class="action-btn_add"
-                    mat-raised-button
-                    [disabled]="loading() || productForm.invalid"
-                    type="submit"
-                  >
-                    <mat-icon>save</mat-icon>
-                    Guardar producto
-                  </button>
+                  <button *ngIf="!isEditMode" type="submit" mat-raised-button color="primary" class="action-btn_add">
+                        <mat-icon>save</mat-icon>
+                        Guardar producto
+                    </button>
                 </div>
               </div>
             </div>
