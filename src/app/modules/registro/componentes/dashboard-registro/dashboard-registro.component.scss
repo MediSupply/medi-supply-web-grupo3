@@ -1,0 +1,63 @@
+:host::ng-deep {
+  .table-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 24px;
+
+    h2 {
+      color: #000000;
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.75rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .search-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 1;
+    }
+  }
+
+  .table-container {
+    .search-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 1;
+      justify-content: flex-start;
+
+      .action-btn_add {
+        background-color: #69a7ff !important;
+        color: white !important;
+        border-radius: 6px !important;
+        white-space: nowrap;
+        padding: 0 20px;
+        height: 48px;
+
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+
+      button {
+        min-height: 149px;
+        min-width: 164px;
+
+        .mat_icon {
+          font-size: 24px;
+        }
+
+        .mdc-button__label {
+          font-size: 18px;
+          font-weight: 100;
+        }
+      }
+    }
+  }
+}
