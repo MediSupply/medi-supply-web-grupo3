@@ -171,26 +171,6 @@ export class CargarProductoComponent implements OnInit {
       this.categorySelected = '';
       this.providerSelected = '';
     }
-
-    // this.product = history.state.product || {};
-    // const state = history.state;
-    // state.action === 'edit' ? this.isEditMode=true: this.isEditMode=false;
-    // if(this.isEditMode){
-    //   if (this.product?.category) {
-    //     this.categorySelected = this.product.category.id.toString();
-    //     const categoryExists = this.categories.find(cat => cat.id === this.categorySelected);
-    //   }
-    //   else{
-    //     this.categorySelected = ''
-    //   }
-    //   if (this.product?.provider) {
-    //     this.providerSelected = this.product.provider.id.toString();
-    //     const categoryExists = this.categories.find(cat => cat.id === this.providerSelected);
-    //   }
-    //   else{
-    //     this.providerSelected = ''
-    //   }
-    // }
   }
 
   getFieldError(fieldName: string): string {
@@ -223,7 +203,8 @@ onSubmit() {
   if (this.productForm.valid) {
     this.loading.set(true);
     console.log('guardando');
-    // Lógica de guardado...
+    this.productForm.reset()
+    alert("Producto registrado exitosamente")
   } else {
     this.markAllFieldsAsTouched();
   }
@@ -239,6 +220,7 @@ markAllFieldsAsTouched(): void {
 }
 
   onCancel(): void {
-    this.router.navigate(['/productos']);
+    this.productForm.reset()
+    this.router.navigate(['/dashboard/productos']);
   }
 }
