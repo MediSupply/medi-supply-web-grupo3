@@ -22,7 +22,7 @@ export class AuthService {
           localStorage.setItem('jwt_token', response.token);
         }
       })
-    );;
+    );
   }
 
   login(email: string, password: string): Observable<any> {
