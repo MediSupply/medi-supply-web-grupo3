@@ -15,7 +15,8 @@ describe('SidebarComponent', () => {
   let urlSpy: jasmine.Spy<any>;
 
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout', 'isAdmin']);
+    authServiceSpy.isAdmin.and.returnValue(true); // Por defecto es admin para mantener compatibilidad con pruebas existentes
     routerEvents$ = new Subject<any>();
 
     await TestBed.configureTestingModule({
@@ -45,7 +46,6 @@ describe('SidebarComponent', () => {
   it('debería crear el componente', () => {
     expect(component).toBeTruthy();
   });
-
   it('debería inicializar con valores por defecto', () => {
     expect(component.logoError()).toBeFalsy();
     expect(component.menuItems().length).toBeGreaterThan(0);
@@ -136,7 +136,9 @@ describe('SidebarComponent', () => {
     expect(component['autoExpandMenus']).toHaveBeenCalled();
   });
 
-  it('debería tener estructura de menú correcta', () => {
+  it('debería tener estructura de menú correcta cuando es admin', () => {
+    authServiceSpy.isAdmin.and.returnValue(true);
+    component.ngOnInit();
     const menuItems = component.menuItems();
 
     expect(menuItems.length).toBe(5);
@@ -147,7 +149,22 @@ describe('SidebarComponent', () => {
     expect(menuItems[4].id).toBe('rutas');
   });
 
-  it('debería tener rutas correctas en los menús', () => {
+  it('debería ocultar registro cuando no es admin', () => {
+    authServiceSpy.isAdmin.and.returnValue(false);
+    component.ngOnInit();
+    const menuItems = component.menuItems();
+
+    expect(menuItems.length).toBe(4);
+    expect(menuItems.find(item => item.id === 'registro')).toBeUndefined();
+    expect(menuItems[0].id).toBe('producto');
+    expect(menuItems[1].id).toBe('plan-venta');
+    expect(menuItems[2].id).toBe('reportes');
+    expect(menuItems[3].id).toBe('rutas');
+  });
+
+  it('debería tener rutas correctas en los menús cuando es admin', () => {
+    authServiceSpy.isAdmin.and.returnValue(true);
+    component.ngOnInit();
     const menuItems = component.menuItems();
 
     expect(menuItems[0].path).toBe('/dashboard/productos');
