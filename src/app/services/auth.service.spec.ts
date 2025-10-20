@@ -17,6 +17,11 @@ describe('AuthService', () => {
     role: 'USER',
   };
 
+  const mockLogin = {
+    email: 'juan@ejemplo.com',
+    password: 'password123',
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -41,5 +46,38 @@ describe('AuthService', () => {
 
     // Simula la respuesta del servidor
     req.flush({ message: 'Usuario creado correctamente' });
+  });
+
+  it('debería realizar una petición POST a /auth/login', () => {
+    const token = 'abc123token';
+    service.login(mockLogin.email, mockLogin.password).subscribe(response => {
+      expect(response).toBeTruthy();
+      expect(response.token).toBe(token);
+    });
+
+    const req = httpMock.expectOne('http://localhost:5001/auth/login');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(mockLogin);
+
+    // Simula la respuesta del servidor
+    req.flush({ token });
+  });
+
+  // 🔹 Prueba de isAuthenticated()
+  it('debería retornar true si existe un token en localStorage', () => {
+    localStorage.setItem('jwt_token', 'fake-token');
+    expect(service.isAuthenticated()).toBeTrue();
+  });
+
+  it('debería retornar false si NO existe token en localStorage', () => {
+    localStorage.removeItem('jwt_token');
+    expect(service.isAuthenticated()).toBeFalse();
+  });
+
+  // 🔹 Prueba de logout()
+  it('debería eliminar el token del localStorage al cerrar sesión', () => {
+    localStorage.setItem('jwt_token', 'fake-token');
+    service.logout();
+    expect(localStorage.getItem('jwt_token')).toBeNull();
   });
 });
