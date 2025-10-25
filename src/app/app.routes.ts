@@ -18,7 +18,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'registro', pathMatch: 'full' },
       { path: 'registro', component: DashboardRegistroComponent },
       { path: 'registro-proveedor', component: RegistroProveedorComponent },
-             { path: 'reportes', component: ReportesComponent },
+      { path: 'reportes', component: ReportesComponent },
     ],
   },
 ];

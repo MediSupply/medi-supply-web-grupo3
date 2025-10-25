@@ -122,7 +122,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return currentUrl.startsWith(item.path);
   }
 
-
   private autoExpandMenus(): void {
     const currentUrl = this.router.url;
 

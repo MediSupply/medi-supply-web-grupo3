@@ -1,5 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { VendedoresService, Vendedor, IndicadoresVendedor } from './vendedores.service';
+import {
+  VendedoresService,
+  Vendedor,
+  IndicadoresVendedor,
+} from './vendedores.service';
 
 describe('VendedoresService', () => {
   let service: VendedoresService;
@@ -14,7 +18,7 @@ describe('VendedoresService', () => {
   });
 
   describe('getVendedores', () => {
-    it('should return list of vendedores', (done) => {
+    it('should return list of vendedores', done => {
       service.getVendedores().subscribe(vendedores => {
         expect(vendedores).toBeDefined();
         expect(vendedores.length).toBe(4);
@@ -27,7 +31,7 @@ describe('VendedoresService', () => {
   });
 
   describe('getIndicadoresVendedor', () => {
-    it('should return indicadores for vendedor 1', (done) => {
+    it('should return indicadores for vendedor 1', done => {
       service.getIndicadoresVendedor(1).subscribe(indicadores => {
         expect(indicadores).toBeDefined();
         expect(indicadores?.ventasTotales).toBe(850000);
@@ -38,7 +42,7 @@ describe('VendedoresService', () => {
       });
     });
 
-    it('should return indicadores for vendedor 4', (done) => {
+    it('should return indicadores for vendedor 4', done => {
       service.getIndicadoresVendedor(4).subscribe(indicadores => {
         expect(indicadores).toBeDefined();
         expect(indicadores?.ventasTotales).toBe(1200000);
@@ -49,26 +53,26 @@ describe('VendedoresService', () => {
       });
     });
 
-    it('should return null for vendedor 3', (done) => {
+    it('should return null for vendedor 3', done => {
       service.getIndicadoresVendedor(3).subscribe(indicadores => {
         expect(indicadores).toBeNull();
         done();
       });
     });
 
-    it('should throw error for vendedor 2', (done) => {
+    it('should throw error for vendedor 2', done => {
       service.getIndicadoresVendedor(2).subscribe({
         next: () => fail('Should have thrown an error'),
-        error: (error) => {
+        error: error => {
           expect(error.message).toBe('Error técnico al cargar los reportes');
           done();
-        }
+        },
       });
     });
   });
 
   describe('getDatosVentasHistoricas', () => {
-    it('should return ventas data for vendedor 1', (done) => {
+    it('should return ventas data for vendedor 1', done => {
       service.getDatosVentasHistoricas(1).subscribe(data => {
         expect(data).toBeDefined();
         expect(data.length).toBe(7);
@@ -77,7 +81,7 @@ describe('VendedoresService', () => {
       });
     });
 
-    it('should return ventas data for vendedor 4', (done) => {
+    it('should return ventas data for vendedor 4', done => {
       service.getDatosVentasHistoricas(4).subscribe(data => {
         expect(data).toBeDefined();
         expect(data.length).toBe(7);
@@ -88,7 +92,7 @@ describe('VendedoresService', () => {
   });
 
   describe('getDatosClientes', () => {
-    it('should return clientes data for vendedor 1', (done) => {
+    it('should return clientes data for vendedor 1', done => {
       service.getDatosClientes(1).subscribe(data => {
         expect(data).toBeDefined();
         expect(data.clientesAtendidos).toBeDefined();
@@ -101,7 +105,7 @@ describe('VendedoresService', () => {
   });
 
   describe('getDatosDistribucion', () => {
-    it('should return distribucion data for vendedor 1', (done) => {
+    it('should return distribucion data for vendedor 1', done => {
       service.getDatosDistribucion(1).subscribe(data => {
         expect(data).toBeDefined();
         expect(data.labels).toBeDefined();
@@ -113,7 +117,7 @@ describe('VendedoresService', () => {
       });
     });
 
-    it('should return null data for vendedor 3', (done) => {
+    it('should return null data for vendedor 3', done => {
       service.getDatosDistribucion(3).subscribe(data => {
         expect(data).toBeDefined();
         expect(data.labels[0]).toBe('Sin datos');

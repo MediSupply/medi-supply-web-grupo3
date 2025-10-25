@@ -24,7 +24,6 @@
     }
   }
 
-
   .loading-container {
     text-align: center;
     padding: 48px 24px;
@@ -85,7 +84,7 @@
   @media (max-width: 768px) {
     .charts-container .charts-grid {
       grid-template-columns: 1fr;
-      
+
       .chart-card.pie-chart {
         grid-column: 1;
       }
@@ -141,7 +140,7 @@
 
     .charts-container .charts-grid {
       grid-template-columns: 1fr;
-      
+
       .chart-card.pie-chart {
         grid-column: 1;
       }
