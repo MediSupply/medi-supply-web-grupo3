@@ -7,7 +7,10 @@
   <form [formGroup]="vendedorForm" class="vendedor-filter">
     <mat-form-field appearance="outline" class="vendedor-field">
       <mat-label>Vendedor</mat-label>
-      <mat-select formControlName="vendedor" (selectionChange)="seleccionarVendedor()">
+      <mat-select
+        formControlName="vendedor"
+        (selectionChange)="seleccionarVendedor()"
+      >
         <mat-option *ngFor="let vendedor of vendedores" [value]="vendedor.id">
           {{ vendedor.nombre }}
         </mat-option>
@@ -15,35 +18,34 @@
     </mat-form-field>
   </form>
 
-
   <!-- Loading Spinner -->
   <div class="loading-container" *ngIf="cargando">
     <mat-spinner diameter="50"></mat-spinner>
     <p>Cargando indicadores...</p>
   </div>
 
-         <!-- Gráficas de Reportes -->
-         <div class="charts-container" *ngIf="mostrarIndicadores && indicadores">
-           <div class="charts-grid">
-             <!-- Gráfica de Líneas -->
-             <div class="chart-card">
-               <h3>Evolución de Ventas Totales</h3>
-               <canvas #lineChart></canvas>
-             </div>
+  <!-- Gráficas de Reportes -->
+  <div class="charts-container" *ngIf="mostrarIndicadores && indicadores">
+    <div class="charts-grid">
+      <!-- Gráfica de Líneas -->
+      <div class="chart-card">
+        <h3>Evolución de Ventas Totales</h3>
+        <canvas #lineChart></canvas>
+      </div>
 
-             <!-- Gráfica de Barras -->
-             <div class="chart-card">
-               <h3>Clientes Atendidos vs Nuevos Clientes</h3>
-               <canvas #barChart></canvas>
-             </div>
+      <!-- Gráfica de Barras -->
+      <div class="chart-card">
+        <h3>Clientes Atendidos vs Nuevos Clientes</h3>
+        <canvas #barChart></canvas>
+      </div>
 
-             <!-- Gráfica Circular -->
-             <div class="chart-card pie-chart">
-               <h3>Distribución de Indicadores de Desempeño</h3>
-               <canvas #pieChart></canvas>
-             </div>
-           </div>
-         </div>
+      <!-- Gráfica Circular -->
+      <div class="chart-card pie-chart">
+        <h3>Distribución de Indicadores de Desempeño</h3>
+        <canvas #pieChart></canvas>
+      </div>
+    </div>
+  </div>
 
   <!-- Mensaje de Sin Datos -->
   <div class="sin-datos" *ngIf="sinDatos">
@@ -58,7 +60,10 @@
   </div>
 
   <!-- Mensaje de Selección Requerida -->
-  <div class="seleccion-requerida" *ngIf="!vendedorSeleccionado && !cargando && !sinDatos && !errorCarga">
+  <div
+    class="seleccion-requerida"
+    *ngIf="!vendedorSeleccionado && !cargando && !sinDatos && !errorCarga"
+  >
     <mat-icon>person_search</mat-icon>
     <p>Seleccione un vendedor para visualizar sus indicadores de desempeño</p>
   </div>
