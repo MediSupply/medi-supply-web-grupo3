@@ -1,0 +1,104 @@
+<div class="form-container">
+  <h2>Registro de Vendedor</h2>
+  
+  <!-- Loader -->
+  <app-loader [show]="cargando" message="Registrando vendedor..."></app-loader>
+
+  <form
+    *ngIf="showForm"
+    [formGroup]="vendedorForm"
+    (ngSubmit)="onSubmit()"
+    class="vendedor-form"
+  >
+    <!-- Nombre del vendedor -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del vendedor</mat-label>
+      <input
+        matInput
+        formControlName="nombre"
+        placeholder="Ingrese el nombre del vendedor"
+      />
+      <mat-error>{{ getFieldError('nombre') }}</mat-error>
+    </mat-form-field>
+
+    <!-- País -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>País</mat-label>
+      <mat-select formControlName="pais">
+        <mat-option value="">Seleccione un país</mat-option>
+        <mat-option *ngFor="let pais of paises" [value]="pais.id">
+          {{ pais.value }}
+        </mat-option>
+      </mat-select>
+      <mat-error>{{ getFieldError('pais') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Zona asignada -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Zona asignada</mat-label>
+      <mat-select formControlName="zona">
+        <mat-option value="">Seleccione una zona</mat-option>
+        <mat-option *ngFor="let zona of zonas" [value]="zona.id">
+          {{ zona.value }}
+        </mat-option>
+      </mat-select>
+      <mat-error>{{ getFieldError('zona') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Ruta de visitas -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ruta de visitas</mat-label>
+      <input
+        matInput
+        formControlName="rutaVisitas"
+        placeholder="Ingrese los puntos de visita separados por comas (ej: Cliente A, Cliente B, Cliente C)"
+      />
+      <mat-error>{{ getFieldError('rutaVisitas') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Correo -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correo electrónico</mat-label>
+      <input
+        matInput
+        formControlName="correo"
+        placeholder="Ingrese el correo electrónico"
+        type="email"
+      />
+      <mat-error>{{ getFieldError('correo') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Contraseña -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contraseña</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="contrasena"
+        placeholder="Ingrese la contraseña"
+      />
+      <mat-error>{{ getFieldError('contrasena') }}</mat-error>
+    </mat-form-field>
+
+    <!-- Botones de acción -->
+    <div class="form-actions">
+      <button
+        type="button"
+        mat-button
+        (click)="onCancel()"
+        class="action-btn_cancel"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        mat-raised-button
+        color="primary"
+        class="action-btn_add"
+      >
+        <mat-icon>save</mat-icon>
+        Registrar Vendedor
+      </button>
+    </div>
+  </form>
+</div>
