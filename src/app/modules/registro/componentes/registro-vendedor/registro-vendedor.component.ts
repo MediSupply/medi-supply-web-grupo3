@@ -65,16 +65,22 @@ export class RegistroVendedorComponent {
       nombre: ['Juan Pérez', [Validators.required, this.alphabeticValidator]],
       pais: [0, Validators.required], // Colombia
       zona: [1, Validators.required], // Zona Norte
-      rutaVisitas: ['Cliente A, Cliente B, Cliente C', [Validators.required, this.rutaVisitasValidator]],
+      rutaVisitas: [
+        'Cliente A, Cliente B, Cliente C',
+        [Validators.required, this.rutaVisitasValidator],
+      ],
       correo: ['juan.perez@email.com', [Validators.required, Validators.email]],
-      contrasena: ['password123', [Validators.required, this.passwordValidator]],
+      contrasena: [
+        'password123',
+        [Validators.required, this.passwordValidator],
+      ],
     });
   }
 
   private alphabeticValidator(control: AbstractControl) {
     const value = control.value;
     if (!value) return null;
-    
+
     // Solo permite letras y espacios
     const alphabeticPattern = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     return alphabeticPattern.test(value) ? null : { alphabetic: true };
@@ -83,16 +89,18 @@ export class RegistroVendedorComponent {
   private rutaVisitasValidator(control: AbstractControl) {
     const value = control.value;
     if (!value) return null;
-    
+
     // Debe contener al menos un punto de visita (separado por comas, puntos, o guiones)
-    const puntosVisita = value.split(/[,.\-;]/).filter((punto: any) => punto.trim().length > 0);
+    const puntosVisita = value
+      .split(/[,.\-;]/)
+      .filter((punto: any) => punto.trim().length > 0);
     return puntosVisita.length >= 1 ? null : { minPuntosVisita: true };
   }
 
   private passwordValidator(control: AbstractControl) {
     const value = control.value;
     if (!value) return null;
-    
+
     // Misma validación que en signup: al menos 8 caracteres, letras y números
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordPattern.test(value) ? null : { passwordFormat: true };
@@ -105,15 +113,20 @@ export class RegistroVendedorComponent {
     if (field?.errors && field.touched) {
       if (field.errors['required']) {
         if (fieldName === 'zona') return 'Debe seleccionar una zona asignada.';
-        if (fieldName === 'rutaVisitas') return 'Debe ingresar la ruta de visitas.';
+        if (fieldName === 'rutaVisitas')
+          return 'Debe ingresar la ruta de visitas.';
         if (fieldName === 'pais') return 'Debe seleccionar un país.';
         return 'Este campo es requerido';
       }
-      if (field.errors['alphabetic']) return 'Solo se permiten caracteres alfabéticos y espacios';
-      if (field.errors['minPuntosVisita']) return 'Debe contener al menos un punto de visita';
+      if (field.errors['alphabetic'])
+        return 'Solo se permiten caracteres alfabéticos y espacios';
+      if (field.errors['minPuntosVisita'])
+        return 'Debe contener al menos un punto de visita';
       if (field.errors['email']) return 'Formato de correo inválido';
-      if (field.errors['passwordFormat']) return 'La contraseña debe tener al menos 8 caracteres e incluir letras y números';
-      if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+      if (field.errors['passwordFormat'])
+        return 'La contraseña debe tener al menos 8 caracteres e incluir letras y números';
+      if (field.errors['minlength'])
+        return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
     }
 
     return '';
@@ -132,12 +145,12 @@ export class RegistroVendedorComponent {
         try {
           // Aquí iría la lógica para enviar los datos al servidor
           // Ejemplo: this.vendedorService.crearVendedor(formData).subscribe(...)
-          
+
           this.snackBar.open('Vendedor registrado exitosamente', 'Cerrar', {
             duration: 3000,
-            panelClass: ['success-snackbar']
+            panelClass: ['success-snackbar'],
           });
-          
+
           // Ocultar y mostrar el formulario para forzar su recreación completa
           this.showForm = false;
           setTimeout(() => {
@@ -147,17 +160,21 @@ export class RegistroVendedorComponent {
           }, 50);
         } catch (error) {
           this.cargando = false; // Desactivar loader en caso de error
-          this.snackBar.open('Ha ocurrido un error, intente nuevamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
+          this.snackBar.open(
+            'Ha ocurrido un error, intente nuevamente',
+            'Cerrar',
+            {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            }
+          );
         }
       }, 1500); // Simular tiempo de procesamiento
     } else {
       this.markFormGroupTouched(this.vendedorForm);
       this.snackBar.open('Todos los campos son obligatorios', 'Cerrar', {
         duration: 3000,
-        panelClass: ['warning-snackbar']
+        panelClass: ['warning-snackbar'],
       });
     }
   }
