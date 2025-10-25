@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DashboardRegistroComponent } from './modules/registro/componentes/dashboard-registro/dashboard-registro.component';
 import { RegistroProveedorComponent } from './modules/registro/componentes/registro-proveedor/registro-proveedor.component';
+import { ReportesComponent } from './modules/reportes/reportes.component';
 
 export const routes: Routes = [
   // { path: '**', redirectTo: 'login', pathMatch: 'full' },
@@ -17,6 +18,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'registro', pathMatch: 'full' },
       { path: 'registro', component: DashboardRegistroComponent },
       { path: 'registro-proveedor', component: RegistroProveedorComponent },
+             { path: 'reportes', component: ReportesComponent },
     ],
   },
 ];
