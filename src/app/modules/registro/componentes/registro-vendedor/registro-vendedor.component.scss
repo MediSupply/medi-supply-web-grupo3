@@ -1,0 +1,195 @@
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    width: 100%;
+    margin-bottom: 16px;
+
+    .mat-mdc-text-field-wrapper {
+      height: 56px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 100% !important;
+      align-items: center !important;
+    }
+
+    // Mejorar el espaciado del label
+    .mat-mdc-form-field-label {
+      margin-top: 4px !important;
+    }
+
+    // Cuando el campo está enfocado
+    &.mat-focused {
+      .mat-mdc-form-field-label {
+        margin-top: 8px !important;
+        transform: translateY(-8px) scale(0.75) !important;
+      }
+    }
+
+    // Cuando el campo tiene valor
+    &.mat-form-field-has-label {
+      .mat-mdc-form-field-label {
+        margin-top: 8px !important;
+        transform: translateY(-8px) scale(0.75) !important;
+      }
+    }
+
+    // Espaciado del input
+    .mat-mdc-input-element {
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+  }
+
+  .custom-select-field.mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: rgba(255, 255, 255, 0.4) !important;
+      border-radius: 6px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 100% !important;
+      align-items: center !important;
+      padding: 0 12px !important;
+    }
+
+    .mat-mdc-select {
+      color: white !important;
+      font-size: 14px;
+
+      .mat-mdc-select-value {
+        color: rgb(0, 0, 0) !important;
+      }
+
+      .mat-mdc-select-placeholder {
+        color: rgba(0, 0, 0, 0.7) !important;
+      }
+
+      .mat-mdc-select-arrow {
+        color: rgb(0, 0, 0) !important;
+      }
+    }
+  }
+
+  // Estilos para inputs normales (ya no necesitamos estilos específicos para textarea)
+
+  // Mejorar el espaciado general del formulario
+  .vendedor-form {
+    .mat-mdc-form-field {
+      margin-bottom: 20px;
+    }
+  }
+
+  // Estilos específicos para el contenedor del formulario
+  .form-container {
+    padding: 20px;
+
+    h2 {
+      margin-bottom: 24px;
+      color: #333;
+    }
+  }
+
+  .submit-button {
+    min-width: 180px;
+
+    .button-spinner {
+      ::ng-deep circle {
+        stroke: white;
+      }
+    }
+  }
+
+  .card {
+    border-radius: 12px;
+
+    .card-header {
+      border-radius: 12px 12px 0 0 !important;
+    }
+  }
+
+  .mat-mdc-form-field-outline {
+    border-radius: 8px !important;
+  }
+
+  .mat-form-field.mat-form-field-invalid {
+    .mat-form-field-outline-thick {
+      color: #dc3545 !important;
+    }
+  }
+
+  .mat-form-field.mat-form-field-valid {
+    .mat-form-field-outline-thick {
+      color: #198754 !important;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .d-flex.gap-2 {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.action-btn_add {
+  background-color: #69a7ff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  white-space: nowrap;
+  padding: 0 20px;
+  height: 48px;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.action-btn_cancel {
+  border-radius: 6px !important;
+  white-space: nowrap;
+  padding: 1rem 20px;
+  height: 48px;
+}
+
+// Estilos para los snackbars
+::ng-deep .success-snackbar {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+::ng-deep .warning-snackbar {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
