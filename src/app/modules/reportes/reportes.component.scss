@@ -1,0 +1,176 @@
+.reports-container {
+  padding: 24px 4px;
+  max-width: 1200px;
+
+  .header {
+    margin-bottom: 32px;
+    text-align: left;
+
+    h1 {
+      color: #000000;
+      margin-bottom: 8px;
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+  }
+
+  .vendedor-filter {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: flex-start;
+
+    .vendedor-field {
+      min-width: 300px;
+    }
+  }
+
+  .loading-container {
+    text-align: center;
+    padding: 48px 24px;
+    color: #666;
+
+    mat-spinner {
+      margin: 0 auto 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+  }
+
+  .charts-container {
+    margin-top: 32px;
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 24px;
+
+      .chart-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+
+        h3 {
+          margin: 0 0 20px 0;
+          color: #333;
+          font-size: 1.2rem;
+          font-weight: 500;
+          text-align: left;
+        }
+
+        canvas {
+          width: 100% !important;
+          height: 300px !important;
+        }
+
+        &.pie-chart {
+          grid-column: 1 / -1;
+          max-width: 800px;
+
+          canvas {
+            height: 500px !important;
+          }
+        }
+      }
+    }
+  }
+
+  // En pantallas móviles, mostrar todas las gráficas en columna única
+  @media (max-width: 768px) {
+    .charts-container .charts-grid {
+      grid-template-columns: 1fr;
+
+      .chart-card.pie-chart {
+        grid-column: 1;
+      }
+    }
+  }
+
+  .sin-datos,
+  .error-carga,
+  .seleccion-requerida {
+    text-align: center;
+    padding: 48px 24px;
+    color: #666;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      color: #ccc;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .error-carga {
+    mat-icon {
+      color: #f44336;
+    }
+  }
+
+  .seleccion-requerida {
+    mat-icon {
+      color: #ff9800;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 16px 2px;
+
+    .header h1 {
+      font-size: 2rem;
+    }
+
+    .vendedor-filter .vendedor-field {
+      min-width: 250px;
+    }
+
+    .charts-container .charts-grid {
+      grid-template-columns: 1fr;
+
+      .chart-card.pie-chart {
+        grid-column: 1;
+      }
+    }
+  }
+}
+
+// Material Design overrides
+:host ::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-label {
+      color: #666;
+    }
+
+    &.mat-focused .mat-mdc-form-field-label {
+      color: #1976d2;
+    }
+  }
+
+  .mat-mdc-card-header {
+    .mat-mdc-card-title {
+      color: #333;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+  }
+
+  .mat-mdc-button {
+    &.mat-mdc-raised-button {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
