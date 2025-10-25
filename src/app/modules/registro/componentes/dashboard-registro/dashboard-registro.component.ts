@@ -33,7 +33,9 @@ import { Router, RouterModule } from '@angular/router';
 export class DashboardRegistroComponent {
   constructor(private router: Router) {}
 
-  addSeller() {}
+  addSeller() {
+    this.router.navigate(['/dashboard/registro-vendedor']);
+  }
 
   addSupplier() {
     this.router.navigate(['/dashboard/registro-proveedor']);
