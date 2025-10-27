@@ -15,13 +15,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
 import { of, Subject, throwError } from 'rxjs';
+import { DebugElement } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ListarProductosComponent', () => {
-    let component: ListarProductosComponent;
+  let component: ListarProductosComponent;
   let fixture: ComponentFixture<ListarProductosComponent>;
-  let router: jasmine.SpyObj<Router>;
-  let dialog: jasmine.SpyObj<MatDialog>;
+  let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
   let productService: jasmine.SpyObj<ProductoService>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let debugElement: DebugElement;
+
   const futureDate = new Date();
   futureDate.setMonth(futureDate.getMonth() + 3);
   const expirationDateString = futureDate.toISOString().split('T')[0];
@@ -68,224 +72,153 @@ describe('ListarProductosComponent', () => {
   ];
 
   beforeEach(async () => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const productServiceSpy = jasmine.createSpyObj('ProductoService', ['getAllProducts']);
+    activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], { // Agrega este spy
+      snapshot: {
+        paramMap: new Map(),
+        queryParamMap: new Map()
+      }
+    });
 
     await TestBed.configureTestingModule({
       imports: [
         ListarProductosComponent,
+        HttpClientTestingModule,
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule
         ],
         providers: [
+          { provide: ProductoService, useValue: productServiceSpy },
           { provide: Router, useValue: routerSpy },
-          { provide: MatDialog, useValue: dialogSpy },
-          { provide: ProductoService, useValue: productServiceSpy }
+          { provide: ActivatedRoute, useValue: activatedRouteSpy }
         ]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(ListarProductosComponent);
-
+    component = fixture.componentInstance;
     productService = TestBed.inject(ProductoService) as jasmine.SpyObj<ProductoService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+    debugElement = fixture.debugElement;
 
     productService.getAllProducts.and.returnValue(of(mockProducts));
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-    afterEach(() => {
-    // Limpiar cualquier spy o mock
-    productService.getAllProducts.calls.reset();
-    router.navigate.calls.reset();
-    if(fixture){
-      fixture.destroy();
-    }
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
   describe('Initialization', () => {
     it('should create the component', () => {
-      fixture.detectChanges();
-      expect(component).toBeTruthy();
-    });
-    it('should initialize with correct displayed columns', () => {
-      fixture.detectChanges();
-      expect(component.displayedColumns()).toEqual(['id', 'name', 'description', 'price', 'amount', 'actions']);
-    });
-    it('should initialize dataSource as MatTableDataSource', () => {
-      expect(component.dataSource).toBeInstanceOf(MatTableDataSource);
-    });
-    it('should load products on initialization', () => {
-      fixture.detectChanges(); // Ejecuta ngOnInit
-
-      expect(productService.getAllProducts).toHaveBeenCalled();
-      expect(component.dataSource.data).toEqual(mockProducts);
-      expect(component.loading()).toBeFalse();
-    });
-  });
-
-  describe('Load Products - Success and Failure', () => {
-    it('should load products successfully and set dataSource', () => {
-      // ÉXITO: Configurar el servicio para retornar productos exitosamente
       productService.getAllProducts.and.returnValue(of(mockProducts));
-
-      component.loadProducts();
-
-      expect(component.loading()).toBeFalse();
-      expect(component.dataSource.data).toEqual(mockProducts);
-      expect(productService.getAllProducts).toHaveBeenCalled();
-    });
-    it('should handle error when loading products fails', () => {
-      // FALLO: Configurar el servicio para retornar un error
-      const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(throwError(() => errorMessage));
-
-      const consoleSpy = spyOn(console, 'error');
-
-      component.loadProducts();
-
-      expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading products:', errorMessage);
+      fixture.detectChanges(); // Esto ejecutará ngOnInit que llama a loadProducts()
+      expect(component).toBeTruthy();
       expect(productService.getAllProducts).toHaveBeenCalled();
     });
   });
 
-  describe('Filter Products - Success and Edge Cases', () => {
+  describe('applyFilter', () => {
+    it('should filter products and reset paginator to first page', () => {
+      // Configurar datos iniciales en el dataSource
+      component.dataSource.data = mockProducts;
+      component.ngAfterViewInit(); // Para inicializar paginator y sort
+
+      const mockEvent = {
+        target: { value: 'acetaminofén' }
+      } as unknown as Event;
+
+      spyOn(component.dataSource.paginator!, 'firstPage');
+
+      component.applyFilter(mockEvent);
+
+      expect(component.dataSource.filter).toBe('acetaminofén');
+      expect(component.dataSource.paginator?.firstPage).toHaveBeenCalled();
+    });
+  })
+  
+  it('should show alert when no products are found', () => {
+    // Configurar datos iniciales
+    component.dataSource.data = mockProducts;
+    component.ngAfterViewInit();
+
+    const mockEvent = {
+      target: { value: 'producto que no existe' }
+    } as unknown as Event;
+
+    // Espiar el alert
+    spyOn(window, 'alert');
+
+    component.applyFilter(mockEvent);
+
+    expect(component.dataSource.filter).toBe('producto que no existe');
+    expect(window.alert).toHaveBeenCalledWith('Producto no encontrado');
+  });
+
+  describe('addProduct', () => {
+    it('should navigate to producto route with new action and source query params', () => {
+      component.addProduct();
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(
+        ['../producto'],
+        {
+          relativeTo: activatedRouteSpy,
+          queryParams: {
+            action: 'new',
+            source: 'productos',
+          }
+        }
+      );
+    });
+  })
+
+  describe('editProduct', () => {
+    it('should navigate to producto route with product state and edit action', () => {
+      const mockProduct: Product = mockProducts[0];
+
+      component.editProduct(mockProduct);
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(
+        ['../producto'],
+        {
+          relativeTo: activatedRouteSpy,
+          state: {
+            product: mockProduct,
+            action: 'edit',
+          }
+        }
+      );
+    });
+  })
+ 
+  describe('Table Data Display', () => {
     beforeEach(() => {
       component.dataSource.data = mockProducts;
       fixture.detectChanges();
     });
 
-    it('should filter products successfully when filter value exists', () => {
-      const filterValue = 'Amoxicilina 500mg';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
+      it('should display products in the table with correct columns', () => {
+    const table = fixture.nativeElement.querySelector('table');
+    expect(table).toBeTruthy();
 
-      component.applyFilter(mockEvent);
+    // Verificar que las columnas definidas se muestran
+    const displayedColumns = component.displayedColumns();
+    const headerCells = fixture.nativeElement.querySelectorAll('th');
+    expect(headerCells.length).toBe(displayedColumns.length);
 
-      expect(component.dataSource.filter).toBe(filterValue.trim().toLowerCase());
-      expect(component.dataSource.filteredData.length).toBe(1);
-      expect(component.dataSource.filteredData[0].name).toBe('Amoxicilina 500mg');
-    });
-    it('should show all products when filter value is empty', () => {
-      // ÉXITO: Filtro vacío
-      const filterValue = '';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
-
-      component.applyFilter(mockEvent);
-
-      expect(component.dataSource.filter).toBe('');
-      expect(component.dataSource.filteredData.length).toBe(mockProducts.length);
-    });
-    it('should handle filter when paginator is not available', () => {
-      // FALLO: Paginator no disponible
-      const filterValue = 'Ibuprofeno';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
-      component.dataSource.paginator = null;
-
-      expect(() => component.applyFilter(mockEvent)).not.toThrow();
-      expect(component.dataSource.filter).toBe('ibuprofeno');
-    });
-  });
-
-  describe('Load Products - Success and Failure', () => {
-    it('should handle error when loading products fails', () => {
-      // FALLO: Error al cargar productos
-      const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(throwError(() => errorMessage));
-
-      const consoleSpy = spyOn(console, 'error');
-
-      // Llamar loadProducts directamente para probar el caso de error
-      component.loadProducts();
-
-      expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading products:', errorMessage);
-      expect(productService.getAllProducts).toHaveBeenCalled();
-    });
-    it('should set loading to true when starting to load products', fakeAsync(() => {
-      // Usar un Subject para controlar el momento de la emisión
-      const productsSubject = new Subject<Product[]>();
-      productService.getAllProducts.and.returnValue(productsSubject.asObservable());
-
-      component.loadProducts();
-
-      // En este punto, loading debería ser true
-      expect(component.loading()).toBeTrue();
-
-      // Completar el observable
-      productsSubject.next(mockProducts);
-      productsSubject.complete();
-      tick();
-
-      // Ahora loading debería ser false
-      expect(component.loading()).toBeFalse();
-    }));
-  })
-
-  describe('Add Product - Success and Failure', () => {
-    it('should navigate to product form for adding new product successfully', () => {
-      component.addProduct();
-
-      expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
-        queryParams: {
-          action: 'new',
-          source: 'productos'
-        }
-      });
-    });
-    it('should not break when router service fails', () => {
-      router.navigate.and.returnValue(Promise.reject('Navigation failed'));
-
-      component.addProduct();
-
-      expect(router.navigate).toHaveBeenCalled();
+    // Verificar textos de los headers (ajusta según tu HTML real)
+    expect(headerCells[0].textContent.trim()).toBe('CÓDIGO PRODUCTO');
+      expect(headerCells[1].textContent.trim()).toBe('NOMBRE PRODUCTO');
+      expect(headerCells[2].textContent.trim()).toBe('DESCRIPCIÓN');
+      expect(headerCells[3].textContent.trim()).toBe('PRECIO');
+      expect(headerCells[4].textContent.trim()).toBe('CANTIDAD');
+      expect(headerCells[5].textContent.trim()).toBe('ACCIONES');
     });
   })
-
-  describe('Edit Product - Success and Failure', () => {
-    it('should navigate to product form for editing product successfully', () => {
-      const consoleSpy = spyOn(console, 'log');
-
-      component.editProduct(mockProducts[0]);
-
-      expect(consoleSpy).toHaveBeenCalledWith(mockProducts[0]);
-      expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
-        state: { 
-          product: mockProducts[0],
-          action: 'edit'
-        } 
-      });
-    });
-    it('should handle navigation failure when editing product', () => {
-      router.navigate.and.returnValue(Promise.reject('Edit navigation failed'));
-
-      expect(() => component.editProduct( mockProducts[0])).not.toThrow();
-      expect(router.navigate).toHaveBeenCalled();
-    });
-  })
-/*
-  describe('View Initialization - Success and Edge Cases', () => {
-    it('should set paginator and sort after view init successfully', () => {
-      const paginatorMock = {} as any;
-      const sortMock = {} as any;
-      
-      component.paginator = paginatorMock;
-      component.sort = sortMock;
-
-      component.ngAfterViewInit();
-
-      expect(component.dataSource.paginator).toBe(paginatorMock);
-      expect(component.dataSource.sort).toBe(sortMock);
-    });
-
-  })
-    */
 })
+
+

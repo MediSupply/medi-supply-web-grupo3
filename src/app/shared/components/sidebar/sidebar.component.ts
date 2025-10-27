@@ -101,9 +101,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private updateActiveItem(url: string): void {
     // Buscar el item que coincide con la URL actual
+    const cleanUrl = url.split('?')[0].split('#')[0];
     const allItems = this.getAllMenuItems();
     const activeItem = allItems.find(
-      item => url === item.path || url.startsWith(item.path + '/')
+      item => url === item.path || cleanUrl.startsWith(item.path + '/')
     );
 
     if (activeItem) {
@@ -113,7 +114,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getAllMenuItems(): MenuItem[] {
+  public getAllMenuItems(): MenuItem[] {
     const allItems: MenuItem[] = [];
 
     this.menuItems().forEach(item => {
@@ -143,6 +144,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isActive(item: MenuItem): boolean {
     const currentUrl = this.router.url;
 
+    if (!currentUrl) {
+      return false;
+    }
+
     if (item.children) {
       return item.children.some(child => currentUrl.startsWith(child.path));
     }
@@ -163,7 +168,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     );
   }
 
-  private autoExpandMenus(): void {
+  public autoExpandMenus(): void {
     const currentUrl = this.router.url;
 
     this.menuItems.update(items =>

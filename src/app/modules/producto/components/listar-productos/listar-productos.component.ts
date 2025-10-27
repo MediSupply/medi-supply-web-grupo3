@@ -105,7 +105,6 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
         action: 'new',
         source: 'productos',
       },
-      // state: { data: {} }
     });
   }
 

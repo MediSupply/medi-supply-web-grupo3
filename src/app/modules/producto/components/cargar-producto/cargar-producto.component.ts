@@ -96,12 +96,12 @@ export class CargarProductoComponent implements OnInit {
       name: [this.product?.name || '', [
         Validators.required,
         Validators.minLength(3),
-        Validators.maxLength(100)
+        Validators.maxLength(10)
       ]],
       description: [this.product?.description || '', [
         Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(500)
+        Validators.minLength(3),
+        Validators.maxLength(50)
       ]],
       price: [this.product?.price || '', [
         Validators.required,
@@ -119,7 +119,7 @@ export class CargarProductoComponent implements OnInit {
       conditions: [this.product?.conditions || '', [
         Validators.required,
         Validators.minLength(5),
-        Validators.maxLength(200)
+        Validators.maxLength(20)
       ]],
       expirationDate: [this.product?.expirationDate || '', [
         Validators.required,
@@ -201,10 +201,12 @@ export class CargarProductoComponent implements OnInit {
 
 onSubmit() {
   if (this.productForm.valid) {
+    const formData: any = this.productForm.value;
+    console.log(formData)
     this.loading.set(true);
     console.log('guardando');
-    this.productForm.reset()
     alert("Producto registrado exitosamente")
+    this.productForm.reset()
   } else {
     this.markAllFieldsAsTouched();
   }
@@ -222,5 +224,46 @@ markAllFieldsAsTouched(): void {
   onCancel(): void {
     this.productForm.reset()
     this.router.navigate(['/dashboard/productos']);
+  }
+
+  // Getters para acceder fácilmente a los controles del formulario (usando signals)
+  get name() {
+    return this.productForm.get('name');
+  }
+
+  get description() {
+    return this.productForm.get('description');
+  }
+
+  get price() {
+    return this.productForm.get('price');
+  }
+
+  get amount() {
+    return this.productForm.get('amount');
+  }
+
+  get category() {
+    return this.productForm.get('category');
+  }
+
+  get conditions() {
+    return this.productForm.get('conditions');
+  }
+
+  get expirationDate() {
+    return this.productForm.get('expirationDate');
+  }
+
+  get batch() {
+    return this.productForm.get('batch');
+  }
+
+  get provider() {
+    return this.productForm.get('provider');
+  }
+
+  get deliveryTime() {
+    return this.productForm.get('deliveryTime');
   }
 }
