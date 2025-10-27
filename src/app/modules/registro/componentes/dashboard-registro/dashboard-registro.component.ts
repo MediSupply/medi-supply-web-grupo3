@@ -14,29 +14,30 @@ import { Router, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-dashboard-registro',
   standalone: true,
-  imports: [CommonModule,
-      RouterModule,
-      MatTableModule,
-      MatPaginatorModule,
-      MatSortModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatIconModule,
-      MatButtonModule,
-      MatTooltipModule,
-      MatDialogModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatDialogModule,
+  ],
   templateUrl: './dashboard-registro.component.html',
-  styleUrl: './dashboard-registro.component.scss'
+  styleUrl: './dashboard-registro.component.scss',
 })
 export class DashboardRegistroComponent {
-
   constructor(private router: Router) {}
 
-  addSeller(){
-    
+  addSeller() {
+    this.router.navigate(['/dashboard/registro-vendedor']);
   }
 
-  addSupplier(){
+  addSupplier() {
     this.router.navigate(['/dashboard/registro-proveedor']);
   }
 }

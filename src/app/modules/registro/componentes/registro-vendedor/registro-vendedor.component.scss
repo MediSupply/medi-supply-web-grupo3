@@ -1,6 +1,7 @@
 :host ::ng-deep {
   .mat-mdc-form-field {
     width: 100%;
+    margin-bottom: 16px;
 
     .mat-mdc-text-field-wrapper {
       height: 56px !important;
@@ -9,6 +10,33 @@
     .mat-mdc-form-field-flex {
       height: 100% !important;
       align-items: center !important;
+    }
+
+    // Mejorar el espaciado del label
+    .mat-mdc-form-field-label {
+      margin-top: 4px !important;
+    }
+
+    // Cuando el campo está enfocado
+    &.mat-focused {
+      .mat-mdc-form-field-label {
+        margin-top: 8px !important;
+        transform: translateY(-8px) scale(0.75) !important;
+      }
+    }
+
+    // Cuando el campo tiene valor
+    &.mat-form-field-has-label {
+      .mat-mdc-form-field-label {
+        margin-top: 8px !important;
+        transform: translateY(-8px) scale(0.75) !important;
+      }
+    }
+
+    // Espaciado del input
+    .mat-mdc-input-element {
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
     }
   }
 
@@ -42,9 +70,23 @@
     }
   }
 
-  textarea.mat-mdc-input-element {
-    min-height: 80px !important;
-    resize: vertical;
+  // Estilos para inputs normales (ya no necesitamos estilos específicos para textarea)
+
+  // Mejorar el espaciado general del formulario
+  .vendedor-form {
+    .mat-mdc-form-field {
+      margin-bottom: 20px;
+    }
+  }
+
+  // Estilos específicos para el contenedor del formulario
+  .form-container {
+    padding: 20px;
+
+    h2 {
+      margin-bottom: 24px;
+      color: #333;
+    }
   }
 
   .submit-button {
@@ -131,8 +173,23 @@
 
 .action-btn_cancel {
   border-radius: 6px !important;
-  border-radius: 6px !important;
   white-space: nowrap;
   padding: 1rem 20px;
   height: 48px;
+}
+
+// Estilos para los snackbars
+::ng-deep .success-snackbar {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+::ng-deep .warning-snackbar {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
 }

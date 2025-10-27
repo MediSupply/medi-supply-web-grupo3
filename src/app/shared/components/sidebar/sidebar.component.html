@@ -21,9 +21,8 @@
           mat-list-item
           [routerLink]="item.path"
           routerLinkActive="active-link"
-          [class.active-item]="isItemActive(item)"
+          [class.active-item]="isActive(item)"
           class="nav-item"
-          (click)="setActiveItem(item)"
         >
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle class="nav-label">{{ item.label }}</span>

@@ -15,8 +15,8 @@ import { finalize } from 'rxjs';
 })
 export class LoginComponent {
   user = {
-    email: 'juan@ejemplo.com',
-    password: 'password123',
+    email: '',
+    password: '',
   };
 
   mensaje = '';

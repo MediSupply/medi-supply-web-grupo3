@@ -1,27 +1,24 @@
 <div class="form-container">
-  <h2>Registro de Proveedor</h2>
+  <h2>Registro de Vendedor</h2>
+
+  <!-- Loader -->
+  <app-loader [show]="cargando" message="Registrando vendedor..."></app-loader>
 
   <form
-    [formGroup]="proveedorForm"
+    *ngIf="showForm"
+    [formGroup]="vendedorForm"
     (ngSubmit)="onSubmit()"
-    class="proveedor-form"
+    class="vendedor-form"
   >
-    <!-- Nombre proveedor -->
+    <!-- Nombre del vendedor -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nombre del proveedor</mat-label>
+      <mat-label>Nombre del vendedor</mat-label>
       <input
         matInput
         formControlName="nombre"
-        placeholder="Ingrese el nombre del proveedor"
+        placeholder="Ingrese el nombre del vendedor"
       />
       <mat-error>{{ getFieldError('nombre') }}</mat-error>
-    </mat-form-field>
-
-    <!-- NIT -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>NIT</mat-label>
-      <input matInput formControlName="nit" placeholder="Ingrese el NIT" />
-      <mat-error>{{ getFieldError('nit') }}</mat-error>
     </mat-form-field>
 
     <!-- País -->
@@ -36,28 +33,27 @@
       <mat-error>{{ getFieldError('pais') }}</mat-error>
     </mat-form-field>
 
-    <!-- Dirección -->
+    <!-- Zona asignada -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Dirección</mat-label>
-      <input
-        matInput
-        formControlName="direccion"
-        placeholder="Ingrese la dirección completa"
-        rows="3"
-      />
-      <mat-error>{{ getFieldError('direccion') }}</mat-error>
+      <mat-label>Zona asignada</mat-label>
+      <mat-select formControlName="zona">
+        <mat-option value="">Seleccione una zona</mat-option>
+        <mat-option *ngFor="let zona of zonas" [value]="zona.id">
+          {{ zona.value }}
+        </mat-option>
+      </mat-select>
+      <mat-error>{{ getFieldError('zona') }}</mat-error>
     </mat-form-field>
 
-    <!-- Teléfono -->
+    <!-- Ruta de visitas -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Teléfono</mat-label>
+      <mat-label>Ruta de visitas</mat-label>
       <input
         matInput
-        formControlName="telefono"
-        placeholder="Ingrese el teléfono"
-        type="tel"
+        formControlName="rutaVisitas"
+        placeholder="Ingrese los puntos de visita separados por comas (ej: Cliente A, Cliente B, Cliente C)"
       />
-      <mat-error>{{ getFieldError('telefono') }}</mat-error>
+      <mat-error>{{ getFieldError('rutaVisitas') }}</mat-error>
     </mat-form-field>
 
     <!-- Correo -->
@@ -77,20 +73,10 @@
       <mat-label>Contraseña</mat-label>
       <input
         matInput
-        [type]="hidePassword ? 'password' : 'text'"
+        type="text"
         formControlName="contrasena"
         placeholder="Ingrese la contraseña"
       />
-      <button
-        mat-icon-button
-        matSuffix
-        (click)="hidePassword = !hidePassword"
-        type="button"
-      >
-        <mat-icon>{{
-          hidePassword ? 'visibility_off' : 'visibility'
-        }}</mat-icon>
-      </button>
       <mat-error>{{ getFieldError('contrasena') }}</mat-error>
     </mat-form-field>
 
@@ -111,7 +97,7 @@
         class="action-btn_add"
       >
         <mat-icon>save</mat-icon>
-        Registrar Proveedor
+        Registrar Vendedor
       </button>
     </div>
   </form>

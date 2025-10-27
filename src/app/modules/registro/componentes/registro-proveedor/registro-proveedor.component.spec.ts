@@ -26,9 +26,9 @@ describe('RegistroProveedorComponent', () => {
         MatInputModule,
         MatSelectModule,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
       ],
-      providers: [{ provide: Router, useValue: routerSpy }]
+      providers: [{ provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegistroProveedorComponent);
@@ -49,13 +49,15 @@ describe('RegistroProveedorComponent', () => {
       direccion: '',
       telefono: '',
       correo: '',
-      contrasena: ''
+      contrasena: '',
     });
   });
 
   it('should validate positiveNumberValidator', () => {
     const control: any = { value: -5 };
-    expect(component['positiveNumberValidator'](control)).toEqual({ positiveNumber: true });
+    expect(component['positiveNumberValidator'](control)).toEqual({
+      positiveNumber: true,
+    });
 
     control.value = 0;
     expect(component['positiveNumberValidator'](control)).toBeNull();
@@ -73,12 +75,14 @@ describe('RegistroProveedorComponent', () => {
       direccion: 'Calle 12345',
       telefono: '1234567',
       correo: 'test@test.com',
-      contrasena: 'abcdef'
+      contrasena: 'abcdef',
     });
 
     component.onSubmit();
 
-    expect(window.alert).toHaveBeenCalledWith('Proveedor registrado exitosamente');
+    expect(window.alert).toHaveBeenCalledWith(
+      'Proveedor registrado exitosamente'
+    );
     expect(component.proveedorForm.pristine).toBeTrue();
     expect(component.proveedorForm.value).toEqual({
       nombre: null,
@@ -87,7 +91,7 @@ describe('RegistroProveedorComponent', () => {
       direccion: null,
       telefono: null,
       correo: null,
-      contrasena: null
+      contrasena: null,
     });
   });
 
@@ -99,7 +103,7 @@ describe('RegistroProveedorComponent', () => {
       direccion: '',
       telefono: '',
       correo: '',
-      contrasena: ''
+      contrasena: '',
     });
 
     component.onSubmit();
@@ -145,7 +149,9 @@ describe('RegistroProveedorComponent', () => {
       const control = component.nit;
       control?.setValue(10000000001);
       control?.markAsTouched();
-      expect(component.getFieldError('nit')).toBe('El valor máximo es 10000000000');
+      expect(component.getFieldError('nit')).toBe(
+        'El valor máximo es 10000000000'
+      );
     });
 
     it('should return pattern error', () => {
@@ -155,16 +161,27 @@ describe('RegistroProveedorComponent', () => {
     });
 
     it('should return positiveNumber error', () => {
-      const testControl = { value: -10, errors: { positiveNumber: true }, touched: true } as any;
+      const testControl = {
+        value: -10,
+        errors: { positiveNumber: true },
+        touched: true,
+      } as any;
       (component.proveedorForm as any).controls['test'] = testControl;
-      expect(component.getFieldError('test')).toBe('Debe ser un número positivo');
+      expect(component.getFieldError('test')).toBe(
+        'Debe ser un número positivo'
+      );
     });
 
     it('should return pastDate error', () => {
       // Simulamos un control con el error pastDate
       const controlName = 'fecha';
-      (component.proveedorForm as any).controls[controlName] = { errors: { pastDate: true }, touched: true };
-      expect(component.getFieldError(controlName)).toBe('La fecha debe ser futura');
+      (component.proveedorForm as any).controls[controlName] = {
+        errors: { pastDate: true },
+        touched: true,
+      };
+      expect(component.getFieldError(controlName)).toBe(
+        'La fecha debe ser futura'
+      );
     });
 
     it('should return empty string if no errors', () => {
