@@ -1,183 +1,407 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { Router, NavigationEnd } from '@angular/router';
-import { Subject } from 'rxjs';
-import { MatIconModule } from '@angular/material/icon';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatListModule } from '@angular/material/list';
-import { SidebarComponent } from '../../../../shared/components/sidebar/sidebar.component';
-import { AuthService } from '../../../../services/auth.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-describe('SidebarComponent', () => {
-  let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
-  let router: jasmine.SpyObj<Router>;
-  let routerEventsSubject: Subject<any>;
-  let currentUrl: string;
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+
+import { CargarProductoComponent } from './cargar-producto.component';
+
+describe('CargarProductoComponent', () => {
+  let component: CargarProductoComponent;
+  let fixture: ComponentFixture<CargarProductoComponent>;
+  let routerSpy: jasmine.SpyObj<Router>;
+
+  const initializeComponent = (stateData: any = {}) => {
+    history.replaceState(stateData, '');
+    fixture.detectChanges();
+  };
 
   beforeEach(async () => {
-    routerEventsSubject = new Subject();
-    currentUrl = '/dashboard/productos';
-    
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {
-      events: routerEventsSubject.asObservable(),
-      get url() { return currentUrl; }
-    });
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [
-        SidebarComponent,
-        MatIconModule,
-        MatExpansionModule,
-        MatListModule
+        CargarProductoComponent,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatIconModule
       ],
       providers: [
-        { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy }
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SidebarComponent);
+    fixture = TestBed.createComponent(CargarProductoComponent);
     component = fixture.componentInstance;
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
-  // Pruebas básicas existentes
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
+    history.replaceState({}, '');
   });
 
-  it('should initialize with menu items', () => {
-    expect(component.menuItems().length).toBe(5);
-    expect(component.menuItems()[0].label).toBe('Productos');
-  });
-
-  it('should handle logo error', () => {
-    const consoleSpy = spyOn(console, 'warn');
+  it('should submit valid form and reset it', () => {
+    spyOn(window, 'alert');
     
-    component.onLogoError(new Event('error'));
-    
-    expect(component.logoError()).toBeTrue();
-    expect(consoleSpy).toHaveBeenCalledWith('Avatar no encontrado, usando placeholder');
-  });
+    // Inicializar el componente con estado vacío
+    initializeComponent();
 
-  it('should call logout on auth service', () => {
-    component.logOut();
-    expect(authService.logout).toHaveBeenCalled();
-  });
+    // Verificar que el formulario existe
+    expect(component.productForm).toBeDefined();
 
-
-  it('should toggle submenu expansion', () => {
-    const menuItem = component.menuItems()[0];
-    const initialExpanded = menuItem.isExpanded;
-    
-    component.toggleSubmenu(menuItem);
-    
-    const updatedItem = component.menuItems().find(item => item.id === menuItem.id);
-    expect(updatedItem?.isExpanded).toBe(!initialExpanded);
-  });
-
-  describe('isActive method', () => {
-    it('should return true when URL matches item path', () => {
-      const menuItem = component.menuItems()[0];
-      currentUrl = '/dashboard/productos';
-      
-      expect(component.isActive(menuItem)).toBeTrue();
+    const testDate = new Date('2026-02-12');
+    component.productForm.setValue({
+      name: 'Prueba',
+      description: 'Descripcion prueba',
+      price: 10,
+      amount: 1000,
+      category: '1',
+      expirationDate: testDate,
+      batch: 'ejemplo',
+      provider: '2',
+      deliveryTime: '24 horas',
+      conditions: 'Wertyui'
     });
 
-    it('should return false when URL does not match item path', () => {
-      const menuItem = component.menuItems()[0];
-      currentUrl = '/other-route';
-      
-      expect(component.isActive(menuItem)).toBeTrue();
-    });
+    expect(component.productForm.valid).toBeTrue();
 
-    it('should return true for parent when child URL matches', () => {
-      const menuItemWithChildren = { 
-        id: 'parent', 
-        label: 'Parent', 
-        icon: 'folder', 
-        path: '/parent',
-        children: [
-          { id: 'child1', label: 'Child 1', icon: 'child', path: '/parent/child1' }
-        ],
-        isExpanded: false 
-      };
-      
-      currentUrl = '/parent/child1';
-      
-      expect(component.isActive(menuItemWithChildren)).toBeFalse();
-    });
+    component.onSubmit();
 
-    it('should return false for parent when no child URL matches', () => {
-      const menuItemWithChildren = { 
-        id: 'parent', 
-        label: 'Parent', 
-        icon: 'folder', 
-        path: '/parent',
-        children: [
-          { id: 'child1', label: 'Child 1', icon: 'child', path: '/parent/child1' }
-        ],
-        isExpanded: false 
-      };
-      
-      currentUrl = '/other-route';
-      
-      expect(component.isActive(menuItemWithChildren)).toBeFalse();
-    });
-
-    it('should handle items with empty children array', () => {
-      const menuItemWithEmptyChildren = { 
-        id: 'parent', 
-        label: 'Parent', 
-        icon: 'folder', 
-        path: '/parent',
-        children: [],
-        isExpanded: false 
-      };
-      
-      currentUrl = '/parent';
-      
-      expect(component.isActive(menuItemWithEmptyChildren)).toBeFalse();
+    expect(window.alert).toHaveBeenCalledWith('Producto registrado exitosamente');
+    expect(component.productForm.pristine).toBeTrue();
+    expect(component.productForm.value).toEqual({
+      name: null,
+      description: null,
+      price: null,
+      amount: null,
+      category: null,
+      expirationDate: null,
+      batch: null,
+      provider: null,
+      deliveryTime: null,
+      conditions: null
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle toggleSubmenu with non-existent item', () => {
-      const nonExistentItem = { 
-        id: 'non-existent', 
-        label: 'Non Existent', 
-        icon: 'icon', 
-        path: '/path' 
-      };
-      
-      const initialItems = component.menuItems();
-      
-      component.toggleSubmenu(nonExistentItem);
-      
-      expect(component.menuItems()).toEqual(initialItems);
-    });
-  });
+  it('should mark form as touched when submitting invalid form', () => {
+    // Inicializar el componente con estado vacío
+    initializeComponent();
 
-  describe('Signal Behavior', () => {
-    it('should update signals immutably', () => {
-      const initialMenuItems = component.menuItems();
-      
-      component.toggleSubmenu(initialMenuItems[0]);
-      
-      const updatedMenuItems = component.menuItems();
-      expect(updatedMenuItems).not.toBe(initialMenuItems); // Nueva referencia
-      expect(updatedMenuItems[0].isExpanded).not.toBe(initialMenuItems[0].isExpanded);
+    // Verificar que el formulario existe
+    expect(component.productForm).toBeDefined();
+
+    component.productForm.setValue({
+      name: '',
+      description: '',
+      price: '',
+      amount: '',
+      category: '',
+      expirationDate: '',
+      batch: '',
+      provider: '',
+      deliveryTime: '',
+      conditions: ''
     });
 
-    it('should update logoError signal correctly', () => {
-      expect(component.logoError()).toBeFalse();
-      
-      component.onLogoError(new Event('error'));
-      
-      expect(component.logoError()).toBeTrue();
-    });
+    component.onSubmit();
+    expect(component.productForm.touched).toBeTrue();
   });
+
+  it('should reset form and navigate on cancel', () => {
+    // Inicializar el componente con estado vacío
+    initializeComponent();
+
+    // Verificar que el formulario existe
+    expect(component.productForm).toBeDefined();
+    component.onCancel();
+    expect(component.productForm.pristine).toBeTrue();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard/productos']);
+  });
+
+  describe('getFieldError', () => {
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.name;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('name')).toBe('Este campo es requerido');
+    });
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.name;
+      control?.setValue('ab');
+      control?.markAsTouched();
+      expect(component.getFieldError('name')).toBe('Mínimo 3 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.name;
+      control?.setValue('123456789012');
+      control?.markAsTouched();
+      expect(component.getFieldError('name')).toBe('Máximo 10 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.description;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('description')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.description;
+      control?.setValue('ab');
+      control?.markAsTouched();
+      expect(component.getFieldError('description')).toBe('Mínimo 3 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.description;
+      control?.setValue('a'.repeat(51));
+      control?.markAsTouched();
+      expect(component.getFieldError('description')).toBe('Máximo 50 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.price;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('price')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.price;
+      control?.setValue(-9);
+      control?.markAsTouched();
+      expect(component.getFieldError('price')).toBe('El valor mínimo es 0');
+    });
+
+  it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.price;
+      control?.setValue('ab');
+      control?.markAsTouched();
+      expect(component.getFieldError('price')).toBe('Debe ser un número positivo');
+    });
+
+  it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.amount;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('amount')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.amount;
+      control?.setValue(-9);
+      control?.markAsTouched();
+      expect(component.getFieldError('amount')).toBe('El valor mínimo es 0');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.amount;
+      control?.setValue('ab4');
+      control?.markAsTouched();
+      expect(component.getFieldError('amount')).toBe('Formato inválido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.category;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('category')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.conditions;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('conditions')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.conditions;
+      control?.setValue('ab');
+      control?.markAsTouched();
+      expect(component.getFieldError('conditions')).toBe('Mínimo 5 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.conditions;
+      control?.setValue('a'.repeat(21));
+      control?.markAsTouched();
+      expect(component.getFieldError('conditions')).toBe('Máximo 20 caracteres');
+    });
+
+    it('should return required error', () => {
+       // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.expirationDate;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('expirationDate')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+       // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.expirationDate;
+      control?.setValue(new Date('2024-02-12'));
+      control?.markAsTouched();
+      expect(component.getFieldError('expirationDate')).toBe('La fecha debe ser futura');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.batch;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('batch')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.batch;
+      control?.setValue('ab');
+      control?.markAsTouched();
+      expect(component.getFieldError('batch')).toBe('Mínimo 3 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.batch;
+      control?.setValue('a'.repeat(51));
+      control?.markAsTouched();
+      expect(component.getFieldError('batch')).toBe('Máximo 50 caracteres');
+    });
+
+    it('should return required error', () => {
+      // Inicializar el componente con estado vacío
+      initializeComponent();
+
+      // Verificar que el formulario existe
+      expect(component.productForm).toBeDefined();
+      const control = component.provider;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('provider')).toBe('Este campo es requerido');
+    });
+
+    it('should return required error', () => {
+      initializeComponent();
+      expect(component.productForm).toBeDefined();
+      const control = component.deliveryTime;
+      control?.setValue('');
+      control?.markAsTouched();
+      expect(component.getFieldError('deliveryTime')).toBe('Este campo es requerido');
+    });
+  })
 });
