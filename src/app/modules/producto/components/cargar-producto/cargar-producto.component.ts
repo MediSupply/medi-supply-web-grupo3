@@ -55,7 +55,10 @@ export class CargarProductoComponent implements OnInit {
   categorySelected: string = '';
   providerSelected: string = '';
 
-  constructor(private router: Router, private snackBar: MatSnackBar,) {}
+  constructor(
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
 
   providers = [
     { id: '1', value: 'Genfar S.A.' },
@@ -85,7 +88,6 @@ export class CargarProductoComponent implements OnInit {
     { id: '12', value: 'Anticoagulantes' },
   ];
 
-
   ngOnInit() {
     this.checkEditMode();
     this.initForm();
@@ -93,46 +95,64 @@ export class CargarProductoComponent implements OnInit {
 
   private initForm(): void {
     this.productForm = this.fb.group({
-      name: [this.product?.name || '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(10)
-      ]],
-      description: [this.product?.description || '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50)
-      ]],
-      price: [this.product?.price || '', [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(1000000),
-        this.positiveNumberValidator
-      ]],
-      amount: [this.product?.amount || '', [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(10000),
-        Validators.pattern('^[0-9]*$')
-      ]],
+      name: [
+        this.product?.name || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(10),
+        ],
+      ],
+      description: [
+        this.product?.description || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+        ],
+      ],
+      price: [
+        this.product?.price || '',
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(1000000),
+          this.positiveNumberValidator,
+        ],
+      ],
+      amount: [
+        this.product?.amount || '',
+        [
+          Validators.required,
+          Validators.min(0),
+          Validators.max(10000),
+          Validators.pattern('^[0-9]*$'),
+        ],
+      ],
       category: [this.categorySelected, Validators.required],
-      conditions: [this.product?.conditions || '', [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(20)
-      ]],
-      expirationDate: [this.product?.expirationDate || '', [
-        Validators.required,
-        this.futureDateValidator
-      ]],
-      batch: [this.product?.batch || '', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(50),
-        Validators.pattern('^[A-Za-z0-9-]*$')
-      ]],
+      conditions: [
+        this.product?.conditions || '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(20),
+        ],
+      ],
+      expirationDate: [
+        this.product?.expirationDate || '',
+        [Validators.required, this.futureDateValidator],
+      ],
+      batch: [
+        this.product?.batch || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+          Validators.pattern('^[A-Za-z0-9-]*$'),
+        ],
+      ],
       provider: [this.providerSelected, Validators.required],
-      deliveryTime: [this.product?.deliveryTime || '', Validators.required]
+      deliveryTime: [this.product?.deliveryTime || '', Validators.required],
     });
     if (this.isEditMode) {
       this.productForm.disable();
@@ -156,7 +176,7 @@ export class CargarProductoComponent implements OnInit {
 
     return selectedDate >= today ? null : { pastDate: true };
   }
-  
+
   public checkEditMode(): void {
     this.product = history.state.product;
     const state = history.state;
@@ -199,30 +219,30 @@ export class CargarProductoComponent implements OnInit {
     return !!(field?.invalid && field.touched);
   }
 
-onSubmit() {
-  if (this.productForm.valid) {
-    const formData: any = this.productForm.value;
-    console.log(formData)
-    this.loading.set(true);
-    console.log('guardando');
-    alert("Producto registrado exitosamente")
-    this.productForm.reset()
-  } else {
-    this.markAllFieldsAsTouched();
-  }
-}
-
-markAllFieldsAsTouched(): void {
-  Object.keys(this.productForm.controls).forEach(key => {
-    const control = this.productForm.get(key);
-    if (control) {
-      control.markAsTouched();
+  onSubmit() {
+    if (this.productForm.valid) {
+      const formData: any = this.productForm.value;
+      console.log(formData);
+      this.loading.set(true);
+      console.log('guardando');
+      alert('Producto registrado exitosamente');
+      this.productForm.reset();
+    } else {
+      this.markAllFieldsAsTouched();
     }
-  });
-}
+  }
+
+  markAllFieldsAsTouched(): void {
+    Object.keys(this.productForm.controls).forEach(key => {
+      const control = this.productForm.get(key);
+      if (control) {
+        control.markAsTouched();
+      }
+    });
+  }
 
   onCancel(): void {
-    this.productForm.reset()
+    this.productForm.reset();
     this.router.navigate(['/dashboard/productos']);
   }
 

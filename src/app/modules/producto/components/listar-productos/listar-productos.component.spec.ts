@@ -1,4 +1,9 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 
 import { ListarProductosComponent } from './listar-productos.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,54 +36,60 @@ describe('ListarProductosComponent', () => {
   const expirationDateString = futureDate.toISOString().split('T')[0];
   const mockProducts: Product[] = [
     {
-      "id": 1,
-      "name": "Acetaminofén 500mg",
-      "description": "Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre",
-      "price": 8500,
-      "amount": 150,
-      "category": "1",
-      "conditions": "Almacenar en lugar fresco y seco. Temperatura menor a 30°C",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-AC202312",
-      "provider":  "1",
-      "deliveryTime": "24-48 horas"
+      id: 1,
+      name: 'Acetaminofén 500mg',
+      description:
+        'Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre',
+      price: 8500,
+      amount: 150,
+      category: '1',
+      conditions: 'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
+      expirationDate: expirationDateString,
+      batch: 'LOT-AC202312',
+      provider: '1',
+      deliveryTime: '24-48 horas',
     },
     {
-      "id": 2,
-      "name": "Ibuprofeno 400mg",
-      "description": "Antiinflamatorio no esteroideo para dolor, inflamación y fiebre",
-      "price": 12000,
-      "amount": 85,
-      "category": "2",
-      "conditions": "Proteger de la luz. Mantener en envase original",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-IB202401",
-      "provider": "2",
-      "deliveryTime": "48-72 horas"
+      id: 2,
+      name: 'Ibuprofeno 400mg',
+      description:
+        'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
+      price: 12000,
+      amount: 85,
+      category: '2',
+      conditions: 'Proteger de la luz. Mantener en envase original',
+      expirationDate: expirationDateString,
+      batch: 'LOT-IB202401',
+      provider: '2',
+      deliveryTime: '48-72 horas',
     },
     {
-      "id": 3,
-      "name": "Amoxicilina 500mg",
-      "description": "Antibiótico de amplio espectro para infecciones bacterianas",
-      "price": 18500,
-      "amount": 60,
-      "category": "3",
-      "conditions": "Refrigerar entre 2°C y 8°C después de reconstituir",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-AM202402",
-      "provider":  "3",
-      "deliveryTime": "72 horas"
-    }
+      id: 3,
+      name: 'Amoxicilina 500mg',
+      description:
+        'Antibiótico de amplio espectro para infecciones bacterianas',
+      price: 18500,
+      amount: 60,
+      category: '3',
+      conditions: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      expirationDate: expirationDateString,
+      batch: 'LOT-AM202402',
+      provider: '3',
+      deliveryTime: '72 horas',
+    },
   ];
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const productServiceSpy = jasmine.createSpyObj('ProductoService', ['getAllProducts']);
-    activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], { // Agrega este spy
+    const productServiceSpy = jasmine.createSpyObj('ProductoService', [
+      'getAllProducts',
+    ]);
+    activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
+      // Agrega este spy
       snapshot: {
         paramMap: new Map(),
-        queryParamMap: new Map()
-      }
+        queryParamMap: new Map(),
+      },
     });
 
     await TestBed.configureTestingModule({
@@ -90,19 +101,20 @@ describe('ListarProductosComponent', () => {
         MatInputModule,
         MatSelectModule,
         MatNativeDateModule,
-        MatIconModule
-        ],
-        providers: [
-          { provide: ProductoService, useValue: productServiceSpy },
-          { provide: Router, useValue: routerSpy },
-          { provide: ActivatedRoute, useValue: activatedRouteSpy }
-        ]
-    })
-    .compileComponents();
+        MatIconModule,
+      ],
+      providers: [
+        { provide: ProductoService, useValue: productServiceSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: activatedRouteSpy },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ListarProductosComponent);
     component = fixture.componentInstance;
-    productService = TestBed.inject(ProductoService) as jasmine.SpyObj<ProductoService>;
+    productService = TestBed.inject(
+      ProductoService
+    ) as jasmine.SpyObj<ProductoService>;
     debugElement = fixture.debugElement;
 
     productService.getAllProducts.and.returnValue(of(mockProducts));
@@ -129,7 +141,7 @@ describe('ListarProductosComponent', () => {
       component.ngAfterViewInit(); // Para inicializar paginator y sort
 
       const mockEvent = {
-        target: { value: 'acetaminofén' }
+        target: { value: 'acetaminofén' },
       } as unknown as Event;
 
       spyOn(component.dataSource.paginator!, 'firstPage');
@@ -139,15 +151,15 @@ describe('ListarProductosComponent', () => {
       expect(component.dataSource.filter).toBe('acetaminofén');
       expect(component.dataSource.paginator?.firstPage).toHaveBeenCalled();
     });
-  })
-  
+  });
+
   it('should show alert when no products are found', () => {
     // Configurar datos iniciales
     component.dataSource.data = mockProducts;
     component.ngAfterViewInit();
 
     const mockEvent = {
-      target: { value: 'producto que no existe' }
+      target: { value: 'producto que no existe' },
     } as unknown as Event;
 
     // Espiar el alert
@@ -163,18 +175,15 @@ describe('ListarProductosComponent', () => {
     it('should navigate to producto route with new action and source query params', () => {
       component.addProduct();
 
-      expect(routerSpy.navigate).toHaveBeenCalledWith(
-        ['../producto'],
-        {
-          relativeTo: activatedRouteSpy,
-          queryParams: {
-            action: 'new',
-            source: 'productos',
-          }
-        }
-      );
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['../producto'], {
+        relativeTo: activatedRouteSpy,
+        queryParams: {
+          action: 'new',
+          source: 'productos',
+        },
+      });
     });
-  })
+  });
 
   describe('editProduct', () => {
     it('should navigate to producto route with product state and edit action', () => {
@@ -182,43 +191,38 @@ describe('ListarProductosComponent', () => {
 
       component.editProduct(mockProduct);
 
-      expect(routerSpy.navigate).toHaveBeenCalledWith(
-        ['../producto'],
-        {
-          relativeTo: activatedRouteSpy,
-          state: {
-            product: mockProduct,
-            action: 'edit',
-          }
-        }
-      );
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['../producto'], {
+        relativeTo: activatedRouteSpy,
+        state: {
+          product: mockProduct,
+          action: 'edit',
+        },
+      });
     });
-  })
- 
+  });
+
   describe('Table Data Display', () => {
     beforeEach(() => {
       component.dataSource.data = mockProducts;
       fixture.detectChanges();
     });
 
-      it('should display products in the table with correct columns', () => {
-    const table = fixture.nativeElement.querySelector('table');
-    expect(table).toBeTruthy();
+    it('should display products in the table with correct columns', () => {
+      const table = fixture.nativeElement.querySelector('table');
+      expect(table).toBeTruthy();
 
-    // Verificar que las columnas definidas se muestran
-    const displayedColumns = component.displayedColumns();
-    const headerCells = fixture.nativeElement.querySelectorAll('th');
-    expect(headerCells.length).toBe(displayedColumns.length);
+      // Verificar que las columnas definidas se muestran
+      const displayedColumns = component.displayedColumns();
+      const headerCells = fixture.nativeElement.querySelectorAll('th');
+      expect(headerCells.length).toBe(displayedColumns.length);
 
-    // Verificar textos de los headers (ajusta según tu HTML real)
-    expect(headerCells[0].textContent.trim()).toBe('CÓDIGO PRODUCTO');
+      // Verificar textos de los headers (ajusta según tu HTML real)
+      expect(headerCells[0].textContent.trim()).toBe('CÓDIGO PRODUCTO');
       expect(headerCells[1].textContent.trim()).toBe('NOMBRE PRODUCTO');
       expect(headerCells[2].textContent.trim()).toBe('DESCRIPCIÓN');
       expect(headerCells[3].textContent.trim()).toBe('PRECIO');
       expect(headerCells[4].textContent.trim()).toBe('CANTIDAD');
       expect(headerCells[5].textContent.trim()).toBe('ACCIONES');
     });
-  })
-})
-
-
+  });
+});

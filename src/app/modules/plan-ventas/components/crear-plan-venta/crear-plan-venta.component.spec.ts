@@ -1,7 +1,18 @@
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 
 import { CrearPlanVentaComponent } from './crear-plan-venta.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -20,30 +31,38 @@ let mockVendedoresService: jasmine.SpyObj<VendedoresService>;
 let mockProductoService: jasmine.SpyObj<ProductoService>;
 
 const mockRouter = {
-  navigate: jasmine.createSpy('navigate')
+  navigate: jasmine.createSpy('navigate'),
 };
 
 const mockSnackBar = {
-  open: jasmine.createSpy('open')
+  open: jasmine.createSpy('open'),
 };
 
 describe('CrearPlanVentaComponent', () => {
- let component: CrearPlanVentaComponent;
+  let component: CrearPlanVentaComponent;
   let fixture: ComponentFixture<CrearPlanVentaComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
   let snackBar: MatSnackBar;
 
   beforeEach(async () => {
-    const vendedoresServiceSpy = jasmine.createSpyObj('VendedoresService', ['getVendedores']);
-    const productoServiceSpy = jasmine.createSpyObj('ProductoService', ['getAllProducts']);
-    vendedoresServiceSpy.getVendedores.and.returnValue(of([
-      { id: 1, nombre: 'Vendedor 1' },
-      { id: 2, nombre: 'Vendedor 2' }
-    ]));
-    productoServiceSpy.getAllProducts.and.returnValue(of([
-      { id: 1, name: 'Producto 1' },
-      { id: 2, name: 'Producto 2' }
-    ]));
+    const vendedoresServiceSpy = jasmine.createSpyObj('VendedoresService', [
+      'getVendedores',
+    ]);
+    const productoServiceSpy = jasmine.createSpyObj('ProductoService', [
+      'getAllProducts',
+    ]);
+    vendedoresServiceSpy.getVendedores.and.returnValue(
+      of([
+        { id: 1, nombre: 'Vendedor 1' },
+        { id: 2, nombre: 'Vendedor 2' },
+      ])
+    );
+    productoServiceSpy.getAllProducts.and.returnValue(
+      of([
+        { id: 1, name: 'Producto 1' },
+        { id: 2, name: 'Producto 2' },
+      ])
+    );
 
     await TestBed.configureTestingModule({
       declarations: [],
@@ -56,14 +75,14 @@ describe('CrearPlanVentaComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
       ],
       providers: [
         FormBuilder,
         { provide: Router, useValue: mockRouter },
         { provide: VendedoresService, useValue: vendedoresServiceSpy },
         { provide: ProductoService, useValue: productoServiceSpy },
-      ]
+      ],
     }).compileComponents();
 
     snackBar = TestBed.inject(MatSnackBar);
@@ -75,12 +94,15 @@ describe('CrearPlanVentaComponent', () => {
 
     fixture.detectChanges();
 
-    mockVendedoresService = TestBed.inject(VendedoresService) as jasmine.SpyObj<VendedoresService>;
-    mockProductoService = TestBed.inject(ProductoService) as jasmine.SpyObj<ProductoService>;
+    mockVendedoresService = TestBed.inject(
+      VendedoresService
+    ) as jasmine.SpyObj<VendedoresService>;
+    mockProductoService = TestBed.inject(
+      ProductoService
+    ) as jasmine.SpyObj<ProductoService>;
   });
 
-  afterEach(() => {
-  });
+  afterEach(() => {});
 
   it('debería crear el componente', () => {
     expect(component).toBeTruthy();
@@ -121,7 +143,7 @@ describe('CrearPlanVentaComponent', () => {
         control?.setValue('');
         expect(control?.hasError('required')).toBeTrue();
       });
-      
+
       it('debería marcar startDate como requerido', () => {
         const control = component.planVentaForm.get('startDate');
         control?.setValue('');
@@ -168,41 +190,42 @@ describe('CrearPlanVentaComponent', () => {
     it('debería aceptar cuando endDate es posterior a startDate', () => {
       component.planVentaForm.get('startDate')?.setValue('2024-01-01');
       component.planVentaForm.get('endDate')?.setValue('2024-01-02');
-      
+
       expect(component.planVentaForm.get('endDate')?.errors).toBeNull();
     });
 
     it('debería rechazar cuando endDate es anterior a startDate', () => {
       component.planVentaForm.get('startDate')?.setValue('2024-01-02');
       component.planVentaForm.get('endDate')?.setValue('2024-01-01');
-      
-      expect(component.planVentaForm.get('endDate')?.hasError('endDateInvalid')).toBeTrue();
+
+      expect(
+        component.planVentaForm.get('endDate')?.hasError('endDateInvalid')
+      ).toBeTrue();
     });
 
     it('debería aceptar cuando las fechas son iguales', () => {
       component.planVentaForm.get('startDate')?.setValue('2024-01-01');
       component.planVentaForm.get('endDate')?.setValue('2024-01-01');
-      
+
       expect(component.planVentaForm.get('endDate')?.errors).toBeNull();
     });
 
     it('no debería validar cuando startDate está vacío', () => {
       component.planVentaForm.get('startDate')?.setValue('');
       component.planVentaForm.get('endDate')?.setValue('2024-01-01');
-      
+
       expect(component.planVentaForm.get('endDate')?.errors).toBeNull();
     });
 
     it('no debería validar cuando endDate está vacío', () => {
       component.planVentaForm.get('startDate')?.setValue('2024-01-01');
       component.planVentaForm.get('endDate')?.setValue('');
-      
+
       expect(component.planVentaForm.get('endDate')?.errors).toBeNull();
     });
+  });
 
-  })
-
-   describe('Método getFieldError', () => {
+  describe('Método getFieldError', () => {
     it('debería retornar mensaje de error para campo requerido', () => {
       const control = component.seller;
       control?.setValue('');
@@ -214,7 +237,9 @@ describe('CrearPlanVentaComponent', () => {
       const control = component.product;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('product')).toBe('Este campo es requerido');
+      expect(component.getFieldError('product')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('debería retornar mensaje de error para campo requerido', () => {
@@ -247,7 +272,9 @@ describe('CrearPlanVentaComponent', () => {
       const control = component.startDate;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('startDate')).toBe('Este campo es requerido');
+      expect(component.getFieldError('startDate')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('debería retornar mensaje de error para campo requerido', () => {
@@ -256,7 +283,7 @@ describe('CrearPlanVentaComponent', () => {
       control?.markAsTouched();
       expect(component.getFieldError('endDate')).toBe('');
     });
-  })
+  });
 
   describe('Envío del Formulario', () => {
     it('debería marcar todos los campos como touched cuando el formulario es inválido', () => {
@@ -277,11 +304,16 @@ describe('CrearPlanVentaComponent', () => {
         product: 1,
         meta: '1000',
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
       });
-    
-      spyOnProperty(component.planVentaForm, 'valid', 'get').and.returnValue(true);
-      const snackBarOpenSpy = spyOn(component['snackBar'], 'open').and.callThrough();
+
+      spyOnProperty(component.planVentaForm, 'valid', 'get').and.returnValue(
+        true
+      );
+      const snackBarOpenSpy = spyOn(
+        component['snackBar'],
+        'open'
+      ).and.callThrough();
 
       component.onSubmit();
 
@@ -291,14 +323,19 @@ describe('CrearPlanVentaComponent', () => {
         { duration: 3000 }
       );
     });
-  })
+  });
 
   describe('Manejo de errores en servicios', () => {
     it('debería manejar errores al cargar vendedores', fakeAsync(() => {
       const errorResponse = 'Error al cargar vendedores';
-      mockVendedoresService.getVendedores.and.returnValue(throwError(() => errorResponse));
-      
-      const snackBarOpenSpy = spyOn(component['snackBar'], 'open').and.callThrough();
+      mockVendedoresService.getVendedores.and.returnValue(
+        throwError(() => errorResponse)
+      );
+
+      const snackBarOpenSpy = spyOn(
+        component['snackBar'],
+        'open'
+      ).and.callThrough();
       spyOn(console, 'error');
 
       component.loadSellers();
@@ -307,17 +344,22 @@ describe('CrearPlanVentaComponent', () => {
       flush(); // Limpia cualquier timer pendiente
 
       expect(snackBarOpenSpy).toHaveBeenCalledWith(
-        'Error al cargar la lista de vendedores', 
-        'Cerrar', 
+        'Error al cargar la lista de vendedores',
+        'Cerrar',
         { duration: 3000 }
       );
     }));
 
     it('debería manejar errores al cargar productos', fakeAsync(() => {
       const errorResponse = 'Error al cargar productos';
-      mockProductoService.getAllProducts.and.returnValue(throwError(() => errorResponse));
-      
-      const snackBarOpenSpy = spyOn(component['snackBar'], 'open').and.callThrough();
+      mockProductoService.getAllProducts.and.returnValue(
+        throwError(() => errorResponse)
+      );
+
+      const snackBarOpenSpy = spyOn(
+        component['snackBar'],
+        'open'
+      ).and.callThrough();
       spyOn(console, 'error');
 
       component.loadProducts();
@@ -326,12 +368,12 @@ describe('CrearPlanVentaComponent', () => {
       flush(); // Limpia cualquier timer pendiente
 
       expect(snackBarOpenSpy).toHaveBeenCalledWith(
-        'Error al cargar la lista de productos', 
-        'Cerrar', 
+        'Error al cargar la lista de productos',
+        'Cerrar',
         { duration: 3000 }
       );
     }));
-  })
+  });
 
   describe('Métodos auxiliares', () => {
     it('debería marcar todos los controles como touched', () => {
@@ -342,14 +384,16 @@ describe('CrearPlanVentaComponent', () => {
       });
     });
 
-     it('debería tener getters para todos los controles', () => {
+    it('debería tener getters para todos los controles', () => {
       expect(component.seller).toBe(component.planVentaForm.get('seller'));
       expect(component.product).toBe(component.planVentaForm.get('product'));
       expect(component.meta).toBe(component.planVentaForm.get('meta'));
-      expect(component.startDate).toBe(component.planVentaForm.get('startDate'));
+      expect(component.startDate).toBe(
+        component.planVentaForm.get('startDate')
+      );
       expect(component.endDate).toBe(component.planVentaForm.get('endDate'));
     });
-  })
+  });
 
   describe('Edge Cases', () => {
     let component: CrearPlanVentaComponent;
@@ -358,7 +402,7 @@ describe('CrearPlanVentaComponent', () => {
       // Crear un mock del componente que no use inject()
       class CrearPlanVentaComponentMock {
         planVentaForm!: FormGroup;
-        
+
         constructor(
           private fb: FormBuilder,
           private router: Router,
@@ -406,7 +450,7 @@ describe('CrearPlanVentaComponent', () => {
           try {
             const start = new Date(startDate);
             const end = new Date(endDate);
-            
+
             start.setHours(0, 0, 0, 0);
             end.setHours(0, 0, 0, 0);
 
@@ -416,7 +460,9 @@ describe('CrearPlanVentaComponent', () => {
               const currentErrors = endDateControl?.errors;
               if (currentErrors && currentErrors['endDateInvalid']) {
                 const { endDateInvalid, ...otherErrors } = currentErrors;
-                endDateControl?.setErrors(Object.keys(otherErrors).length > 0 ? otherErrors : null);
+                endDateControl?.setErrors(
+                  Object.keys(otherErrors).length > 0 ? otherErrors : null
+                );
               }
             }
           } catch (error) {
@@ -438,17 +484,19 @@ describe('CrearPlanVentaComponent', () => {
     it('debería mantener otros errores al limpiar endDateInvalid', () => {
       component.planVentaForm.get('endDate')?.setErrors({
         required: true,
-        endDateInvalid: true
+        endDateInvalid: true,
       });
 
       component.planVentaForm.get('startDate')?.setValue('2024-01-01');
       component.planVentaForm.get('endDate')?.setValue('2024-01-02');
       component.validateDates();
 
-      expect(component.planVentaForm.get('endDate')?.hasError('required')).toBeFalse();
-      expect(component.planVentaForm.get('endDate')?.hasError('endDateInvalid')).toBeFalse();
+      expect(
+        component.planVentaForm.get('endDate')?.hasError('required')
+      ).toBeFalse();
+      expect(
+        component.planVentaForm.get('endDate')?.hasError('endDateInvalid')
+      ).toBeFalse();
     });
   });
-})
-
-  
+});

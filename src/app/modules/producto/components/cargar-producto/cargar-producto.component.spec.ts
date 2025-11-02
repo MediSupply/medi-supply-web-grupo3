@@ -35,11 +35,9 @@ describe('CargarProductoComponent', () => {
         MatSelectModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatIconModule
+        MatIconModule,
       ],
-      providers: [
-        { provide: Router, useValue: routerSpy }
-      ]
+      providers: [{ provide: Router, useValue: routerSpy }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CargarProductoComponent);
@@ -55,7 +53,7 @@ describe('CargarProductoComponent', () => {
 
   it('should submit valid form and reset it', () => {
     spyOn(window, 'alert');
-    
+
     // Inicializar el componente con estado vacío
     initializeComponent();
 
@@ -73,14 +71,16 @@ describe('CargarProductoComponent', () => {
       batch: 'ejemplo',
       provider: '2',
       deliveryTime: '24 horas',
-      conditions: 'Wertyui'
+      conditions: 'Wertyui',
     });
 
     expect(component.productForm.valid).toBeTrue();
 
     component.onSubmit();
 
-    expect(window.alert).toHaveBeenCalledWith('Producto registrado exitosamente');
+    expect(window.alert).toHaveBeenCalledWith(
+      'Producto registrado exitosamente'
+    );
     expect(component.productForm.pristine).toBeTrue();
     expect(component.productForm.value).toEqual({
       name: null,
@@ -92,7 +92,7 @@ describe('CargarProductoComponent', () => {
       batch: null,
       provider: null,
       deliveryTime: null,
-      conditions: null
+      conditions: null,
     });
   });
 
@@ -113,7 +113,7 @@ describe('CargarProductoComponent', () => {
       batch: '',
       provider: '',
       deliveryTime: '',
-      conditions: ''
+      conditions: '',
     });
 
     component.onSubmit();
@@ -176,7 +176,9 @@ describe('CargarProductoComponent', () => {
       const control = component.description;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe('Este campo es requerido');
+      expect(component.getFieldError('description')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -188,7 +190,9 @@ describe('CargarProductoComponent', () => {
       const control = component.description;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe('Mínimo 3 caracteres');
+      expect(component.getFieldError('description')).toBe(
+        'Mínimo 3 caracteres'
+      );
     });
 
     it('should return required error', () => {
@@ -200,7 +204,9 @@ describe('CargarProductoComponent', () => {
       const control = component.description;
       control?.setValue('a'.repeat(51));
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe('Máximo 50 caracteres');
+      expect(component.getFieldError('description')).toBe(
+        'Máximo 50 caracteres'
+      );
     });
 
     it('should return required error', () => {
@@ -227,7 +233,7 @@ describe('CargarProductoComponent', () => {
       expect(component.getFieldError('price')).toBe('El valor mínimo es 0');
     });
 
-  it('should return required error', () => {
+    it('should return required error', () => {
       // Inicializar el componente con estado vacío
       initializeComponent();
 
@@ -236,10 +242,12 @@ describe('CargarProductoComponent', () => {
       const control = component.price;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('price')).toBe('Debe ser un número positivo');
+      expect(component.getFieldError('price')).toBe(
+        'Debe ser un número positivo'
+      );
     });
 
-  it('should return required error', () => {
+    it('should return required error', () => {
       // Inicializar el componente con estado vacío
       initializeComponent();
 
@@ -284,7 +292,9 @@ describe('CargarProductoComponent', () => {
       const control = component.category;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('category')).toBe('Este campo es requerido');
+      expect(component.getFieldError('category')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -296,7 +306,9 @@ describe('CargarProductoComponent', () => {
       const control = component.conditions;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('conditions')).toBe('Este campo es requerido');
+      expect(component.getFieldError('conditions')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -320,11 +332,13 @@ describe('CargarProductoComponent', () => {
       const control = component.conditions;
       control?.setValue('a'.repeat(21));
       control?.markAsTouched();
-      expect(component.getFieldError('conditions')).toBe('Máximo 20 caracteres');
+      expect(component.getFieldError('conditions')).toBe(
+        'Máximo 20 caracteres'
+      );
     });
 
     it('should return required error', () => {
-       // Inicializar el componente con estado vacío
+      // Inicializar el componente con estado vacío
       initializeComponent();
 
       // Verificar que el formulario existe
@@ -332,11 +346,13 @@ describe('CargarProductoComponent', () => {
       const control = component.expirationDate;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('expirationDate')).toBe('Este campo es requerido');
+      expect(component.getFieldError('expirationDate')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
-       // Inicializar el componente con estado vacío
+      // Inicializar el componente con estado vacío
       initializeComponent();
 
       // Verificar que el formulario existe
@@ -344,7 +360,9 @@ describe('CargarProductoComponent', () => {
       const control = component.expirationDate;
       control?.setValue(new Date('2024-02-12'));
       control?.markAsTouched();
-      expect(component.getFieldError('expirationDate')).toBe('La fecha debe ser futura');
+      expect(component.getFieldError('expirationDate')).toBe(
+        'La fecha debe ser futura'
+      );
     });
 
     it('should return required error', () => {
@@ -392,7 +410,9 @@ describe('CargarProductoComponent', () => {
       const control = component.provider;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('provider')).toBe('Este campo es requerido');
+      expect(component.getFieldError('provider')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -401,7 +421,9 @@ describe('CargarProductoComponent', () => {
       const control = component.deliveryTime;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('deliveryTime')).toBe('Este campo es requerido');
+      expect(component.getFieldError('deliveryTime')).toBe(
+        'Este campo es requerido'
+      );
     });
-  })
+  });
 });

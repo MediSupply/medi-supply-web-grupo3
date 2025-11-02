@@ -116,37 +116,37 @@
   }
 }
 
- .action-btn_add {
-    background-color: #69a7ff !important;
-    color: white !important;
-    border-radius: 6px !important;
-    white-space: nowrap;
-    padding: 0 20px;
-    height: 48px;
+.action-btn_add {
+  background-color: #69a7ff !important;
+  color: white !important;
+  border-radius: 6px !important;
+  white-space: nowrap;
+  padding: 0 20px;
+  height: 48px;
 
-    mat-icon {
+  mat-icon {
     margin-right: 8px;
-    }
+  }
 }
 
-.action-btn_cancel{
-    border-radius: 6px !important;
-    border-radius: 6px !important;
-    white-space: nowrap;
-    padding: 1rem 20px;
-    height: 48px;
+.action-btn_cancel {
+  border-radius: 6px !important;
+  border-radius: 6px !important;
+  white-space: nowrap;
+  padding: 1rem 20px;
+  height: 48px;
 }
 
 .periodo-container {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 1rem;
-    background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
 }
 
 .periodo-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
 }

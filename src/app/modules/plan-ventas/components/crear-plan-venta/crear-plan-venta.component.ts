@@ -1,6 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -14,7 +22,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { Vendedor, VendedoresService } from '../../../../services/vendedores.service';
+import {
+  Vendedor,
+  VendedoresService,
+} from '../../../../services/vendedores.service';
 import { ProductoService } from '../../../../services/producto.service';
 import { Product } from '../../../producto/models/product';
 
@@ -22,65 +33,61 @@ import { Product } from '../../../producto/models/product';
   selector: 'app-crear-plan-venta',
   standalone: true,
   imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatCardModule,
-        MatDividerModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatCardModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   templateUrl: './crear-plan-venta.component.html',
-  styleUrl: './crear-plan-venta.component.scss'
+  styleUrl: './crear-plan-venta.component.scss',
 })
 export class CrearPlanVentaComponent {
   private fb = inject(FormBuilder);
   sellers: Vendedor[] = [];
-  products: Product[] = []
-  
+  products: Product[] = [];
+
   planVentaForm!: FormGroup;
   loading = signal<boolean>(false);
 
-  constructor(private router: Router, private snackBar: MatSnackBar,private vendedoresService: VendedoresService, private productService :ProductoService) {}
+  constructor(
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private vendedoresService: VendedoresService,
+    private productService: ProductoService
+  ) {}
 
-   ngOnInit() {
+  ngOnInit() {
     this.initForm();
     this.loadSellers();
     this.loadProducts();
     this.planVentaForm.get('startDate')?.valueChanges.subscribe(() => {
       this.planVentaForm.get('endDate')?.updateValueAndValidity();
-    });  
+    });
   }
 
-    public initForm(): void {
-      this.planVentaForm = this.fb.group({
-        seller: ['', [
-          Validators.required,
-        ]],
-        product: ['', [
-          Validators.required,
-        ]],
-        meta: ['', [
-          Validators.required,
-          Validators.min(0),
-          this.positiveNumberValidator,
-        ]],
-        startDate: ['', [
-          Validators.required,
-        ]],
-        endDate: ['', [
-          Validators.required,
-        ]],
-      });
-      this.setupDateValidation();
-    }
+  public initForm(): void {
+    this.planVentaForm = this.fb.group({
+      seller: ['', [Validators.required]],
+      product: ['', [Validators.required]],
+      meta: [
+        '',
+        [Validators.required, Validators.min(0), this.positiveNumberValidator],
+      ],
+      startDate: ['', [Validators.required]],
+      endDate: ['', [Validators.required]],
+    });
+    this.setupDateValidation();
+  }
 
   getFieldError(fieldName: string): string {
     const field = this.planVentaForm.get(fieldName);
@@ -97,8 +104,9 @@ export class CrearPlanVentaComponent {
         return `El valor máximo es ${field.errors['max'].max}`;
       if (field.errors['pattern']) return 'Formato inválido';
       if (field.errors['positiveNumber']) return 'Debe ser un número positivo';
-      if (field.errors['endDateInvalid']) return 'La fecha de fin no puede ser anterior a la fecha de inicio';
-    }     
+      if (field.errors['endDateInvalid'])
+        return 'La fecha de fin no puede ser anterior a la fecha de inicio';
+    }
     return '';
   }
 
@@ -136,7 +144,7 @@ export class CrearPlanVentaComponent {
     try {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       start.setHours(0, 0, 0, 0);
       end.setHours(0, 0, 0, 0);
 
@@ -146,7 +154,9 @@ export class CrearPlanVentaComponent {
         const currentErrors = endDateControl?.errors;
         if (currentErrors && currentErrors['endDateInvalid']) {
           const { endDateInvalid, ...otherErrors } = currentErrors;
-          endDateControl?.setErrors(Object.keys(otherErrors).length > 0 ? otherErrors : null);
+          endDateControl?.setErrors(
+            Object.keys(otherErrors).length > 0 ? otherErrors : null
+          );
         }
       }
     } catch (error) {
@@ -168,9 +178,9 @@ export class CrearPlanVentaComponent {
     });
   }
 
-  loadProducts(){
+  loadProducts() {
     this.productService.getAllProducts().subscribe({
-      next: products =>{
+      next: products => {
         this.products = products;
       },
       error: error => {
@@ -179,10 +189,10 @@ export class CrearPlanVentaComponent {
           duration: 3000,
         });
       },
-    })
+    });
   }
 
-  onSubmit(){
+  onSubmit() {
     if (this.planVentaForm.valid) {
       const formData: any = this.planVentaForm.value;
       console.log('Datos del plan de venta:', formData);

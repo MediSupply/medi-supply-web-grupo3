@@ -23,7 +23,6 @@
             novalidate
           >
             <div class="row mb-4">
-
               <!-- Vendedor -->
               <div class="col-md-6 mb-3">
                 <mat-form-field
@@ -79,54 +78,58 @@
             </div>
 
             <div class="periodo-container">
-                <div class="periodo-header">
-                    <span class="periodo-title">Periodo</span>
-                </div>
-                <div class="row mb-4">
-                    
+              <div class="periodo-header">
+                <span class="periodo-title">Periodo</span>
+              </div>
+              <div class="row mb-4">
                 <!-- Periodo -->
                 <div class="col-md-6">
-                    <mat-form-field appearance="outline" class="w-100">
+                  <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Fecha de inicio</mat-label>
                     <input
-                        matInput
-                        [matDatepicker]="picker"
-                        formControlName="startDate"
+                      matInput
+                      [matDatepicker]="picker"
+                      formControlName="startDate"
                     />
                     <mat-datepicker-toggle
-                        matSuffix
-                        [for]="picker"
+                      matSuffix
+                      [for]="picker"
                     ></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                     <mat-error>{{ getFieldError('startDate') }}</mat-error>
-                    </mat-form-field>
+                  </mat-form-field>
                 </div>
                 <div class="col-md-6">
-                    <mat-form-field appearance="outline" class="w-100">
+                  <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Fecha de fin</mat-label>
                     <input
-                        matInput
-                        [matDatepicker]="picker1"
-                        formControlName="endDate"
+                      matInput
+                      [matDatepicker]="picker1"
+                      formControlName="endDate"
                     />
                     <mat-datepicker-toggle
-                        matSuffix
-                        [for]="picker1"
+                      matSuffix
+                      [for]="picker1"
                     ></mat-datepicker-toggle>
                     <mat-datepicker #picker1></mat-datepicker>
                     <mat-error>{{ getFieldError('endDate') }}</mat-error>
-                    </mat-form-field>
+                  </mat-form-field>
                 </div>
-                </div>
+              </div>
             </div>
 
             <!-- Botones de Acción -->
             <div class="row mt-4">
               <div class="col-12">
                 <div class="d-flex gap-2 justify-content-end">
-                  <button type="submit" mat-raised-button color="primary" class="action-btn_add">
-                        <mat-icon>save</mat-icon>
-                        Crear plan de venta
+                  <button
+                    type="submit"
+                    mat-raised-button
+                    color="primary"
+                    class="action-btn_add"
+                  >
+                    <mat-icon>save</mat-icon>
+                    Crear plan de venta
                   </button>
                 </div>
               </div>

@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -65,12 +70,22 @@ describe('SidebarComponent', () => {
       icon: 'home',
       path: '/dashboard/productos',
       children: [
-        { id: 'registro-ventas', label: 'Listar Productos', icon: '💰', path: '/registro/ventas' },
-        { id: 'registro-compras', label: 'Cargar Producto', icon: '🛒', path: '/registro/compras' },
+        {
+          id: 'registro-ventas',
+          label: 'Listar Productos',
+          icon: '💰',
+          path: '/registro/ventas',
+        },
+        {
+          id: 'registro-compras',
+          label: 'Cargar Producto',
+          icon: '🛒',
+          path: '/registro/compras',
+        },
       ],
       isExpanded: false,
     },
-    ...mockMenuItems.slice(1)
+    ...mockMenuItems.slice(1),
   ];
 
   beforeEach(async () => {
@@ -78,7 +93,14 @@ describe('SidebarComponent', () => {
     routerEvents$ = new Subject<any>();
 
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, RouterTestingModule.withRoutes([]), MatIconModule, MatListModule, MatExpansionModule, NoopAnimationsModule],
+      imports: [
+        SidebarComponent,
+        RouterTestingModule.withRoutes([]),
+        MatIconModule,
+        MatListModule,
+        MatExpansionModule,
+        NoopAnimationsModule,
+      ],
       providers: [{ provide: AuthService, useValue: authServiceSpy }],
     }).compileComponents();
 
@@ -86,8 +108,12 @@ describe('SidebarComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
 
-    spyOnProperty(router, 'events', 'get').and.returnValue(routerEvents$.asObservable());
-    urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue('/dashboard/productos');
+    spyOnProperty(router, 'events', 'get').and.returnValue(
+      routerEvents$.asObservable()
+    );
+    urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue(
+      '/dashboard/productos'
+    );
 
     fixture.detectChanges();
   });
@@ -117,7 +143,9 @@ describe('SidebarComponent', () => {
     });
 
     it('debería limpiar suscripción en ngOnDestroy', () => {
-      const subscriptionSpy = jasmine.createSpyObj('Subscription', ['unsubscribe']);
+      const subscriptionSpy = jasmine.createSpyObj('Subscription', [
+        'unsubscribe',
+      ]);
       component['routerSubscription'] = subscriptionSpy;
 
       component.ngOnDestroy();
@@ -135,7 +163,7 @@ describe('SidebarComponent', () => {
   describe('Estructura del menú', () => {
     it('debería tener la estructura correcta del menú', () => {
       const menuItems = component.menuItems();
-        
+
       expect(menuItems).toBeDefined(mockMenuItems);
     });
 
@@ -214,7 +242,9 @@ describe('SidebarComponent', () => {
 
         component['autoExpandMenus']();
 
-        const updatedItem = component.menuItems().find(item => item.id === parentItem.id);
+        const updatedItem = component
+          .menuItems()
+          .find(item => item.id === parentItem.id);
         expect(updatedItem?.isExpanded).toBeTrue();
       });
 
@@ -225,27 +255,29 @@ describe('SidebarComponent', () => {
 
         component['autoExpandMenus']();
 
-        const updatedItem = component.menuItems().find(item => item.id === parentItem.id);
+        const updatedItem = component
+          .menuItems()
+          .find(item => item.id === parentItem.id);
         expect(updatedItem?.isExpanded).toBeFalse();
       });
 
       // NUEVA PRUEBA: Items con children null o undefined
       it('debería manejar items con children null', () => {
-        const itemWithNullChildren = { 
-          ...mockMenuItemsWithChildren[0], 
-          children: null 
+        const itemWithNullChildren = {
+          ...mockMenuItemsWithChildren[0],
+          children: null,
         };
-        
+
         urlSpy.and.returnValue('/dashboard/productos');
         expect(component.isActive(itemWithNullChildren as any)).toBeTrue();
       });
 
       it('debería manejar items con children undefined', () => {
-        const itemWithUndefinedChildren = { 
-          ...mockMenuItemsWithChildren[0], 
-          children: undefined 
+        const itemWithUndefinedChildren = {
+          ...mockMenuItemsWithChildren[0],
+          children: undefined,
         };
-        
+
         urlSpy.and.returnValue('/dashboard/productos');
         expect(component.isActive(itemWithUndefinedChildren as any)).toBeTrue();
       });
@@ -259,7 +291,9 @@ describe('SidebarComponent', () => {
 
       component.toggleSubmenu(item);
 
-      const updatedItem = component.menuItems().find(menuItem => menuItem.id === item.id);
+      const updatedItem = component
+        .menuItems()
+        .find(menuItem => menuItem.id === item.id);
       expect(updatedItem?.isExpanded).toBe(!initialExpanded);
     });
 
@@ -271,7 +305,9 @@ describe('SidebarComponent', () => {
       component.toggleSubmenu(item);
       component.toggleSubmenu(item);
 
-      const updatedItem = component.menuItems().find(menuItem => menuItem.id === item.id);
+      const updatedItem = component
+        .menuItems()
+        .find(menuItem => menuItem.id === item.id);
       expect(updatedItem?.isExpanded).toBeTrue();
     });
 
@@ -282,7 +318,9 @@ describe('SidebarComponent', () => {
 
       component.toggleSubmenu(itemToToggle);
 
-      const updatedOtherItem = component.menuItems().find(item => item.id === otherItem.id);
+      const updatedOtherItem = component
+        .menuItems()
+        .find(item => item.id === otherItem.id);
       expect(updatedOtherItem?.isExpanded).toBe(otherItemInitialState);
     });
 
@@ -292,7 +330,7 @@ describe('SidebarComponent', () => {
         label: 'No existe',
         icon: 'icon',
         path: '/no-existe',
-        isExpanded: false
+        isExpanded: false,
       };
 
       const initialMenuItems = [...component.menuItems()];
@@ -301,14 +339,17 @@ describe('SidebarComponent', () => {
 
       expect(component.menuItems()).toEqual(initialMenuItems);
     });
-
   });
 
   describe('Eventos del router', () => {
     it('debería llamar autoExpandMenus en eventos NavigationEnd', fakeAsync(() => {
       spyOn(component as any, 'autoExpandMenus').and.callThrough();
 
-      const navigationEnd = new NavigationEnd(1, '/dashboard/registro', '/dashboard/productos');
+      const navigationEnd = new NavigationEnd(
+        1,
+        '/dashboard/registro',
+        '/dashboard/productos'
+      );
       routerEvents$.next(navigationEnd);
 
       tick();
@@ -339,7 +380,9 @@ describe('SidebarComponent', () => {
         tick();
       });
 
-      expect(component['autoExpandMenus']).toHaveBeenCalledTimes(navigationEvents.length);
+      expect(component['autoExpandMenus']).toHaveBeenCalledTimes(
+        navigationEvents.length
+      );
     }));
 
     it('debería crear suscripción al router en setupRouterListener', () => {
@@ -348,7 +391,6 @@ describe('SidebarComponent', () => {
       expect(() => component['setupRouterListener']()).not.toThrow();
       expect(component['routerSubscription']).toBeDefined();
     });
-    
   });
 
   describe('Manejo de errores del logo', () => {
@@ -358,11 +400,17 @@ describe('SidebarComponent', () => {
       component.onLogoError(new Event('error'));
 
       expect(component.logoError()).toBeTrue();
-      expect(consoleSpy).toHaveBeenCalledWith('Avatar no encontrado, usando placeholder');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Avatar no encontrado, usando placeholder'
+      );
     });
 
     it('debería manejar diferentes tipos de eventos de error', () => {
-      const events = [new Event('error'), new Event('load'), new Event('click')];
+      const events = [
+        new Event('error'),
+        new Event('load'),
+        new Event('click'),
+      ];
 
       events.forEach(event => {
         component.onLogoError(event);
@@ -418,7 +466,7 @@ describe('SidebarComponent', () => {
         urlSpy.and.returnValue(url);
         const item = component.menuItems()[0];
         const isActive = component.isActive(item);
-        
+
         const shouldBeActive = url.startsWith(item.path);
         expect(isActive).toBe(shouldBeActive);
       });
@@ -452,10 +500,10 @@ describe('SidebarComponent', () => {
           icon: 'test',
           path: '/test',
           children: [],
-          isExpanded: false
-        }
+          isExpanded: false,
+        },
       ];
-      
+
       component.menuItems.set(itemsWithEmptyChildren);
       component['autoExpandMenus']();
 
@@ -473,7 +521,7 @@ describe('SidebarComponent', () => {
 
     it('debería manejar router.url vacío en autoExpandMenus', () => {
       urlSpy.and.returnValue('');
-      
+
       expect(() => component['autoExpandMenus']()).not.toThrow();
     });
   });
@@ -488,11 +536,11 @@ describe('SidebarComponent', () => {
 
     it('debería filtrar solo eventos NavigationEnd', fakeAsync(() => {
       let receivedEvents = 0;
-      
+
       component['routerSubscription'] = router.events
         .pipe(filter(event => event instanceof NavigationEnd))
         .subscribe(() => receivedEvents++);
-      
+
       routerEvents$.next({ type: 'NavigationStart' });
       routerEvents$.next(new NavigationEnd(1, '/from', '/to'));
       routerEvents$.next({ type: 'NavigationCancel' });
@@ -506,9 +554,9 @@ describe('SidebarComponent', () => {
     // NUEVA PRUEBA: Verificar inmutabilidad en autoExpandMenus
     it('debería crear nueva referencia en autoExpandMenus', () => {
       const initialMenuItems = component.menuItems();
-      
+
       component['autoExpandMenus']();
-      
+
       const updatedMenuItems = component.menuItems();
       expect(updatedMenuItems).not.toBe(initialMenuItems);
     });
@@ -521,22 +569,25 @@ describe('SidebarComponent', () => {
 
     it('debería usar componentes de Angular Material correctamente', () => {
       fixture.detectChanges();
-      
-      const basicComponents = [
-        'mat-nav-list',
-        'mat-icon'
-      ];
+
+      const basicComponents = ['mat-nav-list', 'mat-icon'];
 
       basicComponents.forEach(selector => {
         const element = fixture.nativeElement.querySelector(selector);
-        expect(element).withContext(`Elemento ${selector} no encontrado`).toBeTruthy();
+        expect(element)
+          .withContext(`Elemento ${selector} no encontrado`)
+          .toBeTruthy();
       });
 
-      const listItems = fixture.nativeElement.querySelectorAll('a[mat-list-item]');
+      const listItems =
+        fixture.nativeElement.querySelectorAll('a[mat-list-item]');
       expect(listItems.length).toBeGreaterThan(0);
-      
-      const anyListItem = fixture.nativeElement.querySelector('[mat-list-item]');
-      expect(anyListItem).withContext('No se encontró ningún elemento con mat-list-item').toBeTruthy();
+
+      const anyListItem =
+        fixture.nativeElement.querySelector('[mat-list-item]');
+      expect(anyListItem)
+        .withContext('No se encontró ningún elemento con mat-list-item')
+        .toBeTruthy();
     });
 
     it('debería usar componentes de expansion panel cuando hay items con children', () => {
@@ -546,40 +597,48 @@ describe('SidebarComponent', () => {
       const expansionComponents = [
         'mat-expansion-panel',
         'mat-expansion-panel-header',
-        'mat-panel-title'
+        'mat-panel-title',
       ];
 
       expansionComponents.forEach(selector => {
         const element = fixture.nativeElement.querySelector(selector);
-        expect(element).withContext(`Elemento ${selector} no encontrado`).toBeTruthy();
+        expect(element)
+          .withContext(`Elemento ${selector} no encontrado`)
+          .toBeTruthy();
       });
     });
 
     it('debería mostrar correctamente los mat-icons', () => {
       fixture.detectChanges();
-      
+
       const matIcons = fixture.nativeElement.querySelectorAll('mat-icon');
       expect(matIcons.length).toBeGreaterThan(0);
-      
+
       matIcons.forEach((icon: Element) => {
         expect(icon.textContent).toBeTruthy();
       });
     });
 
     it('debería renderizar mat-list-items correctamente', () => {
-      const directListItems = fixture.nativeElement.querySelectorAll('mat-list-item');
-      const attributeListItems = fixture.nativeElement.querySelectorAll('[mat-list-item]');
-      const anchorListItems = fixture.nativeElement.querySelectorAll('a[mat-list-item]');
-      
-      const totalListItems = directListItems.length + attributeListItems.length + anchorListItems.length;
+      const directListItems =
+        fixture.nativeElement.querySelectorAll('mat-list-item');
+      const attributeListItems =
+        fixture.nativeElement.querySelectorAll('[mat-list-item]');
+      const anchorListItems =
+        fixture.nativeElement.querySelectorAll('a[mat-list-item]');
+
+      const totalListItems =
+        directListItems.length +
+        attributeListItems.length +
+        anchorListItems.length;
       expect(totalListItems).toBeGreaterThan(0);
-      
+
       expect(anchorListItems.length).toBe(6);
     });
 
     it('debería tener routerLinkActive configurado', () => {
       const navItems = fixture.nativeElement.querySelectorAll('.nav-item');
-  
+
       expect(navItems.length).toBeGreaterThan(0);
 
       navItems.forEach((navItem: Element) => {
@@ -670,11 +729,15 @@ describe('SidebarComponent', () => {
 
       // CORREGIR: En lugar de verificar routerLink, verificar ng-reflect-router-link
       it('debería tener routerLink configurado correctamente', () => {
-        const firstNavItem = compiled.querySelector('.nav-item') as HTMLAnchorElement;
-        
+        const firstNavItem = compiled.querySelector(
+          '.nav-item'
+        ) as HTMLAnchorElement;
+
         // Angular en testing renderiza routerLink como ng-reflect-router-link
-        const routerLinkValue = firstNavItem.getAttribute('ng-reflect-router-link');
-        
+        const routerLinkValue = firstNavItem.getAttribute(
+          'ng-reflect-router-link'
+        );
+
         // Si no está ng-reflect-router-link, verificar que al menos tiene el atributo routerLink
         if (routerLinkValue) {
           expect(routerLinkValue).toBe('/dashboard/productos');
@@ -688,10 +751,10 @@ describe('SidebarComponent', () => {
       it('debería navegar al hacer click en un item', async () => {
         const navigateSpy = spyOn(router, 'navigate');
         const firstNavItem = compiled.querySelector('.nav-item') as HTMLElement;
-        
+
         firstNavItem.click();
         fixture.detectChanges();
-        
+
         // Verificar que se intentó navegar (aunque el routerLink normalmente maneja esto automáticamente)
         // Esta prueba verifica que el click no produce errores
         expect(firstNavItem).toBeTruthy();
@@ -723,10 +786,14 @@ describe('SidebarComponent', () => {
       });
 
       it('debería bindear correctamente las propiedades de los children', () => {
-        const firstChild = compiled.querySelector('.submenu-item') as HTMLAnchorElement;
-        
+        const firstChild = compiled.querySelector(
+          '.submenu-item'
+        ) as HTMLAnchorElement;
+
         // Verificar ng-reflect-router-link para children también
-        const routerLinkValue = firstChild.getAttribute('ng-reflect-router-link');
+        const routerLinkValue = firstChild.getAttribute(
+          'ng-reflect-router-link'
+        );
         if (routerLinkValue) {
           expect(routerLinkValue).toBe('/registro/ventas');
         }
@@ -740,17 +807,21 @@ describe('SidebarComponent', () => {
 
       it('debería usar routerLinkActive en items hijos', () => {
         const firstChild = compiled.querySelector('.submenu-item');
-        expect(firstChild?.getAttribute('routerLinkActive')).toBe('active-link');
+        expect(firstChild?.getAttribute('routerLinkActive')).toBe(
+          'active-link'
+        );
       });
 
       // CORREGIR: Verificar expanded binding de manera diferente
       it('debería bindear la propiedad expanded del expansion panel', () => {
         const expansionPanel = compiled.querySelector('mat-expansion-panel');
-        const panelHeader = compiled.querySelector('mat-expansion-panel-header');
-        
+        const panelHeader = compiled.querySelector(
+          'mat-expansion-panel-header'
+        );
+
         expect(expansionPanel).toBeTruthy();
         expect(panelHeader).toBeTruthy();
-        
+
         // Verificar que el panel está colapsado inicialmente
         expect(expansionPanel?.classList.contains('mat-expanded')).toBeFalse();
       });
@@ -758,12 +829,14 @@ describe('SidebarComponent', () => {
       // NUEVA PRUEBA: Verificar toggle del expansion panel
       it('debería responder al toggle del expansion panel', () => {
         const expansionPanel = compiled.querySelector('mat-expansion-panel');
-        const panelHeader = compiled.querySelector('mat-expansion-panel-header') as HTMLElement;
-        
+        const panelHeader = compiled.querySelector(
+          'mat-expansion-panel-header'
+        ) as HTMLElement;
+
         // Simular click en el header
         panelHeader.click();
         fixture.detectChanges();
-        
+
         // Verificar que el componente reacciona al click
         expect(panelHeader).toBeTruthy();
       });
@@ -784,8 +857,10 @@ describe('SidebarComponent', () => {
       it('debería llamar logOut al hacer click', () => {
         spyOn(component, 'logOut');
         const logoutButtons = compiled.querySelectorAll('.nav-item');
-        const logoutButton = logoutButtons[logoutButtons.length - 1] as HTMLElement;
-        
+        const logoutButton = logoutButtons[
+          logoutButtons.length - 1
+        ] as HTMLElement;
+
         logoutButton.click();
 
         expect(component.logOut).toHaveBeenCalled();
@@ -796,10 +871,9 @@ describe('SidebarComponent', () => {
       it('debería tener routerLinkActive configurado en todos los items', () => {
         const navItems = compiled.querySelectorAll('.nav-item');
 
-        expect(navItems.length).toBe(6); 
+        expect(navItems.length).toBe(6);
 
         navItems.forEach((item: Element) => {
-
           expect(item.querySelector('mat-icon')).toBeTruthy();
           expect(item.querySelector('.nav-label')).toBeTruthy();
           expect(item.tagName.toLowerCase()).toBe('a');
@@ -819,10 +893,10 @@ describe('SidebarComponent', () => {
       // PRUEBA ALTERNATIVA: Verificar estructura de routerLink de manera diferente
       it('debería tener la estructura de navegación correcta', () => {
         const navItems = compiled.querySelectorAll('.nav-item');
-        
+
         // Verificar que tenemos el número correcto de items
         expect(navItems.length).toBe(6);
-        
+
         // Verificar que cada item tiene los elementos esperados
         navItems.forEach((item, index) => {
           expect(item.querySelector('mat-icon')).toBeTruthy();
@@ -831,5 +905,4 @@ describe('SidebarComponent', () => {
       });
     });
   });
-
 });

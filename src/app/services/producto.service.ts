@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { Product } from '../modules/producto/models/product';
 
-
 interface ProductsResponse {
   products: Product[];
 }
