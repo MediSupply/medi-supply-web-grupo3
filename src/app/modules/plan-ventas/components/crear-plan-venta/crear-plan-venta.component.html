@@ -1,0 +1,139 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <div class="row align-items-center">
+            <div class="col">
+              <h4 class="mb-0">
+                <i class="fas fa-pills me-2"></i>
+                {{ 'Crear plan de venta' }}
+              </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form
+            [formGroup]="planVentaForm"
+            (ngSubmit)="onSubmit()"
+            class="needs-validation"
+            novalidate
+          >
+            <div class="row mb-4">
+
+              <!-- Vendedor -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-100 custom-select-field"
+                >
+                  <mat-label>Vendedor</mat-label>
+                  <mat-select formControlName="seller">
+                    <mat-option value="">Selecciona una vendedor</mat-option>
+                    <mat-option
+                      *ngFor="let seller of sellers"
+                      [value]="seller.id"
+                    >
+                      {{ seller.nombre }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getFieldError('seller') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Producto -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field
+                  appearance="outline"
+                  class="w-100 custom-select-field"
+                >
+                  <mat-label>Producto</mat-label>
+                  <mat-select formControlName="product">
+                    <mat-option value="">Selecciona una producto</mat-option>
+                    <mat-option
+                      *ngFor="let product of products"
+                      [value]="product.id"
+                    >
+                      {{ product.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getFieldError('product') }}</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Meta -->
+              <div class="col-12 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Meta</mat-label>
+                  <input
+                    matInput
+                    formControlName="meta"
+                    placeholder="Descripción de la meta"
+                  />
+                  <mat-error>{{ getFieldError('meta') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="periodo-container">
+                <div class="periodo-header">
+                    <span class="periodo-title">Periodo</span>
+                </div>
+                <div class="row mb-4">
+                    
+                <!-- Periodo -->
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Fecha de inicio</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="startDate"
+                    />
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error>{{ getFieldError('startDate') }}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                    <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Fecha de fin</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="picker1"
+                        formControlName="endDate"
+                    />
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker1"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                    <mat-error>{{ getFieldError('endDate') }}</mat-error>
+                    </mat-form-field>
+                </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="d-flex gap-2 justify-content-end">
+                  <button type="submit" mat-raised-button color="primary" class="action-btn_add">
+                        <mat-icon>save</mat-icon>
+                        Crear plan de venta
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

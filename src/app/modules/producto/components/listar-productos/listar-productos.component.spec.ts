@@ -10,13 +10,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ProductoService } from '../../services/producto.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
 import { of, Subject, throwError } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ProductoService } from '../../../../services/producto.service';
 
 describe('ListarProductosComponent', () => {
   let component: ListarProductosComponent;

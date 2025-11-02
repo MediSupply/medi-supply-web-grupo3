@@ -47,10 +47,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
       label: 'Productos',
       icon: 'home',
       path: '/dashboard/productos',
-      /*children: [
-        { id: 'registro-ventas', label: 'Listar Productos', icon: '💰', path: '/registro/ventas' },
-        { id: 'registro-compras', label: 'Cargar Producto', icon: '🛒', path: '/registro/compras' },
-      ],*/
       isExpanded: false,
     },
     {
@@ -64,7 +60,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       id: 'plan-venta',
       label: 'Plan de Ventas',
       icon: 'folder',
-      path: '/plan',
+      path: '/dashboard/plan',
       isExpanded: false,
     },
     {

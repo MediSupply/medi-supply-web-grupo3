@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { ProductoService } from './producto.service';
 import { HttpClientTestingModule , HttpTestingController} from '@angular/common/http/testing';
-import { Product } from '../models/product';
+import { Product } from '../modules/producto/models/product';
 
 interface ProductsResponse {
   products: Product[];

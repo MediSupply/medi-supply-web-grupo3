@@ -39,7 +39,7 @@ describe('SidebarComponent', () => {
       id: 'plan-venta',
       label: 'Plan de Ventas',
       icon: 'folder',
-      path: '/plan',
+      path: '/dashboard/plan',
       isExpanded: false,
     },
     {
