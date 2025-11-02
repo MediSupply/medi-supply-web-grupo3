@@ -1,0 +1,70 @@
+<div class="reports-container">
+  <div class="header">
+    <h1>Reportes e Informes</h1>
+  </div>
+
+  <!-- Filtro de Vendedor -->
+  <form [formGroup]="vendedorForm" class="vendedor-filter">
+    <mat-form-field appearance="outline" class="vendedor-field">
+      <mat-label>Vendedor</mat-label>
+      <mat-select
+        formControlName="vendedor"
+        (selectionChange)="seleccionarVendedor()"
+      >
+        <mat-option *ngFor="let vendedor of vendedores" [value]="vendedor.id">
+          {{ vendedor.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="cargando">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando indicadores...</p>
+  </div>
+
+  <!-- Gráficas de Reportes -->
+  <div class="charts-container" *ngIf="mostrarIndicadores && indicadores">
+    <div class="charts-grid">
+      <!-- Gráfica de Líneas -->
+      <div class="chart-card">
+        <h3>Evolución de Ventas Totales</h3>
+        <canvas #lineChart></canvas>
+      </div>
+
+      <!-- Gráfica de Barras -->
+      <div class="chart-card">
+        <h3>Clientes Atendidos vs Nuevos Clientes</h3>
+        <canvas #barChart></canvas>
+      </div>
+
+      <!-- Gráfica Circular -->
+      <div class="chart-card pie-chart">
+        <h3>Distribución de Indicadores de Desempeño</h3>
+        <canvas #pieChart></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de Sin Datos -->
+  <div class="sin-datos" *ngIf="sinDatos">
+    <mat-icon>info</mat-icon>
+    <p>No se encontraron datos para los criterios seleccionados</p>
+  </div>
+
+  <!-- Mensaje de Error -->
+  <div class="error-carga" *ngIf="errorCarga">
+    <mat-icon>error</mat-icon>
+    <p>Ha ocurrido un error al cargar los reportes, intente nuevamente</p>
+  </div>
+
+  <!-- Mensaje de Selección Requerida -->
+  <div
+    class="seleccion-requerida"
+    *ngIf="!vendedorSeleccionado && !cargando && !sinDatos && !errorCarga"
+  >
+    <mat-icon>person_search</mat-icon>
+    <p>Debe seleccionar un vendedor para visualizar su información.</p>
+  </div>
+</div>

@@ -41,17 +41,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private routerSubscription!: Subscription;
   logoError = signal(false);
-  activeItemId = signal<string | null>(null);
   menuItems = signal<MenuItem[]>([
     {
       id: 'producto',
       label: 'Productos',
       icon: 'home',
       path: '/dashboard/productos',
-      /*children: [
-        { id: 'registro-ventas', label: 'Listar Productos', icon: '💰', path: '/registro/ventas' },
-        { id: 'registro-compras', label: 'Cargar Producto', icon: '🛒', path: '/registro/compras' },
-      ],*/
       isExpanded: false,
     },
     {
@@ -65,14 +60,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
       id: 'plan-venta',
       label: 'Plan de Ventas',
       icon: 'folder',
-      path: '/plan',
+      path: '/dashboard/plan',
       isExpanded: false,
     },
     {
       id: 'reportes',
       label: 'Reportes',
       icon: 'insert_drive_file',
-      path: '/reporte',
+      path: '/dashboard/reportes',
       isExpanded: false,
     },
     {
@@ -103,37 +98,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateActiveItem(url: string): void {
-    // Buscar el item que coincide con la URL actual
-    const allItems = this.getAllMenuItems();
-    const activeItem = allItems.find(
-      item => url === item.path || url.startsWith(item.path + '/')
-    );
-
-    if (activeItem) {
-      this.activeItemId.set(activeItem.id);
-    } else {
-      this.activeItemId.set(null);
-    }
-  }
-
-  private getAllMenuItems(): MenuItem[] {
-    const allItems: MenuItem[] = [];
-
-    this.menuItems().forEach(item => {
-      allItems.push(item);
-      if (item.children) {
-        allItems.push(...item.children);
-      }
-    });
-
-    return allItems;
-  }
-
-  isItemActive(item: MenuItem): boolean {
-    return this.activeItemId() === item.id;
-  }
-
   toggleSubmenu(item: MenuItem): void {
     this.menuItems.update(items =>
       items.map(menuItem =>
@@ -152,19 +116,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     return currentUrl.startsWith(item.path);
-  }
-
-  setActiveItem(item: MenuItem): void {
-    this.activeItemId.set(item.id);
-
-    this.menuItems.update(items =>
-      items.map(menuItem => {
-        if (menuItem.id !== item.id && menuItem.children) {
-          return { ...menuItem, isExpanded: false };
-        }
-        return menuItem;
-      })
-    );
   }
 
   private autoExpandMenus(): void {

@@ -172,7 +172,6 @@ describe('LoginComponent', () => {
       const form = { invalid: false } as any;
       const error = { status: 500 };
       authService.login.and.returnValue(throwError(() => error));
-
       component.login(form);
 
       expect(component.mensaje).toBe('Error al iniciar sesion');
