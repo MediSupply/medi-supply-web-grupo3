@@ -6,6 +6,7 @@ import { DashboardRegistroComponent } from './modules/registro/componentes/dashb
 import { RegistroProveedorComponent } from './modules/registro/componentes/registro-proveedor/registro-proveedor.component';
 import { RegistroVendedorComponent } from './modules/registro/componentes/registro-vendedor/registro-vendedor.component';
 import { ReportesComponent } from './modules/reportes/reportes.component';
+import { RutasComponent } from './modules/rutas/rutas.component';
 
 export const routes: Routes = [
   // { path: '**', redirectTo: 'login', pathMatch: 'full' },
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'registro-proveedor', component: RegistroProveedorComponent },
       { path: 'registro-vendedor', component: RegistroVendedorComponent },
       { path: 'reportes', component: ReportesComponent },
+      { path: 'rutas', component: RutasComponent },
     ],
   },
 ];

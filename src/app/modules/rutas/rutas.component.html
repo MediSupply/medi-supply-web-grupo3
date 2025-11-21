@@ -1,0 +1,139 @@
+<div class="rutas-container">
+  <div class="header">
+    <h1>Generar ruta de entrega</h1>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="pedidosPaginados" class="pedidos-table">
+      <!-- Columna de selección e ID PEDIDO combinadas -->
+      <ng-container matColumnDef="seleccionIdPedido">
+        <th mat-header-cell *matHeaderCellDef>ID PEDIDO</th>
+        <td mat-cell *matCellDef="let pedido" class="seleccion-id-cell">
+          <mat-checkbox
+            [checked]="pedido.seleccionado"
+            (change)="toggleSeleccion(pedido)"
+            class="checkbox-inline"
+          ></mat-checkbox>
+          <span class="id-pedido-text">{{ pedido.id }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Columna CLIENTE -->
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef>CLIENTE</th>
+        <td mat-cell *matCellDef="let pedido">{{ pedido.cliente }}</td>
+      </ng-container>
+
+      <!-- Columna DIRECCIÓN DE ENTREGA -->
+      <ng-container matColumnDef="direccionEntrega">
+        <th mat-header-cell *matHeaderCellDef>DIRECCIÓN DE ENTREGA</th>
+        <td mat-cell *matCellDef="let pedido">
+          {{ pedido.direccionEntrega }}
+        </td>
+      </ng-container>
+
+      <!-- Columna OBSERVACIONES -->
+      <ng-container matColumnDef="observaciones">
+        <th mat-header-cell *matHeaderCellDef>OBSERVACIONES</th>
+        <td mat-cell *matCellDef="let pedido">{{ pedido.observaciones }}</td>
+      </ng-container>
+
+      <!-- Columna ESTADO -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>ESTADO</th>
+        <td mat-cell *matCellDef="let pedido">{{ pedido.estado }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Paginación personalizada -->
+    <div class="custom-paginator">
+      <button
+        mat-icon-button
+        class="paginator-button"
+        [disabled]="pageIndex === 0"
+        (click)="paginaAnterior()"
+        [attr.aria-disabled]="pageIndex === 0"
+        aria-label="Página anterior"
+      >
+        <mat-icon>keyboard_double_arrow_left</mat-icon>
+      </button>
+      <span class="page-indicator">{{ pageIndex + 1 }} de {{ totalPaginas() }}</span>
+      <button
+        mat-icon-button
+        class="paginator-button"
+        [disabled]="pageIndex === totalPaginas() - 1"
+        (click)="paginaSiguiente()"
+        aria-label="Página siguiente"
+      >
+        <mat-icon>keyboard_double_arrow_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Botón de acción -->
+  <div class="action-button-container">
+    <button
+      mat-raised-button
+      class="generar-ruta-btn"
+      (click)="generarRuta()"
+      [disabled]="generandoRuta"
+    >
+      <mat-icon>description</mat-icon>
+      Generar ruta de entrega
+    </button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div class="loading-overlay" *ngIf="generandoRuta">
+    <div class="loading-content">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Calculando ruta optimizada...</p>
+    </div>
+  </div>
+
+  <!-- Ruta generada -->
+  <div class="ruta-container" *ngIf="mostrandoRuta && rutaGenerada">
+    <mat-card class="ruta-card">
+      <mat-card-header>
+        <mat-card-title>Ruta de Entrega Optimizada</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="ruta-info">
+          <div class="info-item">
+            <span class="info-label">Distancia Total:</span>
+            <span class="info-value">{{ rutaGenerada.distanciaTotal }} km</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tiempo Estimado:</span>
+            <span class="info-value">{{ rutaGenerada.tiempoEstimado }} minutos</span>
+          </div>
+        </div>
+        <div class="ruta-pedidos">
+          <h3>Secuencia de Entregas:</h3>
+          <ol class="pedidos-lista">
+            <li *ngFor="let pedido of rutaGenerada.pedidos; let i = index" class="pedido-item">
+              <div class="pedido-info">
+                <span class="pedido-numero">{{ i + 1 }}.</span>
+                <div class="pedido-details">
+                  <span class="pedido-id">ID: {{ pedido.id }}</span>
+                  <span class="pedido-cliente">{{ pedido.cliente }}</span>
+                  <span class="pedido-direccion">{{ pedido.direccionEntrega }}</span>
+                  <span class="pedido-observaciones" *ngIf="pedido.observaciones !== 'No aplica'">
+                    {{ pedido.observaciones }}
+                  </span>
+                </div>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="cerrarRuta()">Cerrar</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
+
