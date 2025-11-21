@@ -1,6 +1,7 @@
 :host ::ng-deep {
   .mat-mdc-form-field {
     width: 100%;
+    margin-bottom: 12px !important;
 
     .mat-mdc-text-field-wrapper {
       height: 56px !important;
@@ -135,4 +136,29 @@
   white-space: nowrap;
   padding: 1rem 20px;
   height: 48px;
+}
+
+.proveedor-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container {
+  padding: 20px;
+}
+
+// Estilos para los snackbars
+::ng-deep .success-snackbar {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+::ng-deep .warning-snackbar {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
 }
