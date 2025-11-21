@@ -1,0 +1,439 @@
+:host::ng-deep {
+  .rutas-container {
+    padding: 24px;
+    width: 100%;
+
+    .header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+
+      h1 {
+        color: #000000;
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.75rem;
+      }
+    }
+
+    .table-wrapper {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      .pedidos-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        th {
+          background-color: #69a7ff;
+          font-weight: 400;
+          color: #ffffff;
+          padding: 10px 16px;
+          text-align: center;
+          border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+          border-right: 3px solid rgba(255, 255, 255, 0.3);
+          position: relative;
+          letter-spacing: 1px;
+
+          &:first-child {
+            border-top-left-radius: 8px;
+          }
+
+          &:last-child {
+            border-top-right-radius: 8px;
+            border-right: none;
+          }
+        }
+
+        td {
+          padding: 10px 16px;
+          border-bottom: 3px solid #e0e0e0;
+          border-right: 3px solid #e0e0e0;
+          color: #333333;
+          background-color: #ffffff;
+
+          &:last-child {
+            border-right: none;
+          }
+        }
+
+        // Estilos para la columna combinada de selección e ID
+        .seleccion-id-cell {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          justify-content: flex-start;
+          padding: 10px 12px !important;
+
+          .checkbox-inline {
+            flex-shrink: 0;
+          }
+
+          .id-pedido-text {
+            flex-shrink: 0;
+            text-align: left;
+          }
+        }
+
+
+        tr:hover td {
+          background-color: #f5f8ff;
+        }
+
+        tr:last-child td {
+          border-bottom: none;
+        }
+      }
+
+      // Estilos para checkboxes azules: fondo azul siempre, cuadrado y check blancos
+      .mat-mdc-checkbox {
+        --mdc-checkbox-selected-checkmark-color: #ffffff;
+        --mdc-checkbox-selected-focus-icon-color: #69a7ff;
+        --mdc-checkbox-selected-hover-icon-color: #69a7ff;
+        --mdc-checkbox-selected-icon-color: #69a7ff;
+        --mdc-checkbox-selected-pressed-icon-color: #69a7ff;
+        --mdc-checkbox-unselected-focus-icon-color: #69a7ff;
+        --mdc-checkbox-unselected-hover-icon-color: #69a7ff;
+        --mdc-checkbox-unselected-icon-color: #69a7ff;
+        --mdc-checkbox-unselected-pressed-icon-color: #69a7ff;
+
+        // padding: 2px;
+        border-radius: 6px;
+        display: inline-block;
+        transition: all 0.2s ease;
+        background-color: #69a7ff !important;
+        border-radius: 34%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        .mdc-checkbox {
+          width: 18px;
+          height: 18px;
+
+          .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+          .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+            background-color: transparent !important;
+            border-color: #ffffff !important;
+          }
+
+          .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate='true']) ~ .mdc-checkbox__background {
+            border-color: #ffffff !important;
+            background-color: transparent !important;
+          }
+
+          .mdc-checkbox__native-control:focus:enabled ~ .mdc-checkbox__ripple {
+            background-color: rgba(255, 255, 255, 0.12) !important;
+          }
+
+          .mdc-checkbox__background {
+            border-color: #ffffff !important;
+            border-width: 2px !important;
+            border-radius: 2px !important;
+            width: 18px !important;
+            height: 18px !important;
+            background-color: transparent !important;
+          }
+
+          // Borde blanco y fondo transparente cuando está seleccionado
+          .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+            background-color: transparent !important;
+            border-color: #ffffff !important;
+          }
+
+          // Borde blanco y fondo transparente cuando no está seleccionado
+          .mdc-checkbox__native-control:enabled:not(:checked) ~ .mdc-checkbox__background {
+            background-color: transparent !important;
+            border-color: #ffffff !important;
+          }
+
+          // Checkmark blanco - se verá sobre el fondo azul cuando está seleccionado
+          .mdc-checkbox__checkmark {
+            color: #ffffff !important;
+          }
+
+          .mdc-checkbox__checkmark-path {
+            stroke: #ffffff !important;
+            stroke-width: 2.5px !important;
+          }
+
+          .mdc-checkbox__checkmark-svg {
+            fill: #ffffff !important;
+          }
+        }
+
+        // Mantener fondo azul siempre
+        &.mat-mdc-checkbox-checked,
+        &:not(.mat-mdc-checkbox-checked) {
+          background-color: #69a7ff !important;
+        }
+
+        &:hover {
+          background-color: #5a96e8 !important;
+        }
+      }
+
+      .custom-paginator {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 16px;
+        border-top: 1px solid #e0e0e0;
+        background-color: #ffffff;
+
+        .paginator-button {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background-color: #ffffff;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+
+          mat-icon {
+            color: #69a7ff;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+
+          &:hover:not(:disabled) {
+            background-color: #f5f8ff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+          }
+
+          &:disabled {
+            // opacity: 0.4;
+            cursor: not-allowed;
+            // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+            mat-icon {
+              color: #cccccc;
+            }
+          }
+        }
+
+        .page-indicator {
+          font-size: 14px;
+          color: #333333;
+          font-weight: 500;
+          min-width: 60px;
+          text-align: center;
+        }
+      }
+    }
+
+    .action-button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
+
+      .generar-ruta-btn {
+        background-color: #69a7ff !important;
+        color: white !important;
+        border-radius: 6px !important;
+        padding: 12px 32px;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 4px rgba(105, 167, 255, 0.3);
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        &:hover:not(:disabled) {
+          background-color: #5a96e8 !important;
+          box-shadow: 0 4px 8px rgba(105, 167, 255, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+
+      .loading-content {
+        background: white;
+        padding: 32px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+
+        p {
+          margin: 0;
+          color: #333;
+          font-size: 16px;
+        }
+      }
+    }
+
+    .ruta-container {
+      margin-top: 24px;
+
+      .ruta-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+
+        mat-card-header {
+          background-color: #69a7ff;
+          color: white;
+          padding: 16px;
+          border-radius: 8px 8px 0 0;
+
+          mat-card-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+          }
+        }
+
+        mat-card-content {
+          padding: 24px;
+
+          .ruta-info {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+
+            .info-item {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+
+              .info-label {
+                font-size: 14px;
+                color: #666;
+                font-weight: 500;
+              }
+
+              .info-value {
+                font-size: 20px;
+                color: #333;
+                font-weight: 600;
+              }
+            }
+          }
+
+          .ruta-pedidos {
+            h3 {
+              margin: 0 0 16px 0;
+              color: #333;
+              font-size: 1.2rem;
+            }
+
+            .pedidos-lista {
+              margin: 0;
+              padding-left: 20px;
+
+              .pedido-item {
+                margin-bottom: 16px;
+                padding: 12px;
+                background-color: #f9f9f9;
+                border-radius: 6px;
+                border-left: 3px solid #69a7ff;
+
+                .pedido-info {
+                  display: flex;
+                  gap: 12px;
+                  align-items: flex-start;
+
+                  .pedido-numero {
+                    font-weight: 600;
+                    color: #69a7ff;
+                    font-size: 16px;
+                    min-width: 24px;
+                  }
+
+                  .pedido-details {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    flex: 1;
+
+                    .pedido-id {
+                      font-weight: 600;
+                      color: #333;
+                      font-size: 14px;
+                    }
+
+                    .pedido-cliente {
+                      color: #666;
+                      font-size: 14px;
+                    }
+
+                    .pedido-direccion {
+                      color: #666;
+                      font-size: 13px;
+                    }
+
+                    .pedido-observaciones {
+                      color: #69a7ff;
+                      font-size: 12px;
+                      font-style: italic;
+                      margin-top: 4px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        mat-card-actions {
+          padding: 16px 24px;
+          display: flex;
+          justify-content: flex-end;
+
+          button {
+            color: #69a7ff;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos globales para snackbars
+::ng-deep .success-snackbar {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+::ng-deep .warning-snackbar {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+

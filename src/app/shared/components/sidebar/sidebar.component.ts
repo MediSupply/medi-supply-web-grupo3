@@ -76,9 +76,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     },
     {
       id: 'rutas',
-      label: 'Rutas',
-      icon: 'add_circle_outline',
-      path: '/rutas',
+      label: 'Ruta de entrega',
+      icon: 'local_shipping',
+      path: '/dashboard/rutas',
       isExpanded: false,
     },
   ]);
