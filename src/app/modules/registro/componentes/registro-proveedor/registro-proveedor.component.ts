@@ -14,7 +14,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ProveedoresService } from '../../../../services/proveedores.service';
+import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
 
 @Component({
   selector: 'app-registro-proveedor',
@@ -27,6 +30,8 @@ import { Router } from '@angular/router';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatSnackBarModule,
+    LoaderComponent,
   ],
   templateUrl: './registro-proveedor.component.html',
   styleUrl: './registro-proveedor.component.scss',
@@ -34,6 +39,7 @@ import { Router } from '@angular/router';
 export class RegistroProveedorComponent {
   proveedorForm: FormGroup;
   hidePassword = true;
+  cargando = false;
   paises = [
     { id: 0, value: 'Colombia' },
     { id: 1, value: 'Chile' },
@@ -41,16 +47,18 @@ export class RegistroProveedorComponent {
   ];
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private proveedoresService: ProveedoresService,
+    private snackBar: MatSnackBar
   ) {
     this.proveedorForm = this.createForm();
   }
 
   private createForm(): FormGroup {
     return this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(5)]],
+      nombre: ['Proveedor Ejemplo S.A.', Validators.required],
       nit: [
-        '',
+        '123456789',
         [
           Validators.required,
           Validators.min(0),
@@ -58,20 +66,22 @@ export class RegistroProveedorComponent {
           this.positiveNumberValidator,
         ],
       ],
-      pais: ['', Validators.required],
-      direccion: ['', [Validators.required, Validators.minLength(10)]],
+      pais: [0, Validators.required], // Colombia
+      direccion: ['Calle 123 #45-67', Validators.required],
       telefono: [
-        '',
+        '6012345678',
         [
           Validators.required,
           Validators.minLength(7),
           Validators.maxLength(10),
-          Validators.min(0),
-          this.positiveNumberValidator,
+          this.numericOnlyValidator,
         ],
       ],
-      correo: ['', [Validators.required, Validators.email]],
-      contrasena: ['', [Validators.required, Validators.minLength(6)]],
+      correo: [
+        'contacto@proveedor.com',
+        [Validators.required, Validators.email],
+      ],
+      contrasena: ['123', Validators.required],
     });
   }
 
@@ -83,22 +93,33 @@ export class RegistroProveedorComponent {
     return numValue >= 0 ? null : { positiveNumber: true };
   }
 
+  private numericOnlyValidator(control: AbstractControl) {
+    const value = control.value;
+    if (value === null || value === '') return null;
+
+    // Solo permite números
+    const numericPattern = /^\d+$/;
+    return numericPattern.test(value) ? null : { numericOnly: true };
+  }
+
   getFieldError(fieldName: string): string {
     const field = this.proveedorForm.get(fieldName);
 
     if (field?.errors && field.touched) {
       if (field.errors['required']) return 'Este campo es requerido';
+      if (field.errors['email'])
+        return 'Formato de correo electrónico inválido';
       if (field.errors['minlength'])
-        return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
+        return `Mínimo ${field.errors['minlength'].requiredLength} dígitos`;
       if (field.errors['maxlength'])
-        return `Máximo ${field.errors['maxlength'].requiredLength} caracteres`;
+        return `Máximo ${field.errors['maxlength'].requiredLength} dígitos`;
       if (field.errors['min'])
         return `El valor mínimo es ${field.errors['min'].min}`;
       if (field.errors['max'])
         return `El valor máximo es ${field.errors['max'].max}`;
-      if (field.errors['pattern']) return 'Formato inválido';
+      if (field.errors['numericOnly'])
+        return 'El teléfono solo debe contener números';
       if (field.errors['positiveNumber']) return 'Debe ser un número positivo';
-      if (field.errors['pastDate']) return 'La fecha debe ser futura';
     }
 
     return '';
@@ -106,16 +127,87 @@ export class RegistroProveedorComponent {
 
   onSubmit(): void {
     if (this.proveedorForm.valid) {
-      const formData: any = this.proveedorForm.value;
-      console.log('Datos del proveedor:', formData);
+      const formData = this.proveedorForm.value;
 
-      // Aquí puedes agregar la lógica para enviar los datos al servidor
-      // Ejemplo: this.proveedorService.crearProveedor(formData).subscribe(...)
+      // Mapear el ID del país al nombre en minúsculas
+      const paisSeleccionado = this.paises.find(p => p.id === formData.pais);
+      const nombrePais = paisSeleccionado
+        ? paisSeleccionado.value.toLowerCase()
+        : '';
 
-      alert('Proveedor registrado exitosamente');
-      this.proveedorForm.reset();
+      // Preparar los datos según el formato esperado por el endpoint
+      const proveedorData = {
+        nit: Number(formData.nit),
+        nombre: formData.nombre,
+        pais: nombrePais,
+        direccion: formData.direccion,
+        telefono: Number(formData.telefono),
+        email: formData.correo,
+      };
+
+      console.log('Enviando datos del proveedor:', proveedorData);
+
+      // Activar loader
+      this.cargando = true;
+
+      // Enviar los datos al servidor
+      this.proveedoresService.registrarProveedor(proveedorData).subscribe({
+        next: (response: any) => {
+          console.log('Proveedor registrado exitosamente:', response);
+          this.cargando = false;
+
+          this.snackBar.open('Proveedor registrado exitosamente.', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+          this.proveedorForm.reset();
+          this.router.navigate(['/dashboard/registro']);
+        },
+        error: (error: any) => {
+          console.error('Error al registrar proveedor:', error);
+          this.cargando = false;
+
+          // Manejar el formato de error del backend: { error: "...", success: false }
+          let mensajeError =
+            error.error?.error || error.error?.message || error.message || '';
+
+          // Verificar si el error es relacionado con NIT duplicado
+          if (
+            mensajeError.toLowerCase().includes('nit') ||
+            mensajeError.toLowerCase().includes('ya existe')
+          ) {
+            mensajeError = 'El NIT ya está registrado para otro proveedor';
+          } else if (!mensajeError) {
+            // Si no hay mensaje específico, es un error técnico
+            mensajeError = 'Ha ocurrido un error, intente nuevamente.';
+          }
+
+          this.snackBar.open(mensajeError, 'Cerrar', {
+            duration: 4000,
+            panelClass: ['error-snackbar'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+        },
+      });
     } else {
       this.markFormGroupTouched(this.proveedorForm);
+      this.snackBar.open('Todos los campos son obligatorios.', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['warning-snackbar'],
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
+      });
+    }
+  }
+
+  onTelefonoKeyPress(event: KeyboardEvent): void {
+    // Solo permitir números
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
     }
   }
 

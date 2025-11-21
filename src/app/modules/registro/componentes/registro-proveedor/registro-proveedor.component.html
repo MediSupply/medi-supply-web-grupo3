@@ -1,6 +1,9 @@
 <div class="form-container">
   <h2>Registro de Proveedor</h2>
 
+  <!-- Loader -->
+  <app-loader [show]="cargando" message="Registrando proveedor..."></app-loader>
+
   <form
     [formGroup]="proveedorForm"
     (ngSubmit)="onSubmit()"
@@ -54,8 +57,9 @@
       <input
         matInput
         formControlName="telefono"
-        placeholder="Ingrese el teléfono"
+        placeholder="Ingrese el teléfono (solo números)"
         type="tel"
+        (keypress)="onTelefonoKeyPress($event)"
       />
       <mat-error>{{ getFieldError('telefono') }}</mat-error>
     </mat-form-field>
