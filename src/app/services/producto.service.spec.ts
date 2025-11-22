@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { ProductoService } from './producto.service';
 import {
@@ -18,33 +18,50 @@ describe('ProductoService', () => {
   const mockProducts: Product[] = [
     {
       id: 2,
-      name: 'Ibuprofeno 400mg',
-      description:
+      nombre: 'Ibuprofeno 400mg',
+      descripcion:
         'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
-      price: 12000,
-      amount: 85,
-      category: '2',
-      conditions: 'Proteger de la luz. Mantener en envase original',
-      expirationDate: '2026-03-20',
-      batch: 'LOT-IB202401',
-      provider: '2',
-      deliveryTime: '48-72 horas',
+      valor_unitario: 12000,
+      cantidad_disponible: 85,
+      categoria: '2',
+      condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+      fecha_vencimiento: '2026-03-20',
+      lote: 'LOT-IB202401',
+      id_proveedor: '2',
+      tiempo_estimado_entrega: '48-72 horas',
     },
     {
       id: 3,
-      name: 'Amoxicilina 500mg',
-      description:
+      nombre: 'Amoxicilina 500mg',
+      descripcion:
         'Antibiótico de amplio espectro para infecciones bacterianas',
-      price: 18500,
-      amount: 60,
-      category: '3',
-      conditions: 'Refrigerar entre 2°C y 8°C después de reconstituir',
-      expirationDate: '2024-11-30',
-      batch: 'LOT-AM202402',
-      provider: '3',
-      deliveryTime: '72 horas',
+      valor_unitario: 18500,
+      cantidad_disponible: 60,
+      categoria: '3',
+      condiciones_almacenamiento: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      fecha_vencimiento: '2024-11-30',
+      lote: 'LOT-AM202402',
+      id_proveedor: '3',
+      tiempo_estimado_entrega: '72 horas',
     },
   ];
+  const newProduct: Omit<Product, 'id'> = {
+    nombre: 'Ibuprofeno 400mg',
+    descripcion:
+      'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
+    valor_unitario: 12000,
+    cantidad_disponible: 85,
+    categoria: '2',
+    condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+    fecha_vencimiento: '2026-03-20',
+    lote: 'LOT-IB202401',
+    id_proveedor: '2',
+    tiempo_estimado_entrega: '48-72 horas',
+  };
+  const mockCreatedProduct: Product = {
+    id: 4,
+    ...newProduct
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,67 +75,109 @@ describe('ProductoService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('debería manejar errores al cargar productos', () => {
+  it('debería manejar la carga exitosa de productos', (done) => {
     const mockResponse: ProductsResponse = {
       products: mockProducts,
     };
 
-    service.loadProducts();
+    service.getAllProducts().subscribe({
+      next: (result) => {
+        expect(service.products()).toEqual(mockProducts);
+        expect(service.loading()).toBeFalse();
+        expect(service.error()).toBeNull();
+        done();
+      },
+      error: done.fail
+    });
 
-    expect(service.loading()).toBeTrue();
-
-    const req = httpMock.expectOne('assets/data/products.json');
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
-
-    expect(service.products()).toEqual(mockProducts);
     expect(service.loading()).toBeFalse();
-    expect(service.error()).toBeNull();
+
+    const req = httpMock.expectOne('http://localhost:5001/productos');
+    expect(req.request.method).toBe('GET');
+    
+    expect(req.request.headers.get('Authorization')).toContain('Bearer');
+    
+    req.flush(mockResponse);
   });
 
-  it('debería realizar una petición GET a /assets/data/products.json', () => {
+  it('debería realizar una petición GET a http://localhost:5001/productos', () => {
     const mockResponse: ProductsResponse = {
       products: mockProducts,
     };
 
     service.getAllProducts().subscribe(products => {
       expect(products).toBeTruthy();
-      expect(products).toEqual(mockProducts);
+      expect(products).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne('assets/data/products.json');
+    const req = httpMock.expectOne('http://localhost:5001/productos');
     expect(req.request.method).toBe('GET');
 
-    // Simula la respuesta del servidor
     req.flush(mockResponse);
   });
 
-  it('debería crear un nuevo producto con ID autoincremental', () => {
-    const newProductData: Omit<Product, 'id'> = {
-      name: 'Ibuprofeno 400mg',
-      description:
-        'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
-      price: 12000,
-      amount: 85,
-      category: '2',
-      conditions: 'Proteger de la luz. Mantener en envase original',
-      expirationDate: '2026-03-20',
-      batch: 'LOT-IB202401',
-      provider: '2',
-      deliveryTime: '48-72 horas',
-    };
+   it('debería crear un nuevo producto exitosamente', (done) => {
+    service.createProduct(newProduct).subscribe({
+      next: (response) => {
+        expect(service.loading()).toBeFalse();
+        expect(service.error()).toBeNull();
+        done();
+      },
+      error: done.fail
+    });
 
-    // Establecer productos existentes
-    service['productsSignal'].set(mockProducts);
+    const req = httpMock.expectOne('http://localhost:5001/productos/crear');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(newProduct);
+    expect(req.request.headers.get('Authorization')).toContain('Bearer');
+    expect(req.request.headers.get('Content-Type')).toBe('application/json');
+    
+    req.flush(mockCreatedProduct);
+  });
 
-    service.createProduct(newProductData);
+  it('debería manejar errores al cargar productos', (done) => {
+    service.getAllProducts().subscribe({
+      next: () => {
+        done.fail('No debería tener éxito cuando hay error');
+      },
+      error: (error) => {
+        expect(service.loading()).toBeFalse();
+        expect(service.error()).toContain('Error cargando productos');
+        expect(service.products()).toEqual([]);
+        done();
+      }
+    });
 
-    const expectedProduct: Product = {
-      id: 4, // Math.max(1, 3) + 1 = 4
-      ...newProductData,
-    };
+    expect(service.loading()).toBeFalse();
 
-    expect(service.products()).toContain(expectedProduct);
-    expect(service.products().length).toBe(3);
+    const req = httpMock.expectOne('http://localhost:5001/productos');
+    expect(req.request.method).toBe('GET');
+    
+    req.flush('Error del servidor', { 
+      status: 500, 
+      statusText: 'Internal Server Error' 
+    });
+  });
+
+  it('debería manejar errores al crear producto', (done) => {
+    service.createProduct(newProduct).subscribe({
+      next: () => {
+        done.fail('No debería tener éxito cuando hay error');
+      },
+      error: (error) => {
+        expect(service.loading()).toBeFalse();
+        expect(service.error()).toContain('Error cargando productos');
+        done();
+      }
+    });
+
+    const req = httpMock.expectOne('http://localhost:5001/productos/crear');
+    expect(req.request.method).toBe('POST');
+    
+    // Simular error
+    req.flush('Error del servidor', { 
+      status: 400, 
+      statusText: 'Bad Request' 
+    });
   });
 });

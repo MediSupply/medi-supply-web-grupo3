@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { Product } from '../modules/producto/models/product';
 import { environment } from '../../environments/environment';
 
@@ -30,22 +30,20 @@ export class ProductoService {
   getAllProducts(): Observable<any>  {
     const token = localStorage.getItem('jwt_token');
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
     return this.http
-      .get(`${this.dataUrl}/productos`, {headers})
+      .get<ProductsResponse>(`${this.dataUrl}/productos`, {headers})
       .pipe(
-        tap({
-          next: products => {
-            //this.productsSignal.set(products);
-            this.loadingSignal.set(false);
-          },
-          error: error => {
-            this.errorSignal.set('Error cargando productos: ' + error.message);
-            this.loadingSignal.set(false);
-            this.productsSignal.set([]);
-          },
+        tap(response => {
+          this.productsSignal.set(response.products);
+          this.loadingSignal.set(false); 
+        }),
+        catchError(error => {
+          this.errorSignal.set('Error cargando productos: ' + error.message);
+          this.loadingSignal.set(false);
+          this.productsSignal.set([]);
+          return throwError(() => error);
         })
       )
   }
@@ -53,23 +51,19 @@ export class ProductoService {
   createProduct(newProduct: Omit<Product, 'id'>): Observable<any> {
     const token = localStorage.getItem('jwt_token');
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-    console.log(newProduct)
     return this.http
-      .post(`${this.dataUrl}/productos/crear`, newProduct, {headers: headers}, )
+      .post(`${this.dataUrl}/productos`, newProduct, {headers}, )
       .pipe(
-        tap({
-          next: products => {
-            //this.productsSignal.set(products);
-            this.loadingSignal.set(false);
-          },
-          error: error => {
-            this.errorSignal.set('Error cargando productos: ' + error.message);
-            this.loadingSignal.set(false);
-            this.productsSignal.set([]);
-          },
+        tap(response => {
+          this.loadingSignal.set(false); 
+        }),
+        catchError(error => {
+          this.errorSignal.set('Error cargando productos: ' + error.message);
+          this.loadingSignal.set(false);
+          this.productsSignal.set([]);
+          return throwError(() => error);
         })
       )
   }

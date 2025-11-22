@@ -133,7 +133,6 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
   }
 
   editProduct(product: Product) {
-    console.log(product);
     this.router.navigate(['../producto'], {
       relativeTo: this.route,
       state: {
@@ -142,4 +141,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
       },
     });
   }
+
+  locateProduct(){
+    this.router.navigate(['../localizar-producto'])
+  }
+  
 }

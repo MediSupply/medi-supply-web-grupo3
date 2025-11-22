@@ -275,43 +275,43 @@ export class CargarProductoComponent implements OnInit {
   }
 
   // Getters para acceder fácilmente a los controles del formulario (usando signals)
-  get name() {
-    return this.productForm.get('name');
+  get nombre() {
+    return this.productForm.get('nombre');
   }
 
-  get description() {
-    return this.productForm.get('description');
+  get descripcion() {
+    return this.productForm.get('descripcion');
   }
 
-  get price() {
-    return this.productForm.get('price');
+  get valor_unitario() {
+    return this.productForm.get('valor_unitario');
   }
 
-  get amount() {
-    return this.productForm.get('amount');
+  get cantidad_disponible() {
+    return this.productForm.get('cantidad_disponible');
   }
 
-  get category() {
-    return this.productForm.get('category');
+  get categoria() {
+    return this.productForm.get('categoria');
   }
 
-  get conditions() {
-    return this.productForm.get('conditions');
+  get condiciones_almacenamiento() {
+    return this.productForm.get('condiciones_almacenamiento');
   }
 
-  get expirationDate() {
-    return this.productForm.get('expirationDate');
+  get fecha_vencimiento() {
+    return this.productForm.get('fecha_vencimiento');
   }
 
-  get batch() {
-    return this.productForm.get('batch');
+  get lote() {
+    return this.productForm.get('lote');
   }
 
-  get provider() {
-    return this.productForm.get('provider');
+  get proveedor() {
+    return this.productForm.get('proveedor');
   }
 
-  get deliveryTime() {
-    return this.productForm.get('deliveryTime');
+  get tiempo_estimado_entrega() {
+    return this.productForm.get('tiempo_estimado_entrega');
   }
 }

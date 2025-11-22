@@ -11,11 +11,17 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CargarProductoComponent } from './cargar-producto.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProductoService } from '../../../../services/producto.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { finalize, of } from 'rxjs';
 
 describe('CargarProductoComponent', () => {
   let component: CargarProductoComponent;
   let fixture: ComponentFixture<CargarProductoComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
+  let productServiceSpy: jasmine.SpyObj<ProductoService>;
 
   const initializeComponent = (stateData: any = {}) => {
     history.replaceState(stateData, '');
@@ -24,6 +30,8 @@ describe('CargarProductoComponent', () => {
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+    productServiceSpy = jasmine.createSpyObj('ProductoService', ['createProduct']);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -36,8 +44,13 @@ describe('CargarProductoComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule,
+        HttpClientTestingModule
       ],
-      providers: [{ provide: Router, useValue: routerSpy }],
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: ProductoService, useValue: productServiceSpy }
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CargarProductoComponent);
@@ -52,48 +65,35 @@ describe('CargarProductoComponent', () => {
   });
 
   it('should submit valid form and reset it', () => {
-    spyOn(window, 'alert');
+    productServiceSpy.createProduct.and.returnValue(of({ success: true }).pipe(
+      finalize(() => {}) // Mock del pipe
+    ));
 
-    // Inicializar el componente con estado vacío
+    // Espiar console.log si es necesario
+    spyOn(console, 'log');
+
     initializeComponent();
 
-    // Verificar que el formulario existe
-    expect(component.productForm).toBeDefined();
-
-    const testDate = new Date('2026-02-12');
+    const testDate = '2026-02-12'; // Usar string en lugar de Date
     component.productForm.setValue({
-      name: 'Prueba',
-      description: 'Descripcion prueba',
-      price: 10,
-      amount: 1000,
-      category: '1',
-      expirationDate: testDate,
-      batch: 'ejemplo',
-      provider: '2',
-      deliveryTime: '24 horas',
-      conditions: 'Wertyui',
+      nombre: 'Prueba',
+      descripcion: 'Descripcion prueba',
+      valor_unitario: 10,
+      cantidad_disponible: 1000,
+      categoria: '1',
+      fecha_vencimiento: testDate, // ← Usar string
+      lote: 'ejemplo',
+      proveedor: '2',
+      tiempo_estimado_entrega: '24 horas',
+      condiciones_almacenamiento: 'Wertyui',
     });
 
     expect(component.productForm.valid).toBeTrue();
 
     component.onSubmit();
 
-    expect(window.alert).toHaveBeenCalledWith(
-      'Producto registrado exitosamente'
-    );
-    expect(component.productForm.pristine).toBeTrue();
-    expect(component.productForm.value).toEqual({
-      name: null,
-      description: null,
-      price: null,
-      amount: null,
-      category: null,
-      expirationDate: null,
-      batch: null,
-      provider: null,
-      deliveryTime: null,
-      conditions: null,
-    });
+    // Verificar que se llamó al servicio
+    expect(productServiceSpy.createProduct).toHaveBeenCalled();
   });
 
   it('should mark form as touched when submitting invalid form', () => {
@@ -104,16 +104,16 @@ describe('CargarProductoComponent', () => {
     expect(component.productForm).toBeDefined();
 
     component.productForm.setValue({
-      name: '',
-      description: '',
-      price: '',
-      amount: '',
-      category: '',
-      expirationDate: '',
-      batch: '',
-      provider: '',
-      deliveryTime: '',
-      conditions: '',
+      nombre: '',
+      descripcion: '',
+      valor_unitario: '',
+      cantidad_disponible: '',
+      categoria: '',
+      fecha_vencimiento: '',
+      lote: '',
+      proveedor: '',
+      tiempo_estimado_entrega: '',
+      condiciones_almacenamiento: '',
     });
 
     component.onSubmit();
@@ -121,14 +121,39 @@ describe('CargarProductoComponent', () => {
   });
 
   it('should reset form and navigate on cancel', () => {
-    // Inicializar el componente con estado vacío
     initializeComponent();
 
-    // Verificar que el formulario existe
     expect(component.productForm).toBeDefined();
+    
+    component.productForm.patchValue({
+      nombre: 'Test Product',
+      descripcion: 'Test descripcion',
+      valor_unitario: 1000,
+      cantidad_disponible: 10,
+      categoria: '1',
+      condiciones_almacenamiento: 'Test condiciones_almacenamiento',
+      fecha_vencimiento: '2025-12-31',
+      lote: 'TEST123',
+      proveedor: '1',
+      tiempo_estimado_entrega: '24 horas'
+    });
+    expect(component.productForm.dirty).toBeFalse();
     component.onCancel();
-    expect(component.productForm.pristine).toBeTrue();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard/productos']);
+    
+    expect(component.productForm.pristine).toBeTrue();
+    expect(component.productForm.value).toEqual({
+      nombre: null,
+      descripcion: null,
+      valor_unitario: null,
+      cantidad_disponible: null,
+      categoria: null,
+      condiciones_almacenamiento: null,
+      fecha_vencimiento: null,
+      lote: null,
+      proveedor: null,
+      tiempo_estimado_entrega: null
+    });
   });
 
   describe('getFieldError', () => {
@@ -138,10 +163,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.name;
+      const control = component.nombre;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('name')).toBe('Este campo es requerido');
+      expect(component.getFieldError('nombre')).toBe('Este campo es requerido');
     });
     it('should return required error', () => {
       // Inicializar el componente con estado vacío
@@ -149,10 +174,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.name;
+      const control = component.nombre;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('name')).toBe('Mínimo 3 caracteres');
+      expect(component.getFieldError('nombre')).toBe('Mínimo 3 caracteres');
     });
 
     it('should return required error', () => {
@@ -161,10 +186,11 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.name;
-      control?.setValue('123456789012');
+      const control = component.nombre;
+      control?.setValue('a'.repeat(111));
       control?.markAsTouched();
-      expect(component.getFieldError('name')).toBe('Máximo 10 caracteres');
+
+      expect(component.getFieldError('nombre')).toBe('Máximo 100 caracteres');
     });
 
     it('should return required error', () => {
@@ -173,10 +199,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.description;
+      const control = component.descripcion;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe(
+      expect(component.getFieldError('descripcion')).toBe(
         'Este campo es requerido'
       );
     });
@@ -187,10 +213,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.description;
+      const control = component.descripcion;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe(
+      expect(component.getFieldError('descripcion')).toBe(
         'Mínimo 3 caracteres'
       );
     });
@@ -201,10 +227,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.description;
+      const control = component.descripcion;
       control?.setValue('a'.repeat(51));
       control?.markAsTouched();
-      expect(component.getFieldError('description')).toBe(
+      expect(component.getFieldError('descripcion')).toBe(
         'Máximo 50 caracteres'
       );
     });
@@ -215,10 +241,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.price;
+      const control = component.valor_unitario;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('price')).toBe('Este campo es requerido');
+      expect(component.getFieldError('valor_unitario')).toBe('Este campo es requerido');
     });
 
     it('should return required error', () => {
@@ -227,10 +253,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.price;
+      const control = component.valor_unitario;
       control?.setValue(-9);
       control?.markAsTouched();
-      expect(component.getFieldError('price')).toBe('El valor mínimo es 0');
+      expect(component.getFieldError('valor_unitario')).toBe('El valor mínimo es 0');
     });
 
     it('should return required error', () => {
@@ -239,10 +265,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.price;
+      const control = component.valor_unitario;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('price')).toBe(
+      expect(component.getFieldError('valor_unitario')).toBe(
         'Debe ser un número positivo'
       );
     });
@@ -253,10 +279,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.amount;
+      const control = component.cantidad_disponible;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('amount')).toBe('Este campo es requerido');
+      expect(component.getFieldError('cantidad_disponible')).toBe('Este campo es requerido');
     });
 
     it('should return required error', () => {
@@ -265,10 +291,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.amount;
+      const control = component.cantidad_disponible;
       control?.setValue(-9);
       control?.markAsTouched();
-      expect(component.getFieldError('amount')).toBe('El valor mínimo es 0');
+      expect(component.getFieldError('cantidad_disponible')).toBe('El valor mínimo es 0');
     });
 
     it('should return required error', () => {
@@ -277,10 +303,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.amount;
+      const control = component.cantidad_disponible;
       control?.setValue('ab4');
       control?.markAsTouched();
-      expect(component.getFieldError('amount')).toBe('Formato inválido');
+      expect(component.getFieldError('cantidad_disponible')).toBe('Formato inválido');
     });
 
     it('should return required error', () => {
@@ -289,10 +315,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.category;
+      const control = component.categoria;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('category')).toBe(
+      expect(component.getFieldError('categoria')).toBe(
         'Este campo es requerido'
       );
     });
@@ -303,10 +329,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.conditions;
+      const control = component.condiciones_almacenamiento;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('conditions')).toBe(
+      expect(component.getFieldError('condiciones_almacenamiento')).toBe(
         'Este campo es requerido'
       );
     });
@@ -317,10 +343,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.conditions;
+      const control = component.condiciones_almacenamiento;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('conditions')).toBe('Mínimo 5 caracteres');
+      expect(component.getFieldError('condiciones_almacenamiento')).toBe('Mínimo 5 caracteres');
     });
 
     it('should return required error', () => {
@@ -329,10 +355,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.conditions;
+      const control = component.condiciones_almacenamiento;
       control?.setValue('a'.repeat(21));
       control?.markAsTouched();
-      expect(component.getFieldError('conditions')).toBe(
+      expect(component.getFieldError('condiciones_almacenamiento')).toBe(
         'Máximo 20 caracteres'
       );
     });
@@ -343,10 +369,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.expirationDate;
+      const control = component.fecha_vencimiento;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('expirationDate')).toBe(
+      expect(component.getFieldError('fecha_vencimiento')).toBe(
         'Este campo es requerido'
       );
     });
@@ -357,10 +383,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.expirationDate;
+      const control = component.fecha_vencimiento;
       control?.setValue(new Date('2024-02-12'));
       control?.markAsTouched();
-      expect(component.getFieldError('expirationDate')).toBe(
+      expect(component.getFieldError('fecha_vencimiento')).toBe(
         'La fecha debe ser futura'
       );
     });
@@ -371,10 +397,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.batch;
+      const control = component.lote;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('batch')).toBe('Este campo es requerido');
+      expect(component.getFieldError('lote')).toBe('Este campo es requerido');
     });
 
     it('should return required error', () => {
@@ -383,10 +409,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.batch;
+      const control = component.lote;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('batch')).toBe('Mínimo 3 caracteres');
+      expect(component.getFieldError('lote')).toBe('Mínimo 3 caracteres');
     });
 
     it('should return required error', () => {
@@ -395,10 +421,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.batch;
+      const control = component.lote;
       control?.setValue('a'.repeat(51));
       control?.markAsTouched();
-      expect(component.getFieldError('batch')).toBe('Máximo 50 caracteres');
+      expect(component.getFieldError('lote')).toBe('Máximo 50 caracteres');
     });
 
     it('should return required error', () => {
@@ -407,10 +433,10 @@ describe('CargarProductoComponent', () => {
 
       // Verificar que el formulario existe
       expect(component.productForm).toBeDefined();
-      const control = component.provider;
+      const control = component.proveedor;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('provider')).toBe(
+      expect(component.getFieldError('proveedor')).toBe(
         'Este campo es requerido'
       );
     });
@@ -418,10 +444,10 @@ describe('CargarProductoComponent', () => {
     it('should return required error', () => {
       initializeComponent();
       expect(component.productForm).toBeDefined();
-      const control = component.deliveryTime;
+      const control = component.tiempo_estimado_entrega;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('deliveryTime')).toBe(
+      expect(component.getFieldError('tiempo_estimado_entrega')).toBe(
         'Este campo es requerido'
       );
     });

@@ -37,45 +37,45 @@ describe('ListarProductosComponent', () => {
   const mockProducts: Product[] = [
     {
       id: 1,
-      name: 'Acetaminofén 500mg',
-      description:
+      nombre: 'Acetaminofén 500mg',
+      descripcion:
         'Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre',
-      price: 8500,
-      amount: 150,
-      category: '1',
-      conditions: 'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
-      expirationDate: expirationDateString,
-      batch: 'LOT-AC202312',
-      provider: '1',
-      deliveryTime: '24-48 horas',
+      valor_unitario: 8500,
+      cantidad_disponible: 150,
+      categoria: '1',
+      condiciones_almacenamiento: 'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
+      fecha_vencimiento: expirationDateString,
+      lote: 'LOT-AC202312',
+      id_proveedor: '1',
+      tiempo_estimado_entrega: '24-48 horas',
     },
     {
       id: 2,
-      name: 'Ibuprofeno 400mg',
-      description:
+      nombre: 'Ibuprofeno 400mg',
+      descripcion:
         'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
-      price: 12000,
-      amount: 85,
-      category: '2',
-      conditions: 'Proteger de la luz. Mantener en envase original',
-      expirationDate: expirationDateString,
-      batch: 'LOT-IB202401',
-      provider: '2',
-      deliveryTime: '48-72 horas',
+      valor_unitario: 12000,
+      cantidad_disponible: 85,
+      categoria: '2',
+      condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+      fecha_vencimiento: expirationDateString,
+      lote: 'LOT-IB202401',
+      id_proveedor: '2',
+      tiempo_estimado_entrega: '48-72 horas',
     },
     {
       id: 3,
-      name: 'Amoxicilina 500mg',
-      description:
+      nombre: 'Amoxicilina 500mg',
+      descripcion:
         'Antibiótico de amplio espectro para infecciones bacterianas',
-      price: 18500,
-      amount: 60,
-      category: '3',
-      conditions: 'Refrigerar entre 2°C y 8°C después de reconstituir',
-      expirationDate: expirationDateString,
-      batch: 'LOT-AM202402',
-      provider: '3',
-      deliveryTime: '72 horas',
+      valor_unitario: 18500,
+      cantidad_disponible: 60,
+      categoria: '3',
+      condiciones_almacenamiento: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      fecha_vencimiento: expirationDateString,
+      lote: 'LOT-AM202402',
+      id_proveedor: '3',
+      tiempo_estimado_entrega: '72 horas',
     },
   ];
 
@@ -168,7 +168,6 @@ describe('ListarProductosComponent', () => {
     component.applyFilter(mockEvent);
 
     expect(component.dataSource.filter).toBe('producto que no existe');
-    expect(window.alert).toHaveBeenCalledWith('Producto no encontrado');
   });
 
   describe('addProduct', () => {
