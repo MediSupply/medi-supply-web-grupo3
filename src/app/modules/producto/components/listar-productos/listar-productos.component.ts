@@ -19,6 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProductoService } from '../../../../services/producto.service';
+import { finalize } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-listar-productos',
@@ -40,10 +42,9 @@ import { ProductoService } from '../../../../services/producto.service';
   styleUrl: './listar-productos.component.scss',
 })
 export class ListarProductosComponent implements OnInit, AfterViewInit {
-  private productService = inject(ProductoService);
   private dialog = inject(MatDialog);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
+  snackBar = inject(MatSnackBar);
 
   displayedColumns = signal<string[]>([
     'id',
@@ -55,9 +56,15 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
   ]);
   dataSource = new MatTableDataSource<Product>();
   loading = signal<boolean>(true);
+  mensaje = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+
+  constructor(
+    private productService: ProductoService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -68,22 +75,37 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  loadProducts(): void {
+  loadProducts() {
     this.loading.set(true);
+    this.productService
+      .getAllProducts()
+      .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              //this.cargando = false;
+            }, 400);
+          })
+        )
+      .subscribe({
+        next: (response: any) => {
+          if(response.length === 0){
+            this.snackBar.open('No hay productos registrados', 'Cerrar', {
+              duration: 3000,
+            });
+          }
 
-    this.productService.getAllProducts().subscribe({
-      next: products => {
-        this.dataSource.data = products;
-        this.loading.set(false);
-        setTimeout(() => {
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
-      },
-      error: error => {
-        console.error('Error loading products:', error);
-        this.loading.set(false);
-      },
+        },
+         error: (err: any) => {
+          if (err.status === 401) {
+            this.mensaje = 'Usuario no autorizado';
+          } else {
+            this.mensaje = 'Error al consultar la información, intente nuevamente';
+          }
+          this.snackBar.open(this.mensaje, 'Cerrar', {
+            duration: 3000,
+          });
+          console.error('Error:', err);
+        },
     });
   }
 
@@ -94,7 +116,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
     if (this.dataSource.filteredData.length === 0) {
-      alert('Producto no encontrado');
+        this.snackBar.open("Producto no encontrado", 'Cerrar', {
+          duration: 3000,
+        });
     }
   }
 

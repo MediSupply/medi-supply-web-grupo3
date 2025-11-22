@@ -29,10 +29,10 @@
                   <mat-label>Nombre del Producto</mat-label>
                   <input
                     matInput
-                    formControlName="name"
+                    formControlName="nombre"
                     placeholder="Ej: Acetaminofén 500mg"
                   />
-                  <mat-error>{{ getFieldError('name') }}</mat-error>
+                  <mat-error>{{ getFieldError('nombre') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -43,7 +43,7 @@
                   class="w-100 custom-select-field"
                 >
                   <mat-label>Categoría</mat-label>
-                  <mat-select formControlName="category">
+                  <mat-select formControlName="categoria">
                     <mat-option value="">Selecciona una categoría</mat-option>
                     <mat-option
                       *ngFor="let category of categories"
@@ -52,7 +52,7 @@
                       {{ category.value }}
                     </mat-option>
                   </mat-select>
-                  <mat-error>{{ getFieldError('category') }}</mat-error>
+                  <mat-error>{{ getFieldError('categoria') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -62,10 +62,10 @@
                   <mat-label>Descripción</mat-label>
                   <input
                     matInput
-                    formControlName="description"
+                    formControlName="descripcion"
                     placeholder="Descripción del producto"
                   />
-                  <mat-error>{{ getFieldError('description') }}</mat-error>
+                  <mat-error>{{ getFieldError('descripcion') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -78,13 +78,13 @@
                   <input
                     matInput
                     type="number"
-                    formControlName="price"
+                    formControlName="valor_unitario"
                     placeholder="0"
                     min="0"
                     step="0.01"
                   />
                   <span matPrefix>$&nbsp;</span>
-                  <mat-error>{{ getFieldError('price') }}</mat-error>
+                  <mat-error>{{ getFieldError('valor_unitario') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -95,11 +95,11 @@
                   <input
                     matInput
                     type="number"
-                    formControlName="amount"
+                    formControlName="cantidad_disponible"
                     placeholder="0"
                     min="0"
                   />
-                  <mat-error>{{ getFieldError('amount') }}</mat-error>
+                  <mat-error>{{ getFieldError('cantidad_disponible') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -111,10 +111,10 @@
                   <mat-label>Número de Lote</mat-label>
                   <input
                     matInput
-                    formControlName="batch"
+                    formControlName="lote"
                     placeholder="Ej: LOT-AC202312"
                   />
-                  <mat-error>{{ getFieldError('batch') }}</mat-error>
+                  <mat-error>{{ getFieldError('lote') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -125,14 +125,14 @@
                   <input
                     matInput
                     [matDatepicker]="picker"
-                    formControlName="expirationDate"
+                    formControlName="fecha_vencimiento"
                   />
                   <mat-datepicker-toggle
                     matSuffix
                     [for]="picker"
                   ></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
-                  <mat-error>{{ getFieldError('expirationDate') }}</mat-error>
+                  <mat-error>{{ getFieldError('fecha_vencimiento') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -142,10 +142,10 @@
                   <mat-label>Condiciones de Almacenamiento</mat-label>
                   <input
                     matInput
-                    formControlName="conditions"
+                    formControlName="condiciones_almacenamiento"
                     placeholder="Ej: Almacenar en lugar fresco y seco"
                   />
-                  <mat-error>{{ getFieldError('conditions') }}</mat-error>
+                  <mat-error>{{ getFieldError('condiciones_almacenamiento') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -158,7 +158,7 @@
                   class="w-100 custom-select-field"
                 >
                   <mat-label>Proveedor</mat-label>
-                  <mat-select formControlName="provider">
+                  <mat-select formControlName="proveedor">
                     <mat-option value="0">Selecciona un proveedor</mat-option>
                     <mat-option
                       *ngFor="let provider of providers"
@@ -167,7 +167,7 @@
                       {{ provider.value }}
                     </mat-option>
                   </mat-select>
-                  <mat-error>{{ getFieldError('provider') }}</mat-error>
+                  <mat-error>{{ getFieldError('proveedor') }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -177,10 +177,10 @@
                   <mat-label>Tiempo de Entrega</mat-label>
                   <input
                     matInput
-                    formControlName="deliveryTime"
+                    formControlName="tiempo_estimado_entrega"
                     placeholder="Ej: 24 horas"
                   />
-                  <mat-error>{{ getFieldError('deliveryTime') }}</mat-error>
+                  <mat-error>{{ getFieldError('tiempo_estimado_entrega') }}</mat-error>
                 </mat-form-field>
               </div>
             </div>

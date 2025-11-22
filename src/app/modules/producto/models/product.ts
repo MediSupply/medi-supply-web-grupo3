@@ -3,14 +3,14 @@ import { Provider } from './provider';
 
 export interface Product {
   id: number;
-  name: string;
-  description: string;
-  price: number;
-  amount: number;
-  category: string;
-  conditions: string;
-  expirationDate: string;
-  batch: string;
-  provider: string;
-  deliveryTime: string;
+  nombre: string;
+  descripcion: string;
+  valor_unitario: number;
+  cantidad_disponible: number;
+  categoria: string;
+  condiciones_almacenamiento: string;
+  fecha_vencimiento: string;
+  lote: string;
+  id_proveedor: string;
+  tiempo_estimado_entrega: string;
 }

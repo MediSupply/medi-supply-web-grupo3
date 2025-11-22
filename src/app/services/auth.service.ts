@@ -20,6 +20,7 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem('jwt_token', response.token);
+          localStorage.setItem('isAdmin', String(response?.isAdmin ?? false));
         }
       })
     );
@@ -31,6 +32,7 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           localStorage.setItem('jwt_token', response.token);
+          localStorage.setItem('isAdmin', String(response?.isAdmin ?? false));
         }
       })
     );
@@ -41,9 +43,15 @@ export class AuthService {
     return !!localStorage.getItem('jwt_token');
   }
 
+  // 🔐 Verificar si el usuario es admin
+  isAdmin(): boolean {
+    return localStorage.getItem('isAdmin') === 'true';
+  }
+
   // 🚪 Cerrar sesión
   logout(): void {
     localStorage.removeItem('jwt_token');
+    localStorage.removeItem('isAdmin');
     this.router.navigate(['/login']);
   }
 }

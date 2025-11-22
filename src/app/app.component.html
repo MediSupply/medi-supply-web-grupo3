@@ -1,1 +1,7 @@
+@if (isLoading$ | async; as isLoading) {
+    <app-loader 
+    [show]="isLoading" 
+    [message]="(loadingMessage$ | async) || 'Cargando...'">
+    </app-loader>
+}
 <router-outlet />

@@ -20,6 +20,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProductoService } from '../../../../services/producto.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-cargar-producto',
@@ -54,10 +56,12 @@ export class CargarProductoComponent implements OnInit {
   product: any;
   categorySelected: string = '';
   providerSelected: string = '';
+   mensaje = '';
 
   constructor(
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private productService: ProductoService,
   ) {}
 
   providers = [
@@ -95,24 +99,24 @@ export class CargarProductoComponent implements OnInit {
 
   private initForm(): void {
     this.productForm = this.fb.group({
-      name: [
-        this.product?.name || '',
+      nombre: [
+        this.product?.nombre || '',
         [
           Validators.required,
           Validators.minLength(3),
-          Validators.maxLength(10),
+          Validators.maxLength(100),
         ],
       ],
-      description: [
-        this.product?.description || '',
+      descripcion: [
+        this.product?.descripcion || '',
         [
           Validators.required,
           Validators.minLength(3),
           Validators.maxLength(50),
         ],
       ],
-      price: [
-        this.product?.price || '',
+      valor_unitario: [
+        this.product?.valor_unitario || '',
         [
           Validators.required,
           Validators.min(0),
@@ -120,8 +124,8 @@ export class CargarProductoComponent implements OnInit {
           this.positiveNumberValidator,
         ],
       ],
-      amount: [
-        this.product?.amount || '',
+      cantidad_disponible: [
+        this.product?.cantidad_disponible || '',
         [
           Validators.required,
           Validators.min(0),
@@ -129,21 +133,21 @@ export class CargarProductoComponent implements OnInit {
           Validators.pattern('^[0-9]*$'),
         ],
       ],
-      category: [this.categorySelected, Validators.required],
-      conditions: [
-        this.product?.conditions || '',
+      categoria: [this.categorySelected, Validators.required],
+      condiciones_almacenamiento: [
+        this.product?.condiciones_almacenamiento || '',
         [
           Validators.required,
           Validators.minLength(5),
           Validators.maxLength(20),
         ],
       ],
-      expirationDate: [
-        this.product?.expirationDate || '',
+      fecha_vencimiento: [
+        this.product?.fecha_vencimiento || '',
         [Validators.required, this.futureDateValidator],
       ],
-      batch: [
-        this.product?.batch || '',
+      lote: [
+        this.product?.lote || '',
         [
           Validators.required,
           Validators.minLength(3),
@@ -151,8 +155,8 @@ export class CargarProductoComponent implements OnInit {
           Validators.pattern('^[A-Za-z0-9-]*$'),
         ],
       ],
-      provider: [this.providerSelected, Validators.required],
-      deliveryTime: [this.product?.deliveryTime || '', Validators.required],
+      proveedor: [this.providerSelected, Validators.required],
+      tiempo_estimado_entrega: [this.product?.tiempo_estimado_entrega || '', Validators.required],
     });
     if (this.isEditMode) {
       this.productForm.disable();
@@ -185,8 +189,8 @@ export class CargarProductoComponent implements OnInit {
     this.isEditMode = state?.action === 'edit';
 
     if (this.isEditMode && this.product) {
-      this.categorySelected = this.product.category?.id?.toString() || '';
-      this.providerSelected = this.product.provider?.id?.toString() || '';
+      this.categorySelected = this.product.categoria?.id?.toString() || '';
+      this.providerSelected = this.product.id_proveedor?.toString() || '';
     } else {
       this.categorySelected = '';
       this.providerSelected = '';
@@ -222,11 +226,35 @@ export class CargarProductoComponent implements OnInit {
   onSubmit() {
     if (this.productForm.valid) {
       const formData: any = this.productForm.value;
-      console.log(formData);
       this.loading.set(true);
-      console.log('guardando');
-      alert('Producto registrado exitosamente');
-      this.productForm.reset();
+      this.product = formData;
+      this.productService.createProduct(this.product)
+      .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              //this.cargando = false;
+            }, 400);
+          })
+        )
+      .subscribe({
+        next: (response: any) => {
+          console.log(response)
+          this.productForm.reset();
+          this.ngOnInit();
+        },
+        error: (err: any) => {
+          if (err.status === 401) {
+            this.mensaje = 'Usuario no autorizado';
+          } else {
+            this.mensaje = 'Error al consultar la información, intente nuevamente';
+          }
+          this.snackBar.open(this.mensaje, 'Cerrar', {
+            duration: 3000,
+          });
+          console.error('Error:', err);
+        },
+      });
+      
     } else {
       this.markAllFieldsAsTouched();
     }
