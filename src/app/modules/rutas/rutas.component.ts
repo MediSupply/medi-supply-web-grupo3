@@ -276,9 +276,7 @@ export class RutasComponent implements OnInit {
   }
 
   toggleSeleccionTodos() {
-    const todosSeleccionados = this.pedidosPaginados.every(
-      p => p.seleccionado
-    );
+    const todosSeleccionados = this.pedidosPaginados.every(p => p.seleccionado);
     this.pedidosPaginados.forEach(p => {
       p.seleccionado = !todosSeleccionados;
     });
@@ -353,7 +351,8 @@ export class RutasComponent implements OnInit {
 
     try {
       // Simular cálculo de coordenadas (en producción vendrían de un servicio de geocodificación)
-      const pedidosConCoordenadas = this.agregarCoordenadas(pedidosSeleccionados);
+      const pedidosConCoordenadas =
+        this.agregarCoordenadas(pedidosSeleccionados);
 
       // Calcular ruta optimizada (máximo 3 segundos)
       const inicioTiempo = Date.now();
@@ -365,7 +364,9 @@ export class RutasComponent implements OnInit {
         setTimeout(() => {
           // Actualizar estado de los pedidos incluidos en la ruta
           rutaOptimizada.forEach(pedidoRuta => {
-            const pedidoOriginal = this.pedidos.find(p => p.id === pedidoRuta.id);
+            const pedidoOriginal = this.pedidos.find(
+              p => p.id === pedidoRuta.id
+            );
             if (pedidoOriginal) {
               pedidoOriginal.estado = 'En ruta';
               pedidoOriginal.seleccionado = false; // Deseleccionar después de generar ruta
@@ -458,7 +459,12 @@ export class RutasComponent implements OnInit {
   }
 
   calcularDistancia(pedido1: Pedido, pedido2: Pedido): number {
-    if (!pedido1.latitud || !pedido1.longitud || !pedido2.latitud || !pedido2.longitud) {
+    if (
+      !pedido1.latitud ||
+      !pedido1.longitud ||
+      !pedido2.latitud ||
+      !pedido2.longitud
+    ) {
       return Math.random() * 10; // Distancia aleatoria si no hay coordenadas
     }
 
@@ -493,4 +499,3 @@ export class RutasComponent implements OnInit {
     this.rutaGenerada = null;
   }
 }
-

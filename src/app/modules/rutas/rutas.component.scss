@@ -78,7 +78,6 @@
           }
         }
 
-
         tr:hover td {
           background-color: #f5f8ff;
         }
@@ -112,13 +111,18 @@
           width: 18px;
           height: 18px;
 
-          .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
-          .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+          .mdc-checkbox__native-control:enabled:checked
+            ~ .mdc-checkbox__background,
+          .mdc-checkbox__native-control:enabled:indeterminate
+            ~ .mdc-checkbox__background {
             background-color: transparent !important;
             border-color: #ffffff !important;
           }
 
-          .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate='true']) ~ .mdc-checkbox__background {
+          .mdc-checkbox__native-control:enabled:not(:checked):not(
+              :indeterminate
+            ):not([data-indeterminate='true'])
+            ~ .mdc-checkbox__background {
             border-color: #ffffff !important;
             background-color: transparent !important;
           }
@@ -137,13 +141,15 @@
           }
 
           // Borde blanco y fondo transparente cuando está seleccionado
-          .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+          .mdc-checkbox__native-control:enabled:checked
+            ~ .mdc-checkbox__background {
             background-color: transparent !important;
             border-color: #ffffff !important;
           }
 
           // Borde blanco y fondo transparente cuando no está seleccionado
-          .mdc-checkbox__native-control:enabled:not(:checked) ~ .mdc-checkbox__background {
+          .mdc-checkbox__native-control:enabled:not(:checked)
+            ~ .mdc-checkbox__background {
             background-color: transparent !important;
             border-color: #ffffff !important;
           }
@@ -436,4 +442,3 @@
   background-color: #ffc107 !important;
   color: #212529 !important;
 }
-
