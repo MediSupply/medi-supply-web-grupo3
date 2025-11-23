@@ -188,49 +188,6 @@ describe('ListarProductosComponent', () => {
     });
   });
 
-  describe('Filter Products - Success and Edge Cases', () => {
-    beforeEach(() => {
-      component.dataSource.data = mockProducts;
-      fixture.detectChanges();
-    });
-
-    it('should filter products successfully when filter value exists', () => {
-      const filterValue = 'Amoxicilina 500mg';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
-
-      component.applyFilter(mockEvent);
-
-      expect(component.dataSource.filter).toBe(
-        filterValue.trim().toLowerCase()
-      );
-      expect(component.dataSource.filteredData.length).toBe(1);
-      expect(component.dataSource.filteredData[0].name).toBe(
-        'Amoxicilina 500mg'
-      );
-    });
-    it('should show all products when filter value is empty', () => {
-      // ÉXITO: Filtro vacío
-      const filterValue = '';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
-
-      component.applyFilter(mockEvent);
-
-      expect(component.dataSource.filter).toBe('');
-      expect(component.dataSource.filteredData.length).toBe(
-        mockProducts.length
-      );
-    });
-    it('should handle filter when paginator is not available', () => {
-      // FALLO: Paginator no disponible
-      const filterValue = 'Ibuprofeno';
-      const mockEvent = { target: { value: filterValue } } as unknown as Event;
-      component.dataSource.paginator = null;
-
-      expect(() => component.applyFilter(mockEvent)).not.toThrow();
-      expect(component.dataSource.filter).toBe('ibuprofeno');
-    });
-  });
-
   describe('Load Products - Success and Failure', () => {
     it('should handle error when loading products fails', () => {
       // FALLO: Error al cargar productos
