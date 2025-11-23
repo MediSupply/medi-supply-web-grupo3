@@ -1,10 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SidebarComponent } from './sidebar.component';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { Router, NavigationEnd } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+import { SidebarComponent } from './sidebar.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '../../../services/auth.service';
-import { Subject } from 'rxjs';
-import { By } from '@angular/platform-browser';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -12,14 +22,86 @@ describe('SidebarComponent', () => {
   let router: Router;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerEvents$: Subject<any>;
-  let urlSpy: jasmine.Spy<any>;
+  let urlSpy: jasmine.Spy;
+
+  // Datos de prueba reutilizables
+  const mockMenuItems = [
+    {
+      id: 'producto',
+      label: 'Productos',
+      icon: 'home',
+      path: '/dashboard/productos',
+      isExpanded: false,
+    },
+    {
+      id: 'registro',
+      label: 'Registro',
+      icon: 'person_add',
+      path: '/dashboard/registro',
+      isExpanded: false,
+    },
+    {
+      id: 'plan-venta',
+      label: 'Plan de Ventas',
+      icon: 'folder',
+      path: '/dashboard/plan',
+      isExpanded: false,
+    },
+    {
+      id: 'reportes',
+      label: 'Reportes',
+      icon: 'insert_drive_file',
+      path: '/dashboard/reportes',
+      isExpanded: false,
+    },
+    {
+      id: 'rutas',
+      label: 'Rutas',
+      icon: 'add_circle_outline',
+      path: '/rutas',
+      isExpanded: false,
+    },
+  ];
+
+  const mockMenuItemsWithChildren = [
+    {
+      id: 'producto',
+      label: 'Productos',
+      icon: 'home',
+      path: '/dashboard/productos',
+      children: [
+        {
+          id: 'registro-ventas',
+          label: 'Listar Productos',
+          icon: '💰',
+          path: '/registro/ventas',
+        },
+        {
+          id: 'registro-compras',
+          label: 'Cargar Producto',
+          icon: '🛒',
+          path: '/registro/compras',
+        },
+      ],
+      isExpanded: false,
+    },
+    ...mockMenuItems.slice(1),
+  ];
 
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAdmin', 'logout']);
+    authServiceSpy.isAdmin.and.returnValue(false);
     routerEvents$ = new Subject<any>();
 
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, RouterTestingModule.withRoutes([])],
+      imports: [
+        SidebarComponent,
+        RouterTestingModule.withRoutes([]),
+        MatIconModule,
+        MatListModule,
+        MatExpansionModule,
+        NoopAnimationsModule,
+      ],
       providers: [{ provide: AuthService, useValue: authServiceSpy }],
     }).compileComponents();
 
@@ -30,7 +112,6 @@ describe('SidebarComponent', () => {
     spyOnProperty(router, 'events', 'get').and.returnValue(
       routerEvents$.asObservable()
     );
-
     urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue(
       '/dashboard/productos'
     );
@@ -42,8 +123,42 @@ describe('SidebarComponent', () => {
     routerEvents$.complete();
   });
 
-  it('debería crear el componente', () => {
-    expect(component).toBeTruthy();
+  describe('Inicialización y ciclo de vida', () => {
+    it('debería crear el componente', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('debería inicializar con valores por defecto', () => {
+      expect(component.logoError()).toBeFalse();
+      expect(component.menuItems().length).toBe(4);
+    });
+
+    it('debería configurar listener de router en ngOnInit', () => {
+      spyOn(component as any, 'setupRouterListener').and.callThrough();
+      spyOn(component as any, 'autoExpandMenus').and.callThrough();
+
+      component.ngOnInit();
+
+      expect(component['setupRouterListener']).toHaveBeenCalled();
+      expect(component['autoExpandMenus']).toHaveBeenCalled();
+    });
+
+    it('debería limpiar suscripción en ngOnDestroy', () => {
+      const subscriptionSpy = jasmine.createSpyObj('Subscription', [
+        'unsubscribe',
+      ]);
+      component['routerSubscription'] = subscriptionSpy;
+
+      component.ngOnDestroy();
+
+      expect(subscriptionSpy.unsubscribe).toHaveBeenCalled();
+    });
+
+    it('no debería fallar en ngOnDestroy si no hay suscripción', () => {
+      component['routerSubscription'] = undefined as any;
+
+      expect(() => component.ngOnDestroy()).not.toThrow();
+    });
   });
 
   it('debería inicializar con valores por defecto', () => {
