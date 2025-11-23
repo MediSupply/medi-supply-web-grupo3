@@ -3,13 +3,13 @@ name: Deploy to Firebase Hosting
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+' 
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -47,13 +47,13 @@ jobs:
       - name: Build de producción
         run: npm run build -- --configuration production
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: '--max_old_space_size=4096'
 
       - name: Verificar archivos generados
         run: |
           echo "=== Archivos generados en dist ==="
           ls -lah dist/
-          
+
           if [ -d "dist/meddi-supply/browser" ]; then
             echo "✅ Build exitoso"
             
@@ -88,7 +88,7 @@ jobs:
             "repository": "${{ github.repository }}"
           }
           EOF
-          
+
           echo "✅ Metadata creada"
           cat dist/meddi-supply/browser/deploy-info.json
 
@@ -105,7 +105,7 @@ jobs:
             echo "❌ ERROR: firebase.json no encontrado"
             exit 1
           fi
-          
+
           if [ -f ".firebaserc" ]; then
             echo "✅ .firebaserc encontrado"
             cat .firebaserc
@@ -113,7 +113,7 @@ jobs:
             echo "❌ ERROR: .firebaserc no encontrado"
             exit 1
           fi
-          
+
           echo ""
           echo "=== Verificando directorio de hosting ==="
           if [ -d "dist/meddi-supply/browser" ]; then

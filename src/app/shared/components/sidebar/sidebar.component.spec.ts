@@ -1,10 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SidebarComponent } from './sidebar.component';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { Router, NavigationEnd } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+import { SidebarComponent } from './sidebar.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '../../../services/auth.service';
-import { Subject } from 'rxjs';
-import { By } from '@angular/platform-browser';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
@@ -12,14 +22,86 @@ describe('SidebarComponent', () => {
   let router: Router;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerEvents$: Subject<any>;
-  let urlSpy: jasmine.Spy<any>;
+  let urlSpy: jasmine.Spy;
+
+  // Datos de prueba reutilizables
+  const mockMenuItems = [
+    {
+      id: 'producto',
+      label: 'Productos',
+      icon: 'home',
+      path: '/dashboard/productos',
+      isExpanded: false,
+    },
+    {
+      id: 'registro',
+      label: 'Registro',
+      icon: 'person_add',
+      path: '/dashboard/registro',
+      isExpanded: false,
+    },
+    {
+      id: 'plan-venta',
+      label: 'Plan de Ventas',
+      icon: 'folder',
+      path: '/dashboard/plan',
+      isExpanded: false,
+    },
+    {
+      id: 'reportes',
+      label: 'Reportes',
+      icon: 'insert_drive_file',
+      path: '/dashboard/reportes',
+      isExpanded: false,
+    },
+    {
+      id: 'rutas',
+      label: 'Rutas',
+      icon: 'add_circle_outline',
+      path: '/rutas',
+      isExpanded: false,
+    },
+  ];
+
+  const mockMenuItemsWithChildren = [
+    {
+      id: 'producto',
+      label: 'Productos',
+      icon: 'home',
+      path: '/dashboard/productos',
+      children: [
+        {
+          id: 'registro-ventas',
+          label: 'Listar Productos',
+          icon: '💰',
+          path: '/registro/ventas',
+        },
+        {
+          id: 'registro-compras',
+          label: 'Cargar Producto',
+          icon: '🛒',
+          path: '/registro/compras',
+        },
+      ],
+      isExpanded: false,
+    },
+    ...mockMenuItems.slice(1),
+  ];
 
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['logout']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAdmin', 'logout']);
+    authServiceSpy.isAdmin.and.returnValue(false);
     routerEvents$ = new Subject<any>();
 
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, RouterTestingModule.withRoutes([])],
+      imports: [
+        SidebarComponent,
+        RouterTestingModule.withRoutes([]),
+        MatIconModule,
+        MatListModule,
+        MatExpansionModule,
+        NoopAnimationsModule,
+      ],
       providers: [{ provide: AuthService, useValue: authServiceSpy }],
     }).compileComponents();
 
@@ -30,7 +112,6 @@ describe('SidebarComponent', () => {
     spyOnProperty(router, 'events', 'get').and.returnValue(
       routerEvents$.asObservable()
     );
-
     urlSpy = spyOnProperty(router, 'url', 'get').and.returnValue(
       '/dashboard/productos'
     );
@@ -42,8 +123,42 @@ describe('SidebarComponent', () => {
     routerEvents$.complete();
   });
 
-  it('debería crear el componente', () => {
-    expect(component).toBeTruthy();
+  describe('Inicialización y ciclo de vida', () => {
+    it('debería crear el componente', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('debería inicializar con valores por defecto', () => {
+      expect(component.logoError()).toBeFalse();
+      expect(component.menuItems().length).toBe(4);
+    });
+
+    it('debería configurar listener de router en ngOnInit', () => {
+      spyOn(component as any, 'setupRouterListener').and.callThrough();
+      spyOn(component as any, 'autoExpandMenus').and.callThrough();
+
+      component.ngOnInit();
+
+      expect(component['setupRouterListener']).toHaveBeenCalled();
+      expect(component['autoExpandMenus']).toHaveBeenCalled();
+    });
+
+    it('debería limpiar suscripción en ngOnDestroy', () => {
+      const subscriptionSpy = jasmine.createSpyObj('Subscription', [
+        'unsubscribe',
+      ]);
+      component['routerSubscription'] = subscriptionSpy;
+
+      component.ngOnDestroy();
+
+      expect(subscriptionSpy.unsubscribe).toHaveBeenCalled();
+    });
+
+    it('no debería fallar en ngOnDestroy si no hay suscripción', () => {
+      component['routerSubscription'] = undefined as any;
+
+      expect(() => component.ngOnDestroy()).not.toThrow();
+    });
   });
 
   it('debería inicializar con valores por defecto', () => {
@@ -139,22 +254,21 @@ describe('SidebarComponent', () => {
   it('debería tener estructura de menú correcta', () => {
     const menuItems = component.menuItems();
 
-    expect(menuItems.length).toBe(5);
+    expect(menuItems.length).toBe(4);
     expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
+    expect(menuItems[1].id).toBe('plan-venta');
+    expect(menuItems[2].id).toBe('reportes');
+    expect(menuItems[3].id).toBe('rutas');
   });
 
   it('debería tener rutas correctas en los menús', () => {
+    authServiceSpy.isAdmin.and.returnValue(true);
     const menuItems = component.menuItems();
 
     expect(menuItems[0].path).toBe('/dashboard/productos');
-    expect(menuItems[1].path).toBe('/dashboard/registro');
-    expect(menuItems[2].path).toBe('/plan');
-    expect(menuItems[3].path).toBe('/dashboard/reportes');
-    expect(menuItems[4].path).toBe('/rutas');
+    expect(menuItems[1].path).toBe('/dashboard/plan');
+    expect(menuItems[2].path).toBe('/dashboard/reportes');
+    expect(menuItems[3].path).toBe('/rutas');
   });
 
   it('debería manejar URL que no coincide con ningún menú', () => {
@@ -185,6 +299,7 @@ describe('SidebarComponent', () => {
   });
 
   it('debería mantener estado de logo error', () => {
+    fixture.detectChanges();
     expect(component.logoError()).toBeFalsy();
 
     component.onLogoError(new Event('error'));
@@ -304,14 +419,149 @@ describe('SidebarComponent', () => {
   it('debería manejar diferentes configuraciones de menú', () => {
     const menuItems = component.menuItems();
 
-    expect(menuItems.length).toBe(5);
+    expect(menuItems.length).toBe(4);
 
     // Test each menu item
     expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
+    expect(menuItems[1].id).toBe('plan-venta');
+    expect(menuItems[2].id).toBe('reportes');
+    expect(menuItems[3].id).toBe('rutas');
+  });
+
+  it('debería manejar diferentes estados de autenticación', () => {
+    // Test logout functionality
+    component.logOut();
+    expect(authServiceSpy.logout).toHaveBeenCalled();
+
+    // Test multiple logout calls
+    component.logOut();
+    component.logOut();
+    expect(authServiceSpy.logout).toHaveBeenCalledTimes(3);
+  });
+
+  it('debería manejar diferentes tipos de URLs con submenús', () => {
+    const testUrls = [
+      '/dashboard/productos',
+      '/dashboard/registro',
+      '/dashboard/reportes',
+      '/plan',
+      '/rutas',
+    ];
+
+    testUrls.forEach(url => {
+      urlSpy.and.returnValue(url);
+      const item = component.menuItems()[0];
+      const isActive = component.isActive(item);
+      expect(typeof isActive).toBe('boolean');
+    });
+  });
+
+  it('debería manejar diferentes estados de expansión de menús', () => {
+    const item = component.menuItems()[0];
+
+    // Test initial state
+    expect(component.menuItems().length).toBeGreaterThan(0);
+
+    // Test toggle
+    component.toggleSubmenu(item);
+    expect(component.menuItems().length).toBeGreaterThan(0);
+
+    // Test multiple toggles
+    component.toggleSubmenu(item);
+    component.toggleSubmenu(item);
+    expect(component.menuItems().length).toBeGreaterThan(0);
+  });
+
+  it('debería manejar diferentes tipos de eventos de navegación', () => {
+    const navigationEvents = [
+      new NavigationEnd(1, '/dashboard/productos', '/dashboard/registro'),
+      new NavigationEnd(2, '/dashboard/registro', '/dashboard/reportes'),
+      new NavigationEnd(3, '/dashboard/reportes', '/plan'),
+    ];
+
+    navigationEvents.forEach(event => {
+      routerEvents$.next(event);
+      expect(component.menuItems().length).toBeGreaterThan(0);
+    });
+  });
+
+  it('debería manejar diferentes estados de logo', () => {
+    // Test initial state
+    expect(component.logoError()).toBeFalsy();
+
+    // Test error state
+    component.onLogoError(new Event('error'));
+    expect(component.logoError()).toBeTruthy();
+
+    // Test multiple error events
+    component.onLogoError(new Event('error'));
+    expect(component.logoError()).toBeTruthy();
+  });
+
+  it('debería manejar diferentes tipos de items de menú', () => {
+    const menuItems = component.menuItems();
+
+    menuItems.forEach(item => {
+      expect(item.id).toBeDefined();
+      expect(item.label).toBeDefined();
+      expect(item.icon).toBeDefined();
+      expect(item.path).toBeDefined();
+    });
+  });
+
+  it('debería manejar diferentes rutas de navegación', () => {
+    const testRoutes = [
+      '/dashboard/productos',
+      '/dashboard/registro',
+      '/dashboard/reportes',
+      '/plan',
+      '/rutas',
+    ];
+
+    testRoutes.forEach(route => {
+      urlSpy.and.returnValue(route);
+      const item = component.menuItems()[0];
+      const isActive = component.isActive(item);
+      expect(typeof isActive).toBe('boolean');
+    });
+  });
+
+  it('debería manejar diferentes estados de expansión', () => {
+    const item = component.menuItems()[0];
+
+    // Test initial state
+    expect(component.menuItems().length).toBeGreaterThan(0);
+
+    // Test toggle
+    component.toggleSubmenu(item);
+    expect(component.menuItems().length).toBeGreaterThan(0);
+
+    // Test multiple toggles
+    component.toggleSubmenu(item);
+    component.toggleSubmenu(item);
+    expect(component.menuItems().length).toBeGreaterThan(0);
+  });
+
+  it('debería manejar diferentes tipos de eventos', () => {
+    const events = [new Event('error'), new Event('load'), new Event('click')];
+
+    events.forEach(event => {
+      component.onLogoError(event);
+      expect(component.logoError()).toBeTruthy();
+    });
+  });
+
+  it('debería manejar diferentes configuraciones de menú', () => {
+    authServiceSpy.isAdmin.and.returnValue(true);
+    const menuItems = component.menuItems();
+
+    expect(menuItems.length).toBe(4);
+
+    // Test each menu item
+    expect(menuItems[0].id).toBe('producto');
+    expect(menuItems[1].id).toBe('plan-venta');
+    expect(menuItems[2].id).toBe('reportes');
+    expect(menuItems[3].id).toBe('rutas');
   });
 
   it('debería manejar diferentes estados de autenticación', () => {
@@ -439,150 +689,13 @@ describe('SidebarComponent', () => {
 
   it('debería manejar diferentes configuraciones de menú', () => {
     const menuItems = component.menuItems();
-
-    expect(menuItems.length).toBe(5);
-
-    // Test each menu item
-    expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
-  });
-
-  it('debería manejar diferentes estados de autenticación', () => {
-    // Test logout functionality
-    component.logOut();
-    expect(authServiceSpy.logout).toHaveBeenCalled();
-
-    // Test multiple logout calls
-    component.logOut();
-    component.logOut();
-    expect(authServiceSpy.logout).toHaveBeenCalledTimes(3);
-  });
-
-  it('debería manejar diferentes tipos de URLs con submenús', () => {
-    const testUrls = [
-      '/dashboard/productos',
-      '/dashboard/registro',
-      '/dashboard/reportes',
-      '/plan',
-      '/rutas',
-    ];
-
-    testUrls.forEach(url => {
-      urlSpy.and.returnValue(url);
-      const item = component.menuItems()[0];
-      const isActive = component.isActive(item);
-      expect(typeof isActive).toBe('boolean');
-    });
-  });
-
-  it('debería manejar diferentes estados de expansión de menús', () => {
-    const item = component.menuItems()[0];
-
-    // Test initial state
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test toggle
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test multiple toggles
-    component.toggleSubmenu(item);
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-  });
-
-  it('debería manejar diferentes tipos de eventos de navegación', () => {
-    const navigationEvents = [
-      new NavigationEnd(1, '/dashboard/productos', '/dashboard/registro'),
-      new NavigationEnd(2, '/dashboard/registro', '/dashboard/reportes'),
-      new NavigationEnd(3, '/dashboard/reportes', '/plan'),
-    ];
-
-    navigationEvents.forEach(event => {
-      routerEvents$.next(event);
-      expect(component.menuItems().length).toBeGreaterThan(0);
-    });
-  });
-
-  it('debería manejar diferentes estados de logo', () => {
-    // Test initial state
-    expect(component.logoError()).toBeFalsy();
-
-    // Test error state
-    component.onLogoError(new Event('error'));
-    expect(component.logoError()).toBeTruthy();
-
-    // Test multiple error events
-    component.onLogoError(new Event('error'));
-    expect(component.logoError()).toBeTruthy();
-  });
-
-  it('debería manejar diferentes tipos de items de menú', () => {
-    const menuItems = component.menuItems();
-
-    menuItems.forEach(item => {
-      expect(item.id).toBeDefined();
-      expect(item.label).toBeDefined();
-      expect(item.icon).toBeDefined();
-      expect(item.path).toBeDefined();
-    });
-  });
-
-  it('debería manejar diferentes rutas de navegación', () => {
-    const testRoutes = [
-      '/dashboard/productos',
-      '/dashboard/registro',
-      '/dashboard/reportes',
-      '/plan',
-      '/rutas',
-    ];
-
-    testRoutes.forEach(route => {
-      urlSpy.and.returnValue(route);
-      const item = component.menuItems()[0];
-      const isActive = component.isActive(item);
-      expect(typeof isActive).toBe('boolean');
-    });
-  });
-
-  it('debería manejar diferentes estados de expansión', () => {
-    const item = component.menuItems()[0];
-
-    // Test initial state
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test toggle
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test multiple toggles
-    component.toggleSubmenu(item);
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-  });
-
-  it('debería manejar diferentes tipos de eventos', () => {
-    const events = [new Event('error'), new Event('load'), new Event('click')];
-
-    events.forEach(event => {
-      component.onLogoError(event);
-      expect(component.logoError()).toBeTruthy();
-    });
-  });
-
-  it('debería manejar diferentes configuraciones de menú', () => {
-    const menuItems = component.menuItems();
-
-    expect(menuItems.length).toBe(5);
+    authServiceSpy.isAdmin.and.returnValue(false);
+    expect(menuItems.length).toBe(4);
 
     // Test each menu item
     expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
+    expect(menuItems[1].id).toBe('plan-venta');
+    expect(menuItems[2].id).toBe('reportes');
+    expect(menuItems[3].id).toBe('rutas');
   });
 });

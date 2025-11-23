@@ -1,19 +1,14 @@
 {
-    "root": true,
-    "ignorePatterns": [
-        "projects/**/*",
-        "*.html"
-    ],
-    "overrides": [
-        {
-            "files": [
-                "*.ts"
-            ],
-            "parser": "@typescript-eslint/parser",
-            "rules": {
-                "no-unused-vars": "warn",
-                "no-console": "warn"
-            }
-        }
-    ]
+  "root": true,
+  "ignorePatterns": ["projects/**/*", "*.html"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-console": "warn"
+      }
+    }
+  ]
 }
