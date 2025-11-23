@@ -189,11 +189,15 @@ describe('SidebarComponent', () => {
   it('click en menú llama a setActiveItem', () => {
     spyOn(component, 'setActiveItem');
     fixture.detectChanges();
-    const menuItems = fixture.debugElement.queryAll(By.css('.menu-item'));
+    const menuItems = fixture.debugElement.queryAll(By.css('.nav-item'));
+    expect(menuItems.length).toBeGreaterThan(0);
     if (menuItems.length > 0) {
       menuItems[0].nativeElement.click();
       fixture.detectChanges();
       expect(component.setActiveItem).toHaveBeenCalled();
+    } else {
+      // Si no hay elementos, la prueba debe fallar explícitamente
+      fail('No se encontraron elementos del menú para hacer click');
     }
   });
 
