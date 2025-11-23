@@ -22,8 +22,9 @@ import { ProductoService } from '../../../../services/producto.service';
 import { finalize } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+
 @Component({
-  selector: 'app-listar-productos',
+  selector: 'app-localizar-producto',
   standalone: true,
   imports: [
     CommonModule,
@@ -38,21 +39,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatTooltipModule,
     MatDialogModule,
   ],
-  templateUrl: './listar-productos.component.html',
-  styleUrl: './listar-productos.component.scss',
+  templateUrl: './localizar-producto.component.html',
+  styleUrl: './localizar-producto.component.scss'
 })
-export class ListarProductosComponent implements OnInit, AfterViewInit {
+export class LocalizarProductoComponent implements OnInit, AfterViewInit {
   private dialog = inject(MatDialog);
   private route = inject(ActivatedRoute);
   snackBar = inject(MatSnackBar);
 
   displayedColumns = signal<string[]>([
     'id',
-    'name',
-    'description',
-    'price',
-    'amount',
-    'actions',
+    'nombre',
+    'descripcion',
+    'stock',
+    'ubicacion',
   ]);
   dataSource = new MatTableDataSource<Product>();
   loading = signal<boolean>(true);
@@ -91,9 +91,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
           const products = this.productService.productsSignal();
           if (products.length === 0) {
           this.snackBar.open('No hay productos registrados', 'Cerrar', {
-            duration: 3000,
-          });
-          } 
+              duration: 3000,
+            });
+          }
           else {
             this.dataSource.data = products;
           }
@@ -145,8 +145,8 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  locateProduct(){
-    this.router.navigate(['/dashboard/localizar-producto'])
+  onCancel(): void {
+    this.router.navigate(['/dashboard/productos']);
   }
-  
+
 }

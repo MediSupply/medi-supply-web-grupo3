@@ -86,6 +86,7 @@ describe('CargarProductoComponent', () => {
       proveedor: '2',
       tiempo_estimado_entrega: '24 horas',
       condiciones_almacenamiento: 'Wertyui',
+      ubicacion: 'Bodega 3'
     });
 
     expect(component.productForm.valid).toBeTrue();
@@ -114,6 +115,7 @@ describe('CargarProductoComponent', () => {
       proveedor: '',
       tiempo_estimado_entrega: '',
       condiciones_almacenamiento: '',
+      ubicacion:''
     });
 
     component.onSubmit();
@@ -135,7 +137,8 @@ describe('CargarProductoComponent', () => {
       fecha_vencimiento: '2025-12-31',
       lote: 'TEST123',
       proveedor: '1',
-      tiempo_estimado_entrega: '24 horas'
+      tiempo_estimado_entrega: '24 horas',
+      ubicacion:'Bodega 2'
     });
     expect(component.productForm.dirty).toBeFalse();
     component.onCancel();
@@ -152,7 +155,8 @@ describe('CargarProductoComponent', () => {
       fecha_vencimiento: null,
       lote: null,
       proveedor: null,
-      tiempo_estimado_entrega: null
+      tiempo_estimado_entrega: null,
+      ubicacion: null
     });
   });
 

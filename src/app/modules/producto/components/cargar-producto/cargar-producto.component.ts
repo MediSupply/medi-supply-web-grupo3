@@ -157,6 +157,14 @@ export class CargarProductoComponent implements OnInit {
       ],
       proveedor: [this.providerSelected, Validators.required],
       tiempo_estimado_entrega: [this.product?.tiempo_estimado_entrega || '', Validators.required],
+      ubicacion: [
+        this.product?.ubicacion || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(100),
+        ],
+      ],
     });
     if (this.isEditMode) {
       this.productForm.disable();
@@ -239,7 +247,9 @@ export class CargarProductoComponent implements OnInit {
       .subscribe({
         next: (response: any) => {
           console.log(response)
-          this.productForm.reset();
+          this.snackBar.open("Producto registrado exitosamente", 'Cerrar', {
+            duration: 3000,
+          });
           this.ngOnInit();
         },
         error: (err: any) => {

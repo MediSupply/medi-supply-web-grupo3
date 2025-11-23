@@ -1,13 +1,12 @@
 <div class="table-container">
   <div class="table-header">
-    <h2>Productos registrados</h2>
-    <div class="search-section">
-      <button class="action-btn_add" mat-raised-button (click)="locateProduct()">
-        <mat-icon>save</mat-icon>
-        Localizar producto
-      </button>
+    <div class="row">
+        <h2>Localizar productos</h2>
+    </div>
+    
+    <div class="row search-section">
       <mat-form-field class="filter-field">
-        <mat-label>Consultar productos</mat-label>
+        <mat-label>Nombre o códido del producto</mat-label>
         <input
           matInput
           (keyup)="applyFilter($event)"
@@ -16,10 +15,6 @@
         />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
-      <button class="action-btn_add" mat-raised-button (click)="addProduct()">
-        <mat-icon>save</mat-icon>
-        Cargar producto
-      </button>
     </div>
   </div>
 
@@ -32,47 +27,31 @@
       <td mat-cell *matCellDef="let element">{{ element.id }}</td>
     </ng-container>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
+    <!-- Nombre Column -->
+    <ng-container matColumnDef="nombre">
       <th mat-header-cell *matHeaderCellDef class="text-center">
         NOMBRE PRODUCTO
       </th>
       <td mat-cell *matCellDef="let element">{{ element.nombre }}</td>
     </ng-container>
 
-    <!-- Description Column -->
-    <ng-container matColumnDef="description">
+    <!-- Descriction Column -->
+    <ng-container matColumnDef="descripcion">
       <th mat-header-cell *matHeaderCellDef class="text-center">DESCRIPCIÓN</th>
       <td mat-cell *matCellDef="let element">{{ element.descripcion }}</td>
     </ng-container>
 
-    <!-- Price Column -->
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef class="text-center">PRECIO</th>
-      <td mat-cell *matCellDef="let element">{{ element.valor_unitario }}</td>
-    </ng-container>
-
-    <!-- Amount Column -->
-    <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef class="text-center">CANTIDAD</th>
+    <!-- Stock Column -->
+    <ng-container matColumnDef="stock">
+      <th mat-header-cell *matHeaderCellDef class="text-center">STOCK</th>
       <td mat-cell *matCellDef="let element">{{ element.cantidad_disponible }}</td>
     </ng-container>
 
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="text-center">ACCIONES</th>
-      <td mat-cell *matCellDef="let product">
-        <div class="actions-container">
-          <button
-            class="action-btn_edit"
-            mat-icon-button
-            matTooltip="Editar"
-            (click)="editProduct(product)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-        </div>
-      </td>
+
+    <!-- Ubicacion Column -->
+    <ng-container matColumnDef="ubicacion">
+      <th mat-header-cell *matHeaderCellDef class="text-center">UBICACIÓN</th>
+      <td mat-cell *matCellDef="let element">{{ element.ubicacion }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
@@ -86,4 +65,19 @@
     aria-label="Seleccionar página de productos"
   >
   </mat-paginator>
+  <div class="row mt-4">
+    <div class="col-12">
+    <div class="d-flex gap-2 justify-content-end">
+        <button
+        type="button"
+        mat-button
+        (click)="onCancel()"
+        class="action-btn_cancel"
+        >
+        <mat-icon>arrow_back</mat-icon>
+        Volver a lista de productos registrados
+        </button>
+    </div>
+    </div>
+</div>
 </div>

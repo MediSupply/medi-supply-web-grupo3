@@ -185,6 +185,21 @@
               </div>
             </div>
 
+            <div class="row mb-4">
+              <!-- Ubicacion -->
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Ubicación</mat-label>
+                  <input
+                    matInput
+                    formControlName="ubicacion"
+                    placeholder="Ej: Bodega 1"
+                  />
+                  <mat-error>{{ getFieldError('ubicacion') }}</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
             <!-- Botones de Acción -->
             <div class="row mt-4">
               <div class="col-12">
@@ -193,7 +208,6 @@
                     type="button"
                     mat-button
                     (click)="onCancel()"
-                    [disabled]="loading()"
                     class="action-btn_cancel"
                   >
                     <mat-icon>arrow_back</mat-icon>

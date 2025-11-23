@@ -13,4 +13,5 @@ export interface Product {
   lote: string;
   id_proveedor: string;
   tiempo_estimado_entrega: string;
+  ubicacion: string;
 }

@@ -9,6 +9,7 @@ import { RegistroProveedorComponent } from './modules/registro/componentes/regis
 import { RegistroVendedorComponent } from './modules/registro/componentes/registro-vendedor/registro-vendedor.component';
 import { ReportesComponent } from './modules/reportes/reportes.component';
 import { CrearPlanVentaComponent } from './modules/plan-ventas/components/crear-plan-venta/crear-plan-venta.component';
+import { LocalizarProductoComponent } from './modules/producto/components/localizar-producto/localizar-producto.component';
 
 export const routes: Routes = [
   // { path: '**', redirectTo: 'login', pathMatch: 'full' },
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'registro-vendedor', component: RegistroVendedorComponent },
       { path: 'reportes', component: ReportesComponent },
       { path: 'plan', component: CrearPlanVentaComponent },
+      { path: 'localizar-producto', component: LocalizarProductoComponent },
     ],
   },
 ];

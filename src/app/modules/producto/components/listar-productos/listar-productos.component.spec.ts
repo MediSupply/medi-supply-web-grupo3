@@ -48,6 +48,7 @@ describe('ListarProductosComponent', () => {
       lote: 'LOT-AC202312',
       id_proveedor: '1',
       tiempo_estimado_entrega: '24-48 horas',
+      ubicacion: 'Bodega 1'
     },
     {
       id: 2,
@@ -62,6 +63,7 @@ describe('ListarProductosComponent', () => {
       lote: 'LOT-IB202401',
       id_proveedor: '2',
       tiempo_estimado_entrega: '48-72 horas',
+      ubicacion: 'Bodega 2'
     },
     {
       id: 3,
@@ -76,6 +78,7 @@ describe('ListarProductosComponent', () => {
       lote: 'LOT-AM202402',
       id_proveedor: '3',
       tiempo_estimado_entrega: '72 horas',
+      ubicacion: 'Bodega 3'
     },
   ];
 
