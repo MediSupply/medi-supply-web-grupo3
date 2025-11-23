@@ -4,11 +4,16 @@
     <div class="search-section">
       <mat-form-field appearance="outline">
         <mat-label>Buscar producto</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+        <input
+          matInput
+          (keyup)="applyFilter($event)"
+          placeholder="Buscar"
+          #input
+        />
       </mat-form-field>
     </div>
   </div>
-  
+
   <div class="table-actions">
     <button mat-raised-button color="primary" (click)="addProduct()">
       <mat-icon>add</mat-icon>
@@ -35,7 +40,9 @@
 
       <ng-container matColumnDef="price">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
-        <td mat-cell *matCellDef="let product">{{ product.price | currency }}</td>
+        <td mat-cell *matCellDef="let product">
+          {{ product.price | currency }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="amount">
@@ -46,17 +53,24 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let product">
-          <button mat-icon-button color="primary" (click)="editProduct(product)" matTooltip="Editar">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="editProduct(product)"
+            matTooltip="Editar"
+          >
             <mat-icon>edit</mat-icon>
           </button>
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns();"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
   </div>
 </div>
-

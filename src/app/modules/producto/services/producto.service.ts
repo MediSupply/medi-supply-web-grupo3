@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Product } from '../models/product';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductoService {
   constructor(private http: HttpClient) {}
@@ -15,4 +15,3 @@ export class ProductoService {
     return of([]);
   }
 }
-
