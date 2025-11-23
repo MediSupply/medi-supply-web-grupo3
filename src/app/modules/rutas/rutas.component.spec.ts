@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  flush,
+} from '@angular/core/testing';
 import { RutasComponent, Pedido, RutaGenerada } from './rutas.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -259,11 +265,16 @@ describe('RutasComponent', () => {
       }
 
       // Verificar que efectivamente no hay pedidos pendientes
-      const pedidosPendientes = component.pedidos.filter(p => p.estado === 'Pendiente');
+      const pedidosPendientes = component.pedidos.filter(
+        p => p.estado === 'Pendiente'
+      );
       expect(pedidosPendientes.length).toBe(0);
 
       // Espiar directamente el snackBar del componente
-      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+      const snackBarSpy = spyOn(
+        (component as any).snackBar,
+        'open'
+      ).and.callThrough();
 
       component.generarRuta();
 
@@ -286,13 +297,20 @@ describe('RutasComponent', () => {
       }
 
       // Verificar que hay pedidos pendientes pero ninguno seleccionado
-      const pedidosPendientes = component.pedidos.filter(p => p.estado === 'Pendiente');
-      const pedidosSeleccionados = component.pedidos.filter(p => p.seleccionado);
+      const pedidosPendientes = component.pedidos.filter(
+        p => p.estado === 'Pendiente'
+      );
+      const pedidosSeleccionados = component.pedidos.filter(
+        p => p.seleccionado
+      );
       expect(pedidosPendientes.length).toBeGreaterThan(0);
       expect(pedidosSeleccionados.length).toBe(0);
 
       // Espiar directamente el snackBar del componente
-      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+      const snackBarSpy = spyOn(
+        (component as any).snackBar,
+        'open'
+      ).and.callThrough();
 
       component.generarRuta();
 
@@ -315,7 +333,10 @@ describe('RutasComponent', () => {
       });
 
       // Espiar directamente el snackBar del componente
-      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+      const snackBarSpy = spyOn(
+        (component as any).snackBar,
+        'open'
+      ).and.callThrough();
 
       // Mockear Date.now() para controlar el tiempo
       // Primera llamada: inicioTiempo, Segunda llamada: después del cálculo
@@ -393,11 +414,14 @@ describe('RutasComponent', () => {
       });
 
       // Espiar directamente el snackBar del componente
-      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+      const snackBarSpy = spyOn(
+        (component as any).snackBar,
+        'open'
+      ).and.callThrough();
 
       // Mockear Date.now() para evitar problemas
       spyOn(Date, 'now').and.returnValue(1000);
-      
+
       // Hacer que calcularRutaOptimizada lance un error
       spyOn(component, 'calcularRutaOptimizada').and.throwError(
         'Error de cálculo'
