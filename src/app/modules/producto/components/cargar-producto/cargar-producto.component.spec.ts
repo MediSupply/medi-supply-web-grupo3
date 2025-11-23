@@ -22,7 +22,7 @@ describe('CargarProductoComponent', () => {
   const mockHistoryState = (state: any) => {
     Object.defineProperty(history, 'state', {
       get: () => state,
-      configurable: true
+      configurable: true,
     });
   };
 
@@ -40,22 +40,22 @@ describe('CargarProductoComponent', () => {
         MatSelectModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatIconModule
+        MatIconModule,
         // REMOVER MatSnackBarModule de aquí
       ],
       providers: [
         { provide: Router, useValue: routerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: ActivatedRoute, useValue: {} }
-      ]
+        { provide: ActivatedRoute, useValue: {} },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CargarProductoComponent);
     component = fixture.componentInstance;
-    
+
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    
+
     mockHistoryState({});
     fixture.detectChanges(); // Ejecuta ngOnInit
   });
@@ -63,7 +63,7 @@ describe('CargarProductoComponent', () => {
   afterEach(() => {
     Object.defineProperty(history, 'state', {
       get: () => ({}),
-      configurable: true
+      configurable: true,
     });
   });
 
@@ -76,7 +76,7 @@ describe('CargarProductoComponent', () => {
 
     it('should mark all fields as touched', () => {
       component.markAllFieldsAsTouched();
-      
+
       Object.keys(component.productForm.controls).forEach(key => {
         const control = component.productForm.get(key);
         expect(control?.touched).toBeTrue();
@@ -84,7 +84,10 @@ describe('CargarProductoComponent', () => {
     });
 
     it('should call markAllFieldsAsTouched and show snackbar when submitting invalid form', () => {
-      const markAllFieldsAsTouchedSpy = spyOn(component, 'markAllFieldsAsTouched').and.callThrough();
+      const markAllFieldsAsTouchedSpy = spyOn(
+        component,
+        'markAllFieldsAsTouched'
+      ).and.callThrough();
 
       snackBar.open.calls.reset();
 
@@ -114,56 +117,65 @@ describe('CargarProductoComponent', () => {
 
   describe('Form Submission', () => {
     it('should submit form and set loading when valid', () => {
-    const consoleSpy = spyOn(console, 'log');
-    
-    const futureDate = new Date();
-    futureDate.setMonth(futureDate.getMonth() + 3);
-    const expirationDateString = futureDate.toISOString().split('T')[0];
+      const consoleSpy = spyOn(console, 'log');
 
-    component.productForm.setValue({
-      name: 'Test Product Valid Name',
-      description: 'This is a valid description with more than 10 characters and meets all requirements', 
-      price: 100,
-      amount: 50,
-      category: '1', 
-      conditions: 'Valid storage conditions with enough length to meet validation', 
-      expirationDate: expirationDateString, 
-      batch: 'BATCH-123', 
-      provider: '1', 
-      deliveryTime: '24 horas'
-    });
+      const futureDate = new Date();
+      futureDate.setMonth(futureDate.getMonth() + 3);
+      const expirationDateString = futureDate.toISOString().split('T')[0];
 
-    // Verificar que el formulario es válido antes de enviar
-    expect(component.productForm.valid).withContext(
-      `Form should be valid. Errors: ${JSON.stringify(component.productForm.errors)}`
-    ).toBeTrue();
+      component.productForm.setValue({
+        name: 'Test Product Valid Name',
+        description:
+          'This is a valid description with more than 10 characters and meets all requirements',
+        price: 100,
+        amount: 50,
+        category: '1',
+        conditions:
+          'Valid storage conditions with enough length to meet validation',
+        expirationDate: expirationDateString,
+        batch: 'BATCH-123',
+        provider: '1',
+        deliveryTime: '24 horas',
+      });
 
-    // Verificar específicamente los 3 campos con tipos de datos diferentes
-    expect(component.productForm.get('category')?.valid)
-      .withContext(`Category should be valid. Value: "${component.productForm.get('category')?.value}", Available categories: ${JSON.stringify(component.categories)}`)
-      .toBeTrue();
+      // Verificar que el formulario es válido antes de enviar
+      expect(component.productForm.valid)
+        .withContext(
+          `Form should be valid. Errors: ${JSON.stringify(component.productForm.errors)}`
+        )
+        .toBeTrue();
 
-    expect(component.productForm.get('expirationDate')?.valid)
-      .withContext(`ExpirationDate should be valid. Value: "${component.productForm.get('expirationDate')?.value}", Errors: ${JSON.stringify(component.productForm.get('expirationDate')?.errors)}`)
-      .toBeTrue();
+      // Verificar específicamente los 3 campos con tipos de datos diferentes
+      expect(component.productForm.get('category')?.valid)
+        .withContext(
+          `Category should be valid. Value: "${component.productForm.get('category')?.value}", Available categories: ${JSON.stringify(component.categories)}`
+        )
+        .toBeTrue();
 
-    expect(component.productForm.get('provider')?.valid)
-      .withContext(`Provider should be valid. Value: "${component.productForm.get('provider')?.value}", Available providers: ${JSON.stringify(component.providers)}`)
-      .toBeTrue();
+      expect(component.productForm.get('expirationDate')?.valid)
+        .withContext(
+          `ExpirationDate should be valid. Value: "${component.productForm.get('expirationDate')?.value}", Errors: ${JSON.stringify(component.productForm.get('expirationDate')?.errors)}`
+        )
+        .toBeTrue();
 
-    component.onSubmit();
+      expect(component.productForm.get('provider')?.valid)
+        .withContext(
+          `Provider should be valid. Value: "${component.productForm.get('provider')?.value}", Available providers: ${JSON.stringify(component.providers)}`
+        )
+        .toBeTrue();
 
-    expect(component.loading()).toBeTrue();
-    expect(consoleSpy).toHaveBeenCalledWith('guardando');
+      component.onSubmit();
+
+      expect(component.loading()).toBeTrue();
+      expect(consoleSpy).toHaveBeenCalledWith('guardando');
     });
 
     it('should not set loading when form is invalid', () => {
-        // Formulario vacío (inválido)
-        component.onSubmit();
-        expect(component.loading()).toBeFalse();
+      // Formulario vacío (inválido)
+      component.onSubmit();
+      expect(component.loading()).toBeFalse();
     });
   });
-
 
   describe('Navigation Methods', () => {
     it('should navigate to productos on cancel', () => {
@@ -179,9 +191,9 @@ describe('CargarProductoComponent', () => {
           id: 1,
           name: 'Test Product',
           category: { id: '1', value: 'Analgésicos' },
-          provider: { id: '1', value: 'Genfar S.A.' }
+          provider: { id: '1', value: 'Genfar S.A.' },
         },
-        action: 'edit'
+        action: 'edit',
       });
 
       component.checkEditMode();
