@@ -4,8 +4,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DashboardRegistroComponent } from './dashboard-registro.component';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('DashboardRegistroComponent', () => {
   let component: DashboardRegistroComponent;
