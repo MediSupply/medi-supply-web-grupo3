@@ -211,7 +211,7 @@ describe('SidebarComponent', () => {
     expect(menuItems[1].path).toBe('/dashboard/registro');
     expect(menuItems[2].path).toBe('/plan');
     expect(menuItems[3].path).toBe('/dashboard/reportes');
-    expect(menuItems[4].path).toBe('/rutas');
+    expect(menuItems[4].path).toBe('/dashboard/rutas');
   });
 
   it('debería manejar URL que no coincide con ningún menú', () => {
@@ -458,7 +458,7 @@ describe('SidebarComponent', () => {
       '/dashboard/registro',
       '/dashboard/reportes',
       '/plan',
-      '/rutas',
+      '/dashboard/rutas',
     ];
 
     testRoutes.forEach(route => {
@@ -467,181 +467,5 @@ describe('SidebarComponent', () => {
       const isActive = component.isActive(item);
       expect(typeof isActive).toBe('boolean');
     });
-  });
-
-  it('debería manejar diferentes estados de expansión', () => {
-    const item = component.menuItems()[0];
-
-    // Test initial state
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test toggle
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test multiple toggles
-    component.toggleSubmenu(item);
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-  });
-
-  it('debería manejar diferentes tipos de eventos', () => {
-    const events = [new Event('error'), new Event('load'), new Event('click')];
-
-    events.forEach(event => {
-      component.onLogoError(event);
-      expect(component.logoError()).toBeTruthy();
-    });
-  });
-
-  it('debería manejar diferentes configuraciones de menú', () => {
-    const menuItems = component.menuItems();
-
-    expect(menuItems.length).toBe(5);
-
-    // Test each menu item
-    expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
-  });
-
-  it('debería manejar diferentes estados de autenticación', () => {
-    // Test logout functionality
-    component.logOut();
-    expect(authServiceSpy.logout).toHaveBeenCalled();
-
-    // Test multiple logout calls
-    component.logOut();
-    component.logOut();
-    expect(authServiceSpy.logout).toHaveBeenCalledTimes(3);
-  });
-
-  it('debería manejar diferentes tipos de URLs con submenús', () => {
-    const testUrls = [
-      '/dashboard/productos',
-      '/dashboard/registro',
-      '/dashboard/reportes',
-      '/plan',
-      '/rutas',
-    ];
-
-    testUrls.forEach(url => {
-      urlSpy.and.returnValue(url);
-      const item = component.menuItems()[0];
-      const isActive = component.isActive(item);
-      expect(typeof isActive).toBe('boolean');
-    });
-  });
-
-  it('debería manejar diferentes estados de expansión de menús', () => {
-    const item = component.menuItems()[0];
-
-    // Test initial state
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test toggle
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test multiple toggles
-    component.toggleSubmenu(item);
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-  });
-
-  it('debería manejar diferentes tipos de eventos de navegación', () => {
-    const navigationEvents = [
-      new NavigationEnd(1, '/dashboard/productos', '/dashboard/registro'),
-      new NavigationEnd(2, '/dashboard/registro', '/dashboard/reportes'),
-      new NavigationEnd(3, '/dashboard/reportes', '/plan'),
-    ];
-
-    navigationEvents.forEach(event => {
-      routerEvents$.next(event);
-      expect(component.menuItems().length).toBeGreaterThan(0);
-    });
-  });
-
-  it('debería manejar diferentes estados de logo', () => {
-    // Test initial state
-    expect(component.logoError()).toBeFalsy();
-
-    // Test error state
-    component.onLogoError(new Event('error'));
-    expect(component.logoError()).toBeTruthy();
-
-    // Test multiple error events
-    component.onLogoError(new Event('error'));
-    expect(component.logoError()).toBeTruthy();
-  });
-
-  it('debería manejar diferentes tipos de items de menú', () => {
-    const menuItems = component.menuItems();
-
-    menuItems.forEach(item => {
-      expect(item.id).toBeDefined();
-      expect(item.label).toBeDefined();
-      expect(item.icon).toBeDefined();
-      expect(item.path).toBeDefined();
-    });
-  });
-
-  it('debería manejar diferentes rutas de navegación', () => {
-    const testRoutes = [
-      '/dashboard/productos',
-      '/dashboard/registro',
-      '/dashboard/reportes',
-      '/plan',
-      '/rutas',
-    ];
-
-    testRoutes.forEach(route => {
-      urlSpy.and.returnValue(route);
-      const item = component.menuItems()[0];
-      const isActive = component.isActive(item);
-      expect(typeof isActive).toBe('boolean');
-    });
-  });
-
-  it('debería manejar diferentes estados de expansión', () => {
-    const item = component.menuItems()[0];
-
-    // Test initial state
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test toggle
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-
-    // Test multiple toggles
-    component.toggleSubmenu(item);
-    component.toggleSubmenu(item);
-    expect(component.menuItems().length).toBeGreaterThan(0);
-  });
-
-  it('debería manejar diferentes tipos de eventos', () => {
-    const events = [new Event('error'), new Event('load'), new Event('click')];
-
-    events.forEach(event => {
-      component.onLogoError(event);
-      expect(component.logoError()).toBeTruthy();
-    });
-  });
-
-  it('debería manejar diferentes configuraciones de menú cuando es admin (segunda prueba)', () => {
-    authServiceSpy.isAdmin.and.returnValue(true);
-    component.ngOnInit();
-    const menuItems = component.menuItems();
-
-    expect(menuItems.length).toBe(5);
-
-    // Test each menu item
-    expect(menuItems[0].id).toBe('producto');
-    expect(menuItems[1].id).toBe('registro');
-    expect(menuItems[2].id).toBe('plan-venta');
-    expect(menuItems[3].id).toBe('reportes');
-    expect(menuItems[4].id).toBe('rutas');
   });
 });
