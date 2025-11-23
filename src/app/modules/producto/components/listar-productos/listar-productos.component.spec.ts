@@ -21,7 +21,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
 import { of, Subject, throwError } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 
 describe('ListarProductosComponent', () => {
   let component: ListarProductosComponent;
@@ -278,7 +277,8 @@ describe('ListarProductosComponent', () => {
     it('should navigate to product form for adding new product successfully', () => {
       component.addProduct();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
+      expect(router.navigate).toHaveBeenCalledWith(['../producto'], {
+        relativeTo: jasmine.any(Object),
         queryParams: {
           action: 'new',
           source: 'productos',
@@ -303,7 +303,8 @@ describe('ListarProductosComponent', () => {
       component.editProduct(mockProducts[0]);
 
       expect(consoleSpy).toHaveBeenCalledWith(mockProducts[0]);
-      expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
+      expect(router.navigate).toHaveBeenCalledWith(['../producto'], {
+        relativeTo: jasmine.any(Object),
         state: {
           product: mockProducts[0],
           action: 'edit',
