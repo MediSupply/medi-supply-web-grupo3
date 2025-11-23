@@ -113,6 +113,76 @@ describe('CargarProductoComponent', () => {
       nameControl?.markAsTouched();
       expect(component.getFieldError('name')).toBe('Este campo es requerido');
     });
+
+    it('debe retornar error required', () => {
+      const control = component.productForm.get('name');
+      control?.setErrors({ required: true });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('name');
+
+      expect(result).toBe('Este campo es requerido');
+    });
+
+    it('debe retornar error minlength', () => {
+      const control = component.productForm.get('name');
+      control?.setErrors({ minlength: { requiredLength: 5 } });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('name');
+
+      expect(result).toBe('Mínimo 5 caracteres');
+    });
+
+    it('debe retornar error maxlength', () => {
+      const control = component.productForm.get('name');
+      control?.setErrors({ maxlength: { requiredLength: 10 } });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('name');
+
+      expect(result).toBe('Máximo 10 caracteres');
+    });
+
+    it('debe retornar error min', () => {
+      const control = component.productForm.get('price');
+      control?.setErrors({ min: { min: 5 } });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('price');
+
+      expect(result).toBe('El valor mínimo es 5');
+    });
+
+    it('debe retornar error max', () => {
+      const control = component.productForm.get('price');
+      control?.setErrors({ max: { max: 100 } });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('price');
+
+      expect(result).toBe('El valor máximo es 100');
+    });
+
+    it('debe retornar error pattern', () => {
+      const control = component.productForm.get('name');
+      control?.setErrors({ pattern: true });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('name');
+
+      expect(result).toBe('Formato inválido');
+    });
+
+    it('debe retornar error positiveNumber', () => {
+      const control = component.productForm.get('price');
+      control?.setErrors({ positiveNumber: true });
+      control?.markAsTouched();
+
+      const result = component.getFieldError('price');
+
+      expect(result).toBe('Debe ser un número positivo');
+    });
   });
 
   describe('Form Submission', () => {
