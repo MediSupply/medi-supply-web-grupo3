@@ -1,6 +1,5 @@
-
-import { Category } from "./category";
-import { Provider } from "./provider";
+// import { Category } from "./category"; // Archivo eliminado durante rebase
+// import { Provider } from "./provider";
 
 export interface Product {
     id: number;

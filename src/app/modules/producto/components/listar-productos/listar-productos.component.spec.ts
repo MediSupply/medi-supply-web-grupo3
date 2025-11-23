@@ -2,6 +2,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { ListarProductosComponent } from './listar-productos.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -75,6 +76,7 @@ describe('ListarProductosComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ListarProductosComponent,
+        RouterTestingModule,
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
@@ -104,8 +106,12 @@ describe('ListarProductosComponent', () => {
 
     afterEach(() => {
     // Limpiar cualquier spy o mock
-    productService.getAllProducts.calls.reset();
-    router.navigate.calls.reset();
+    if(productService && productService.getAllProducts) {
+      productService.getAllProducts.calls.reset();
+    }
+    if(router && router.navigate) {
+      router.navigate.calls.reset();
+    }
     if(fixture){
       fixture.destroy();
     }
