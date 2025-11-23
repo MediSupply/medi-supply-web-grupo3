@@ -41,7 +41,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private routerSubscription!: Subscription;
   logoError = signal(false);
-  
+
   private isAdmin = signal<boolean>(this.authService.isAdmin());
   private allMenuItems = signal<MenuItem[]>([
     {

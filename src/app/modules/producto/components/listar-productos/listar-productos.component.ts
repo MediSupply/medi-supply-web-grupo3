@@ -63,7 +63,7 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
 
   constructor(
     private productService: ProductoService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -80,36 +80,36 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
     this.productService
       .getAllProducts()
       .pipe(
-          finalize(() => {
-            setTimeout(() => {
-              //this.cargando = false;
-            }, 400);
-          })
-        )
+        finalize(() => {
+          setTimeout(() => {
+            //this.cargando = false;
+          }, 400);
+        })
+      )
       .subscribe({
         next: (response: any) => {
           const products = this.productService.productsSignal();
           if (products.length === 0) {
-          this.snackBar.open('No hay productos registrados', 'Cerrar', {
-            duration: 3000,
-          });
-          } 
-          else {
+            this.snackBar.open('No hay productos registrados', 'Cerrar', {
+              duration: 3000,
+            });
+          } else {
             this.dataSource.data = products;
           }
         },
-         error: (err: any) => {
+        error: (err: any) => {
           if (err.status === 401) {
             this.mensaje = 'Usuario no autorizado';
           } else {
-            this.mensaje = 'Error al consultar la información, intente nuevamente';
+            this.mensaje =
+              'Error al consultar la información, intente nuevamente';
           }
           this.snackBar.open(this.mensaje, 'Cerrar', {
             duration: 3000,
           });
           console.error('Error:', err);
         },
-    });
+      });
   }
 
   applyFilter(event: Event) {
@@ -119,9 +119,9 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
     if (this.dataSource.filteredData.length === 0) {
-        this.snackBar.open("Producto no encontrado", 'Cerrar', {
-          duration: 3000,
-        });
+      this.snackBar.open('Producto no encontrado', 'Cerrar', {
+        duration: 3000,
+      });
     }
   }
 
@@ -145,8 +145,7 @@ export class ListarProductosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  locateProduct(){
-    this.router.navigate(['/dashboard/localizar-producto'])
+  locateProduct() {
+    this.router.navigate(['/dashboard/localizar-producto']);
   }
-  
 }

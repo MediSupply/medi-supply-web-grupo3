@@ -9,6 +9,6 @@ import { Component, Input } from '@angular/core';
   styleUrl: './loader.component.scss',
 })
 export class LoaderComponent {
-  @Input() show = false; 
+  @Input() show = false;
   @Input() message = 'Cargando...';
 }

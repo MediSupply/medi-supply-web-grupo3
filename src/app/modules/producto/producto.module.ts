@@ -6,6 +6,11 @@ import { LocalizarProductoComponent } from './components/localizar-producto/loca
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule,CargarProductoComponent,ListarProductosComponent, LocalizarProductoComponent ],
+  imports: [
+    CommonModule,
+    CargarProductoComponent,
+    ListarProductosComponent,
+    LocalizarProductoComponent,
+  ],
 })
 export class ProductoModule {}

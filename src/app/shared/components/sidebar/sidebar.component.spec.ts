@@ -264,7 +264,7 @@ describe('SidebarComponent', () => {
   it('debería tener rutas correctas en los menús', () => {
     authServiceSpy.isAdmin.and.returnValue(true);
     const menuItems = component.menuItems();
-    
+
     expect(menuItems[0].path).toBe('/dashboard/productos');
     expect(menuItems[1].path).toBe('/dashboard/plan');
     expect(menuItems[2].path).toBe('/dashboard/reportes');
@@ -299,7 +299,6 @@ describe('SidebarComponent', () => {
   });
 
   it('debería mantener estado de logo error', () => {
-
     fixture.detectChanges();
     expect(component.logoError()).toBeFalsy();
 
@@ -555,7 +554,6 @@ describe('SidebarComponent', () => {
   it('debería manejar diferentes configuraciones de menú', () => {
     authServiceSpy.isAdmin.and.returnValue(true);
     const menuItems = component.menuItems();
-    
 
     expect(menuItems.length).toBe(4);
 

@@ -15,7 +15,7 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
 
   const excludedUrls = ['ignore-loader', 'assets/'];
   const shouldExclude = excludedUrls.some(url => req.url.includes(url));
-  
+
   if (shouldExclude) {
     return next(req);
   }
@@ -26,15 +26,15 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        console.log(router.url)
-        snackBar.open("Usuario no autorizado", 'Cerrar', {
+        console.log(router.url);
+        snackBar.open('Usuario no autorizado', 'Cerrar', {
           duration: 3000,
         });
         router.navigate(['/login'], {
-          queryParams: { returnUrl: router.url }
+          queryParams: { returnUrl: router.url },
         });
       }
-      
+
       return throwError(() => error);
     }),
     finalize(() => {

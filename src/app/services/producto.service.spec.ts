@@ -24,7 +24,8 @@ describe('ProductoService', () => {
       valor_unitario: 12000,
       cantidad_disponible: 85,
       categoria: '2',
-      condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+      condiciones_almacenamiento:
+        'Proteger de la luz. Mantener en envase original',
       fecha_vencimiento: '2026-03-20',
       lote: 'LOT-IB202401',
       id_proveedor: '2',
@@ -39,7 +40,8 @@ describe('ProductoService', () => {
       valor_unitario: 18500,
       cantidad_disponible: 60,
       categoria: '3',
-      condiciones_almacenamiento: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      condiciones_almacenamiento:
+        'Refrigerar entre 2°C y 8°C después de reconstituir',
       fecha_vencimiento: '2024-11-30',
       lote: 'LOT-AM202402',
       id_proveedor: '3',
@@ -54,7 +56,8 @@ describe('ProductoService', () => {
     valor_unitario: 12000,
     cantidad_disponible: 85,
     categoria: '2',
-    condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+    condiciones_almacenamiento:
+      'Proteger de la luz. Mantener en envase original',
     fecha_vencimiento: '2026-03-20',
     lote: 'LOT-IB202401',
     id_proveedor: '2',
@@ -63,7 +66,7 @@ describe('ProductoService', () => {
   };
   const mockCreatedProduct: Product = {
     id: 4,
-    ...newProduct
+    ...newProduct,
   };
 
   beforeEach(() => {
@@ -78,28 +81,28 @@ describe('ProductoService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('debería manejar la carga exitosa de productos', (done) => {
+  it('debería manejar la carga exitosa de productos', done => {
     const mockResponse: ProductsResponse = {
       products: mockProducts,
     };
 
     service.getAllProducts().subscribe({
-      next: (result) => {
+      next: result => {
         //expect(service.products()).toEqual(mockProducts);
         expect(service.loading()).toBeFalse();
         expect(service.error()).toBeNull();
         done();
       },
-      error: done.fail
+      error: done.fail,
     });
 
     expect(service.loading()).toBeFalse();
 
     const req = httpMock.expectOne('http://localhost:5001/productos');
     expect(req.request.method).toBe('GET');
-    
+
     expect(req.request.headers.get('Authorization')).toContain('Bearer');
-    
+
     req.flush(mockResponse);
   });
 
@@ -119,14 +122,14 @@ describe('ProductoService', () => {
     req.flush(mockResponse);
   });
 
-   it('debería crear un nuevo producto exitosamente', (done) => {
+  it('debería crear un nuevo producto exitosamente', done => {
     service.createProduct(newProduct).subscribe({
-      next: (response) => {
+      next: response => {
         expect(service.loading()).toBeFalse();
         expect(service.error()).toBeNull();
         done();
       },
-      error: done.fail
+      error: done.fail,
     });
 
     const req = httpMock.expectOne('http://localhost:5001/productos/crear');
@@ -134,53 +137,53 @@ describe('ProductoService', () => {
     expect(req.request.body).toEqual(newProduct);
     expect(req.request.headers.get('Authorization')).toContain('Bearer');
     expect(req.request.headers.get('Content-Type')).toBe('application/json');
-    
+
     req.flush(mockCreatedProduct);
   });
 
-  it('debería manejar errores al cargar productos', (done) => {
+  it('debería manejar errores al cargar productos', done => {
     service.getAllProducts().subscribe({
       next: () => {
         done.fail('No debería tener éxito cuando hay error');
       },
-      error: (error) => {
+      error: error => {
         expect(service.loading()).toBeFalse();
         expect(service.error()).toContain('Error cargando productos');
         expect(service.products()).toEqual([]);
         done();
-      }
+      },
     });
 
     expect(service.loading()).toBeFalse();
 
     const req = httpMock.expectOne('http://localhost:5001/productos');
     expect(req.request.method).toBe('GET');
-    
-    req.flush('Error del servidor', { 
-      status: 500, 
-      statusText: 'Internal Server Error' 
+
+    req.flush('Error del servidor', {
+      status: 500,
+      statusText: 'Internal Server Error',
     });
   });
 
-  it('debería manejar errores al crear producto', (done) => {
+  it('debería manejar errores al crear producto', done => {
     service.createProduct(newProduct).subscribe({
       next: () => {
         done.fail('No debería tener éxito cuando hay error');
       },
-      error: (error) => {
+      error: error => {
         expect(service.loading()).toBeFalse();
         expect(service.error()).toContain('Error cargando productos');
         done();
-      }
+      },
     });
 
     const req = httpMock.expectOne('http://localhost:5001/productos/crear');
     expect(req.request.method).toBe('POST');
-    
+
     // Simular error
-    req.flush('Error del servidor', { 
-      status: 400, 
-      statusText: 'Bad Request' 
+    req.flush('Error del servidor', {
+      status: 400,
+      statusText: 'Bad Request',
     });
   });
 });

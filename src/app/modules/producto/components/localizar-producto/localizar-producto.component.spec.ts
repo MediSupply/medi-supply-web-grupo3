@@ -17,11 +17,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
-import { of, Subject, throwError } from 'rxjs';
-import { DebugElement } from '@angular/core';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { DebugElement, signal } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ProductoService } from '../../../../services/producto.service';
 import { LocalizarProductoComponent } from './localizar-producto.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 describe('LocalizarProductoComponent', () => {
@@ -31,6 +32,7 @@ describe('LocalizarProductoComponent', () => {
     let productService: jasmine.SpyObj<ProductoService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let debugElement: DebugElement;
+    let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   
     const futureDate = new Date();
     futureDate.setMonth(futureDate.getMonth() + 3);
@@ -85,11 +87,24 @@ describe('LocalizarProductoComponent', () => {
   
     beforeEach(async () => {
       routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+      snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+      
+      const productsSignal = signal<Product[]>([]);
+      const loadingSignal = signal<boolean>(false);
+      const errorSignal = signal<string | null>(null);
+
       const productServiceSpy = jasmine.createSpyObj('ProductoService', [
         'getAllProducts',
-      ]);
+      ], {
+        productsSignal: productsSignal,
+        loadingSignal: loadingSignal,
+        errorSignal: errorSignal,
+        products: productsSignal.asReadonly(),
+        loading: loadingSignal.asReadonly(),
+        error: errorSignal.asReadonly()
+      });
+
       activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
-        // Agrega este spy
         snapshot: {
           paramMap: new Map(),
           queryParamMap: new Map(),
@@ -111,6 +126,7 @@ describe('LocalizarProductoComponent', () => {
           { provide: ProductoService, useValue: productServiceSpy },
           { provide: Router, useValue: routerSpy },
           { provide: ActivatedRoute, useValue: activatedRouteSpy },
+          { provide: MatSnackBar, useValue: snackBarSpy },
         ],
       }).compileComponents();
   
@@ -227,5 +243,87 @@ describe('LocalizarProductoComponent', () => {
         expect(headerCells[4].textContent.trim()).toBe('UBICACIÓN');
       });
     });
+  describe('loadProducts', () => {
+    it('should load products successfully and set dataSource when products exist', fakeAsync(() => {
+      const productsSignal = signal<Product[]>(mockProducts);
+  
+      Object.defineProperty(productService, 'productsSignal', {
+        get: () => productsSignal
+      });
+
+      productService.getAllProducts.and.returnValue(of(mockProducts));
+      spyOn(console, 'error');
+      component.loadProducts();
+      expect(component.loading()).toBeTrue();
+
+      tick(500);
+
+      expect(productService.getAllProducts).toHaveBeenCalled();
+      expect(component.dataSource.data).toEqual(mockProducts);
+      expect(snackBarSpy.open).toHaveBeenCalled();
+      expect(component.loading()).toBeTrue();
+    }));
+
+    it('should show snackbar when no products are returned', fakeAsync(() => {
+      productService.getAllProducts.and.returnValue(of());
+      spyOn(console, 'error');
+
+      component.loadProducts();
+      tick(500);
+
+      expect(productService.getAllProducts).toHaveBeenCalled();
+      expect(snackBarSpy.open).toHaveBeenCalledWith(
+        'No hay productos registrados', 'Cerrar', { duration: 3000 }
+      );
+      expect(component.dataSource.data).toEqual([]);
+      expect(component.loading()).toBeTrue();
+    }));
+
+    it('should handle 401 unauthorized error', fakeAsync(() => {
+      const error401 = { status: 401, message: 'Unauthorized' };
+      productService.getAllProducts.and.returnValue(throwError(() => error401));
+      spyOn(console, 'error');
+
+      component.loadProducts();
+      tick(500);
+
+      expect(productService.getAllProducts).toHaveBeenCalled();
+      expect(snackBarSpy.open).toHaveBeenCalledWith(
+        'Usuario no autorizado', 'Cerrar', { duration: 3000 }
+      );
+      expect(console.error).toHaveBeenCalledWith('Error:', error401);
+      expect(component.loading()).toBeTrue();
+    }));
+
+    it('should handle generic error', fakeAsync(() => {
+      const genericError = { status: 500, message: 'Server Error' };
+      productService.getAllProducts.and.returnValue(throwError(() => genericError));
+      spyOn(console, 'error');
+
+      component.loadProducts();
+      tick(500);
+
+      expect(productService.getAllProducts).toHaveBeenCalled();
+      expect(snackBarSpy.open).toHaveBeenCalledWith(
+        'Error al consultar la información, intente nuevamente', 'Cerrar', { duration: 3000 }
+      );
+      expect(console.error).toHaveBeenCalledWith('Error:', genericError);
+      expect(component.loading()).toBeTrue();
+    }));
+
+    it('should set loading to true immediately when called', () => {
+      productService.getAllProducts.and.returnValue(new Observable());
+      component.loadProducts();
+
+      expect(component.loading()).toBeTrue();
+    });
   });
+
+  it('should call loadProducts on ngOnInit', () => {
+    spyOn(component, 'loadProducts');
+    component.ngOnInit();
+    
+    expect(component.loadProducts).toHaveBeenCalled();
+  });
+});
   

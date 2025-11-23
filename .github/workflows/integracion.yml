@@ -2,14 +2,14 @@ name: PR Validation
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
     types: [opened, synchronize, reopened]
 
 jobs:
   validate:
     name: Tests and Coverage
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
@@ -48,35 +48,35 @@ jobs:
           # Crear script para verificar coverage por archivo
           cat > check_coverage.sh << 'EOF'
           #!/bin/bash
-          
+
           COVERAGE_FILE="coverage/coverage-summary.json"
           MIN_COVERAGE=80
           FAILED_FILES=""
-          
+
           if [ ! -f "$COVERAGE_FILE" ]; then
             echo "❌ ERROR: No se encontró el archivo de coverage"
             exit 1
           fi
-          
+
           echo "Verificando coverage por archivo (mínimo ${MIN_COVERAGE}%)..."
           echo ""
-          
+
           # Obtener coverage total
           TOTAL_LINES=$(cat $COVERAGE_FILE | jq '.total.lines.pct')
           TOTAL_STATEMENTS=$(cat $COVERAGE_FILE | jq '.total.statements.pct')
           TOTAL_FUNCTIONS=$(cat $COVERAGE_FILE | jq '.total.functions.pct')
           TOTAL_BRANCHES=$(cat $COVERAGE_FILE | jq '.total.branches.pct')
-          
+
           echo "📊 Coverage General:"
           echo "  Lines:      ${TOTAL_LINES}%"
           echo "  Statements: ${TOTAL_STATEMENTS}%"
           echo "  Functions:  ${TOTAL_FUNCTIONS}%"
           echo "  Branches:   ${TOTAL_BRANCHES}%"
           echo ""
-          
+
           # Verificar cada archivo
           FILES=$(cat $COVERAGE_FILE | jq -r 'to_entries | .[] | select(.key != "total") | .key')
-          
+
           while IFS= read -r file; do
             # Ignorar archivos de configuración, spec, y node_modules
             if [[ $file =~ \.spec\.ts$ ]] || \
@@ -97,7 +97,7 @@ jobs:
               fi
             fi
           done <<< "$FILES"
-          
+
           if [ -n "$FAILED_FILES" ]; then
             echo ""
             echo "❌ Los siguientes archivos no cumplen con el coverage mínimo del ${MIN_COVERAGE}%:"
@@ -108,7 +108,7 @@ jobs:
             echo "✅ Todos los archivos cumplen con el coverage mínimo del ${MIN_COVERAGE}%"
           fi
           EOF
-          
+
           chmod +x check_coverage.sh
           ./check_coverage.sh
 

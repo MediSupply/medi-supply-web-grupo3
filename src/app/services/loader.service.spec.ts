@@ -6,7 +6,7 @@ describe('LoaderService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LoaderService]
+      providers: [LoaderService],
     });
     service = TestBed.inject(LoaderService);
   });
@@ -16,14 +16,14 @@ describe('LoaderService', () => {
       expect(service).toBeTruthy();
     });
 
-    it('debería tener estado inicial de loading en false', (done) => {
+    it('debería tener estado inicial de loading en false', done => {
       service.loading$.subscribe(loading => {
         expect(loading).toBeFalse();
         done();
       });
     });
 
-    it('debería tener mensaje inicial "Cargando..."', (done) => {
+    it('debería tener mensaje inicial "Cargando..."', done => {
       service.message$.subscribe(message => {
         expect(message).toBe('Cargando...');
         done();
@@ -63,15 +63,15 @@ describe('LoaderService', () => {
 
     it('debería actualizar tanto el loading como el mensaje', fakeAsync(() => {
       const customMessage = 'Procesando...';
-      
+
       service.show(customMessage);
       tick();
 
       let loadingValue: boolean;
       let messageValue: string;
 
-      service.loading$.subscribe(loading => loadingValue = loading);
-      service.message$.subscribe(message => messageValue = message);
+      service.loading$.subscribe(loading => (loadingValue = loading));
+      service.message$.subscribe(message => (messageValue = message));
 
       expect(loadingValue!).toBeTrue();
       expect(messageValue!).toBe(customMessage);
@@ -100,7 +100,7 @@ describe('LoaderService', () => {
 
     it('debería mantener el mensaje al ocultar', fakeAsync(() => {
       const customMessage = 'Cargando usuarios...';
-      
+
       service.show(customMessage);
       tick();
 
@@ -218,7 +218,7 @@ describe('LoaderService', () => {
   });
 
   describe('Métodos observables', () => {
-    it('debería emitir nuevos valores a los observables', (done) => {
+    it('debería emitir nuevos valores a los observables', done => {
       const loadingValues: boolean[] = [];
       const messageValues: string[] = [];
 

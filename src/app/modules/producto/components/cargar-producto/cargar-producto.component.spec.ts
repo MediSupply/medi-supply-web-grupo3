@@ -31,7 +31,9 @@ describe('CargarProductoComponent', () => {
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
-    productServiceSpy = jasmine.createSpyObj('ProductoService', ['createProduct']);
+    productServiceSpy = jasmine.createSpyObj('ProductoService', [
+      'createProduct',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -44,12 +46,12 @@ describe('CargarProductoComponent', () => {
         MatDatepickerModule,
         MatNativeDateModule,
         MatIconModule,
-        HttpClientTestingModule
+        HttpClientTestingModule,
       ],
       providers: [
         { provide: Router, useValue: routerSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
-        { provide: ProductoService, useValue: productServiceSpy }
+        { provide: ProductoService, useValue: productServiceSpy },
       ],
     }).compileComponents();
 
@@ -65,9 +67,11 @@ describe('CargarProductoComponent', () => {
   });
 
   it('should submit valid form and reset it', () => {
-    productServiceSpy.createProduct.and.returnValue(of({ success: true }).pipe(
-      finalize(() => {}) // Mock del pipe
-    ));
+    productServiceSpy.createProduct.and.returnValue(
+      of({ success: true }).pipe(
+        finalize(() => {}) // Mock del pipe
+      )
+    );
 
     // Espiar console.log si es necesario
     spyOn(console, 'log');
@@ -86,7 +90,7 @@ describe('CargarProductoComponent', () => {
       proveedor: '2',
       tiempo_estimado_entrega: '24 horas',
       condiciones_almacenamiento: 'Wertyui',
-      ubicacion: 'Bodega 3'
+      ubicacion: 'Bodega 3',
     });
 
     expect(component.productForm.valid).toBeTrue();
@@ -115,7 +119,7 @@ describe('CargarProductoComponent', () => {
       proveedor: '',
       tiempo_estimado_entrega: '',
       condiciones_almacenamiento: '',
-      ubicacion:''
+      ubicacion: '',
     });
 
     component.onSubmit();
@@ -126,7 +130,7 @@ describe('CargarProductoComponent', () => {
     initializeComponent();
 
     expect(component.productForm).toBeDefined();
-    
+
     component.productForm.patchValue({
       nombre: 'Test Product',
       descripcion: 'Test descripcion',
@@ -138,12 +142,12 @@ describe('CargarProductoComponent', () => {
       lote: 'TEST123',
       proveedor: '1',
       tiempo_estimado_entrega: '24 horas',
-      ubicacion:'Bodega 2'
+      ubicacion: 'Bodega 2',
     });
     expect(component.productForm.dirty).toBeFalse();
     component.onCancel();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard/productos']);
-    
+
     expect(component.productForm.pristine).toBeTrue();
     expect(component.productForm.value).toEqual({
       nombre: null,
@@ -156,7 +160,7 @@ describe('CargarProductoComponent', () => {
       lote: null,
       proveedor: null,
       tiempo_estimado_entrega: null,
-      ubicacion: null
+      ubicacion: null,
     });
   });
 
@@ -248,7 +252,9 @@ describe('CargarProductoComponent', () => {
       const control = component.valor_unitario;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('valor_unitario')).toBe('Este campo es requerido');
+      expect(component.getFieldError('valor_unitario')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -260,7 +266,9 @@ describe('CargarProductoComponent', () => {
       const control = component.valor_unitario;
       control?.setValue(-9);
       control?.markAsTouched();
-      expect(component.getFieldError('valor_unitario')).toBe('El valor mínimo es 0');
+      expect(component.getFieldError('valor_unitario')).toBe(
+        'El valor mínimo es 0'
+      );
     });
 
     it('should return required error', () => {
@@ -286,7 +294,9 @@ describe('CargarProductoComponent', () => {
       const control = component.cantidad_disponible;
       control?.setValue('');
       control?.markAsTouched();
-      expect(component.getFieldError('cantidad_disponible')).toBe('Este campo es requerido');
+      expect(component.getFieldError('cantidad_disponible')).toBe(
+        'Este campo es requerido'
+      );
     });
 
     it('should return required error', () => {
@@ -298,7 +308,9 @@ describe('CargarProductoComponent', () => {
       const control = component.cantidad_disponible;
       control?.setValue(-9);
       control?.markAsTouched();
-      expect(component.getFieldError('cantidad_disponible')).toBe('El valor mínimo es 0');
+      expect(component.getFieldError('cantidad_disponible')).toBe(
+        'El valor mínimo es 0'
+      );
     });
 
     it('should return required error', () => {
@@ -310,7 +322,9 @@ describe('CargarProductoComponent', () => {
       const control = component.cantidad_disponible;
       control?.setValue('ab4');
       control?.markAsTouched();
-      expect(component.getFieldError('cantidad_disponible')).toBe('Formato inválido');
+      expect(component.getFieldError('cantidad_disponible')).toBe(
+        'Formato inválido'
+      );
     });
 
     it('should return required error', () => {
@@ -350,7 +364,9 @@ describe('CargarProductoComponent', () => {
       const control = component.condiciones_almacenamiento;
       control?.setValue('ab');
       control?.markAsTouched();
-      expect(component.getFieldError('condiciones_almacenamiento')).toBe('Mínimo 5 caracteres');
+      expect(component.getFieldError('condiciones_almacenamiento')).toBe(
+        'Mínimo 5 caracteres'
+      );
     });
 
     it('should return required error', () => {

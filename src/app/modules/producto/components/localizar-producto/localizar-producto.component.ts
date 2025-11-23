@@ -22,7 +22,6 @@ import { ProductoService } from '../../../../services/producto.service';
 import { finalize } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-
 @Component({
   selector: 'app-localizar-producto',
   standalone: true,
@@ -40,7 +39,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatDialogModule,
   ],
   templateUrl: './localizar-producto.component.html',
-  styleUrl: './localizar-producto.component.scss'
+  styleUrl: './localizar-producto.component.scss',
 })
 export class LocalizarProductoComponent implements OnInit, AfterViewInit {
   private dialog = inject(MatDialog);
@@ -63,7 +62,7 @@ export class LocalizarProductoComponent implements OnInit, AfterViewInit {
 
   constructor(
     private productService: ProductoService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -80,36 +79,36 @@ export class LocalizarProductoComponent implements OnInit, AfterViewInit {
     this.productService
       .getAllProducts()
       .pipe(
-          finalize(() => {
-            setTimeout(() => {
-              //this.cargando = false;
-            }, 400);
-          })
-        )
+        finalize(() => {
+          setTimeout(() => {
+            //this.cargando = false;
+          }, 400);
+        })
+      )
       .subscribe({
         next: (response: any) => {
           const products = this.productService.productsSignal();
           if (products.length === 0) {
-          this.snackBar.open('No hay productos registrados', 'Cerrar', {
+            this.snackBar.open('No hay productos registrados', 'Cerrar', {
               duration: 3000,
             });
-          }
-          else {
+          } else {
             this.dataSource.data = products;
           }
         },
-         error: (err: any) => {
+        error: (err: any) => {
           if (err.status === 401) {
             this.mensaje = 'Usuario no autorizado';
           } else {
-            this.mensaje = 'Error al consultar la información, intente nuevamente';
+            this.mensaje =
+              'Error al consultar la información, intente nuevamente';
           }
           this.snackBar.open(this.mensaje, 'Cerrar', {
             duration: 3000,
           });
           console.error('Error:', err);
         },
-    });
+      });
   }
 
   applyFilter(event: Event) {
@@ -119,9 +118,9 @@ export class LocalizarProductoComponent implements OnInit, AfterViewInit {
       this.dataSource.paginator.firstPage();
     }
     if (this.dataSource.filteredData.length === 0) {
-        this.snackBar.open("Producto no encontrado", 'Cerrar', {
-          duration: 3000,
-        });
+      this.snackBar.open('Producto no encontrado', 'Cerrar', {
+        duration: 3000,
+      });
     }
   }
 
@@ -148,5 +147,4 @@ export class LocalizarProductoComponent implements OnInit, AfterViewInit {
   onCancel(): void {
     this.router.navigate(['/dashboard/productos']);
   }
-
 }

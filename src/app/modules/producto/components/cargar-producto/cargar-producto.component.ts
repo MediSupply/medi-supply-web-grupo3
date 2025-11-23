@@ -56,12 +56,12 @@ export class CargarProductoComponent implements OnInit {
   product: any;
   categorySelected: string = '';
   providerSelected: string = '';
-   mensaje = '';
+  mensaje = '';
 
   constructor(
     private router: Router,
     private snackBar: MatSnackBar,
-    private productService: ProductoService,
+    private productService: ProductoService
   ) {}
 
   providers = [
@@ -156,7 +156,10 @@ export class CargarProductoComponent implements OnInit {
         ],
       ],
       proveedor: [this.providerSelected, Validators.required],
-      tiempo_estimado_entrega: [this.product?.tiempo_estimado_entrega || '', Validators.required],
+      tiempo_estimado_entrega: [
+        this.product?.tiempo_estimado_entrega || '',
+        Validators.required,
+      ],
       ubicacion: [
         this.product?.ubicacion || '',
         [
@@ -236,35 +239,36 @@ export class CargarProductoComponent implements OnInit {
       const formData: any = this.productForm.value;
       this.loading.set(true);
       this.product = formData;
-      this.productService.createProduct(this.product)
-      .pipe(
+      this.productService
+        .createProduct(this.product)
+        .pipe(
           finalize(() => {
             setTimeout(() => {
               //this.cargando = false;
             }, 400);
           })
         )
-      .subscribe({
-        next: (response: any) => {
-          console.log(response)
-          this.snackBar.open("Producto registrado exitosamente", 'Cerrar', {
-            duration: 3000,
-          });
-          this.ngOnInit();
-        },
-        error: (err: any) => {
-          if (err.status === 401) {
-            this.mensaje = 'Usuario no autorizado';
-          } else {
-            this.mensaje = 'Error al consultar la información, intente nuevamente';
-          }
-          this.snackBar.open(this.mensaje, 'Cerrar', {
-            duration: 3000,
-          });
-          console.error('Error:', err);
-        },
-      });
-      
+        .subscribe({
+          next: (response: any) => {
+            console.log(response);
+            this.snackBar.open('Producto registrado exitosamente', 'Cerrar', {
+              duration: 3000,
+            });
+            this.ngOnInit();
+          },
+          error: (err: any) => {
+            if (err.status === 401) {
+              this.mensaje = 'Usuario no autorizado';
+            } else {
+              this.mensaje =
+                'Error al consultar la información, intente nuevamente';
+            }
+            this.snackBar.open(this.mensaje, 'Cerrar', {
+              duration: 3000,
+            });
+            console.error('Error:', err);
+          },
+        });
     } else {
       this.markAllFieldsAsTouched();
     }

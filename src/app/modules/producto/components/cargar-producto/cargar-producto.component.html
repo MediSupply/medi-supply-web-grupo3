@@ -99,7 +99,9 @@
                     placeholder="0"
                     min="0"
                   />
-                  <mat-error>{{ getFieldError('cantidad_disponible') }}</mat-error>
+                  <mat-error>{{
+                    getFieldError('cantidad_disponible')
+                  }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -132,7 +134,9 @@
                     [for]="picker"
                   ></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
-                  <mat-error>{{ getFieldError('fecha_vencimiento') }}</mat-error>
+                  <mat-error>{{
+                    getFieldError('fecha_vencimiento')
+                  }}</mat-error>
                 </mat-form-field>
               </div>
 
@@ -145,7 +149,9 @@
                     formControlName="condiciones_almacenamiento"
                     placeholder="Ej: Almacenar en lugar fresco y seco"
                   />
-                  <mat-error>{{ getFieldError('condiciones_almacenamiento') }}</mat-error>
+                  <mat-error>{{
+                    getFieldError('condiciones_almacenamiento')
+                  }}</mat-error>
                 </mat-form-field>
               </div>
             </div>
@@ -180,7 +186,9 @@
                     formControlName="tiempo_estimado_entrega"
                     placeholder="Ej: 24 horas"
                   />
-                  <mat-error>{{ getFieldError('tiempo_estimado_entrega') }}</mat-error>
+                  <mat-error>{{
+                    getFieldError('tiempo_estimado_entrega')
+                  }}</mat-error>
                 </mat-form-field>
               </div>
             </div>

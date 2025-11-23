@@ -45,12 +45,13 @@ describe('ListarProductosComponent', () => {
       valor_unitario: 8500,
       cantidad_disponible: 150,
       categoria: '1',
-      condiciones_almacenamiento: 'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
+      condiciones_almacenamiento:
+        'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
       fecha_vencimiento: expirationDateString,
       lote: 'LOT-AC202312',
       id_proveedor: '1',
       tiempo_estimado_entrega: '24-48 horas',
-      ubicacion: 'Bodega 1'
+      ubicacion: 'Bodega 1',
     },
     {
       id: 2,
@@ -60,12 +61,13 @@ describe('ListarProductosComponent', () => {
       valor_unitario: 12000,
       cantidad_disponible: 85,
       categoria: '2',
-      condiciones_almacenamiento: 'Proteger de la luz. Mantener en envase original',
+      condiciones_almacenamiento:
+        'Proteger de la luz. Mantener en envase original',
       fecha_vencimiento: expirationDateString,
       lote: 'LOT-IB202401',
       id_proveedor: '2',
       tiempo_estimado_entrega: '48-72 horas',
-      ubicacion: 'Bodega 2'
+      ubicacion: 'Bodega 2',
     },
     {
       id: 3,
@@ -75,15 +77,15 @@ describe('ListarProductosComponent', () => {
       valor_unitario: 18500,
       cantidad_disponible: 60,
       categoria: '3',
-      condiciones_almacenamiento: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      condiciones_almacenamiento:
+        'Refrigerar entre 2°C y 8°C después de reconstituir',
       fecha_vencimiento: expirationDateString,
       lote: 'LOT-AM202402',
       id_proveedor: '3',
       tiempo_estimado_entrega: '72 horas',
-      ubicacion: 'Bodega 3'
+      ubicacion: 'Bodega 3',
     },
   ];
-  
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -93,17 +95,19 @@ describe('ListarProductosComponent', () => {
     const loadingSignal = signal<boolean>(false);
     const errorSignal = signal<string | null>(null);
 
-    const productServiceSpy = jasmine.createSpyObj('ProductoService', [
-      'getAllProducts',
-    ], {
-      productsSignal: productsSignal,
-      loadingSignal: loadingSignal,
-      errorSignal: errorSignal,
-      products: productsSignal.asReadonly(),
-      loading: loadingSignal.asReadonly(),
-      error: errorSignal.asReadonly()
-    });
-    
+    const productServiceSpy = jasmine.createSpyObj(
+      'ProductoService',
+      ['getAllProducts'],
+      {
+        productsSignal: productsSignal,
+        loadingSignal: loadingSignal,
+        errorSignal: errorSignal,
+        products: productsSignal.asReadonly(),
+        loading: loadingSignal.asReadonly(),
+        error: errorSignal.asReadonly(),
+      }
+    );
+
     activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
       snapshot: {
         paramMap: new Map(),
@@ -248,10 +252,10 @@ describe('ListarProductosComponent', () => {
   describe('loadProducts', () => {
     it('should load products successfully and set dataSource when products exist', fakeAsync(() => {
       const productsSignal = signal<Product[]>(mockProducts);
-  
+
       // Sobrescribir la propiedad productsSignal del servicio
       Object.defineProperty(productService, 'productsSignal', {
-        get: () => productsSignal
+        get: () => productsSignal,
       });
 
       productService.getAllProducts.and.returnValue(of(mockProducts));
@@ -297,7 +301,9 @@ describe('ListarProductosComponent', () => {
 
       // Verificar que se mostró el snackbar de "no hay productos"
       expect(snackBarSpy.open).toHaveBeenCalledWith(
-        'No hay productos registrados', 'Cerrar', { duration: 3000 }
+        'No hay productos registrados',
+        'Cerrar',
+        { duration: 3000 }
       );
 
       // Verificar que el dataSource está vacío
@@ -322,7 +328,9 @@ describe('ListarProductosComponent', () => {
 
       // Verificar que se mostró el snackbar de error específico para 401
       expect(snackBarSpy.open).toHaveBeenCalledWith(
-        'Usuario no autorizado', 'Cerrar', { duration: 3000 }
+        'Usuario no autorizado',
+        'Cerrar',
+        { duration: 3000 }
       );
 
       // Verificar que se llamó console.error
@@ -334,7 +342,9 @@ describe('ListarProductosComponent', () => {
     it('should handle generic error', fakeAsync(() => {
       // Configurar el servicio para retornar error genérico
       const genericError = { status: 500, message: 'Server Error' };
-      productService.getAllProducts.and.returnValue(throwError(() => genericError));
+      productService.getAllProducts.and.returnValue(
+        throwError(() => genericError)
+      );
 
       // Espiar console.error
       spyOn(console, 'error');
@@ -348,7 +358,9 @@ describe('ListarProductosComponent', () => {
 
       // Verificar que se mostró el snackbar de error genérico
       expect(snackBarSpy.open).toHaveBeenCalledWith(
-        'Error al consultar la información, intente nuevamente', 'Cerrar', { duration: 3000 }
+        'Error al consultar la información, intente nuevamente',
+        'Cerrar',
+        { duration: 3000 }
       );
 
       // Verificar que se llamó console.error
