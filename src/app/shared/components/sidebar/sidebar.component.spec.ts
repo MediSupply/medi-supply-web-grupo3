@@ -590,7 +590,9 @@ describe('SidebarComponent', () => {
     });
   });
 
-  it('debería manejar diferentes configuraciones de menú', () => {
+  it('debería manejar diferentes configuraciones de menú cuando es admin (segunda prueba)', () => {
+    authServiceSpy.isAdmin.and.returnValue(true);
+    component.ngOnInit();
     const menuItems = component.menuItems();
 
     expect(menuItems.length).toBe(5);
