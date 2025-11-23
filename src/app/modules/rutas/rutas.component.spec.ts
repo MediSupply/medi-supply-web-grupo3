@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { RutasComponent, Pedido, RutaGenerada } from './rutas.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -243,44 +243,87 @@ describe('RutasComponent', () => {
 
   describe('Generación de ruta', () => {
     beforeEach(() => {
-      jasmine.clock().install();
+      snackBar.open.calls.reset();
     });
 
     afterEach(() => {
-      jasmine.clock().uninstall();
+      snackBar.open.calls.reset();
     });
 
     it('debería mostrar mensaje cuando no hay pedidos pendientes', () => {
-      component.pedidos.forEach(p => (p.estado = 'Completado'));
+      // Asegurar que todos los pedidos tengan estado diferente a 'Pendiente'
+      // Necesitamos modificar el array directamente
+      for (let i = 0; i < component.pedidos.length; i++) {
+        component.pedidos[i].estado = 'Completado';
+        component.pedidos[i].seleccionado = false;
+      }
+
+      // Verificar que efectivamente no hay pedidos pendientes
+      const pedidosPendientes = component.pedidos.filter(p => p.estado === 'Pendiente');
+      expect(pedidosPendientes.length).toBe(0);
+
+      // Espiar directamente el snackBar del componente
+      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
 
       component.generarRuta();
 
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(snackBarSpy).toHaveBeenCalled();
+      expect(snackBarSpy).toHaveBeenCalledWith(
         'No existen pedidos pendientes para generar ruta.',
         'Cerrar',
-        jasmine.any(Object)
+        {
+          duration: 4000,
+          panelClass: ['warning-snackbar'],
+        }
       );
     });
 
     it('debería mostrar mensaje cuando no hay pedidos seleccionados', () => {
-      component.pedidos.forEach(p => {
-        p.estado = 'Pendiente';
-        p.seleccionado = false;
-      });
+      // Asegurar que todos los pedidos estén pendientes pero no seleccionados
+      for (let i = 0; i < component.pedidos.length; i++) {
+        component.pedidos[i].estado = 'Pendiente';
+        component.pedidos[i].seleccionado = false;
+      }
+
+      // Verificar que hay pedidos pendientes pero ninguno seleccionado
+      const pedidosPendientes = component.pedidos.filter(p => p.estado === 'Pendiente');
+      const pedidosSeleccionados = component.pedidos.filter(p => p.seleccionado);
+      expect(pedidosPendientes.length).toBeGreaterThan(0);
+      expect(pedidosSeleccionados.length).toBe(0);
+
+      // Espiar directamente el snackBar del componente
+      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
 
       component.generarRuta();
 
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(snackBarSpy).toHaveBeenCalled();
+      expect(snackBarSpy).toHaveBeenCalledWith(
         'Por favor seleccione al menos un pedido para generar la ruta.',
         'Cerrar',
-        jasmine.any(Object)
+        {
+          duration: 4000,
+          panelClass: ['warning-snackbar'],
+        }
       );
     });
 
-    it('debería generar ruta exitosamente con pedidos seleccionados', () => {
+    it('debería generar ruta exitosamente con pedidos seleccionados', fakeAsync(() => {
+      // Configurar pedidos seleccionados
       component.pedidos.forEach(p => {
         p.estado = 'Pendiente';
         p.seleccionado = true;
+      });
+
+      // Espiar directamente el snackBar del componente
+      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+
+      // Mockear Date.now() para controlar el tiempo
+      // Primera llamada: inicioTiempo, Segunda llamada: después del cálculo
+      let callCount = 0;
+      spyOn(Date, 'now').and.callFake(() => {
+        callCount++;
+        // Primera llamada retorna 1000, segunda retorna 1010 (10ms de cálculo)
+        return callCount === 1 ? 1000 : 1010;
       });
 
       component.generarRuta();
@@ -289,7 +332,10 @@ describe('RutasComponent', () => {
       expect(component.mostrandoRuta).toBeFalse();
       expect(component.rutaGenerada).toBeNull();
 
-      jasmine.clock().tick(3000);
+      // Avanzar el tiempo para que se ejecute el setTimeout
+      // El delay es 3000 - (1010 - 1000) = 2990ms
+      tick(2990);
+      flush(); // Asegurar que todos los timers pendientes se completen
 
       expect(component.generandoRuta).toBeFalse();
       expect(component.mostrandoRuta).toBeTrue();
@@ -297,22 +343,33 @@ describe('RutasComponent', () => {
       expect(component.rutaGenerada?.pedidos.length).toBeGreaterThan(0);
       expect(component.rutaGenerada?.distanciaTotal).toBeDefined();
       expect(component.rutaGenerada?.tiempoEstimado).toBeDefined();
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(snackBarSpy).toHaveBeenCalledWith(
         'Ruta de entrega generada exitosamente.',
         'Cerrar',
-        jasmine.any(Object)
+        {
+          duration: 4000,
+          panelClass: ['success-snackbar'],
+        }
       );
-    });
+    }));
 
-    it('debería actualizar el estado de los pedidos después de generar ruta', () => {
+    it('debería actualizar el estado de los pedidos después de generar ruta', fakeAsync(() => {
       const pedidosSeleccionados = component.pedidos.slice(0, 3);
       pedidosSeleccionados.forEach(p => {
         p.estado = 'Pendiente';
         p.seleccionado = true;
       });
 
+      // Mockear Date.now()
+      let callCount = 0;
+      spyOn(Date, 'now').and.callFake(() => {
+        callCount++;
+        return callCount === 1 ? 1000 : 1010;
+      });
+
       component.generarRuta();
-      jasmine.clock().tick(3000);
+      tick(2990);
+      flush(); // Asegurar que todos los timers pendientes se completen
 
       pedidosSeleccionados.forEach(p => {
         const pedidoOriginal = component.pedidos.find(po => po.id === p.id);
@@ -326,24 +383,37 @@ describe('RutasComponent', () => {
           }
         }
       });
-    });
+    }));
 
     it('debería manejar error al generar ruta', () => {
-      spyOn(component, 'calcularRutaOptimizada').and.throwError(
-        'Error de cálculo'
-      );
+      // Configurar pedidos
       component.pedidos.forEach(p => {
         p.estado = 'Pendiente';
         p.seleccionado = true;
       });
 
+      // Espiar directamente el snackBar del componente
+      const snackBarSpy = spyOn((component as any).snackBar, 'open').and.callThrough();
+
+      // Mockear Date.now() para evitar problemas
+      spyOn(Date, 'now').and.returnValue(1000);
+      
+      // Hacer que calcularRutaOptimizada lance un error
+      spyOn(component, 'calcularRutaOptimizada').and.throwError(
+        'Error de cálculo'
+      );
+
       component.generarRuta();
 
       expect(component.generandoRuta).toBeFalse();
-      expect(snackBar.open).toHaveBeenCalledWith(
+      expect(snackBarSpy).toHaveBeenCalled();
+      expect(snackBarSpy).toHaveBeenCalledWith(
         'Ha ocurrido un error al generar la ruta, intente nuevamente.',
         'Cerrar',
-        jasmine.any(Object)
+        {
+          duration: 4000,
+          panelClass: ['error-snackbar'],
+        }
       );
     });
   });
