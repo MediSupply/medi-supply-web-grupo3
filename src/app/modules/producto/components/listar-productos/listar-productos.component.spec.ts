@@ -1,4 +1,9 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 
 import { ListarProductosComponent } from './listar-productos.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,11 +21,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
 import { of, Subject, throwError } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ListarProductosComponent', () => {
-    let component: ListarProductosComponent;
+  let component: ListarProductosComponent;
   let fixture: ComponentFixture<ListarProductosComponent>;
-  let router: jasmine.SpyObj<Router>;
+  let router: Router;
   let dialog: jasmine.SpyObj<MatDialog>;
   let productService: jasmine.SpyObj<ProductoService>;
   const futureDate = new Date();
@@ -28,91 +34,98 @@ describe('ListarProductosComponent', () => {
   const expirationDateString = futureDate.toISOString().split('T')[0];
   const mockProducts: Product[] = [
     {
-      "id": 1,
-      "name": "Acetaminofén 500mg",
-      "description": "Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre",
-      "price": 8500,
-      "amount": 150,
-      "category": "1",
-      "conditions": "Almacenar en lugar fresco y seco. Temperatura menor a 30°C",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-AC202312",
-      "provider":  "1",
-      "deliveryTime": "24-48 horas"
+      id: 1,
+      name: 'Acetaminofén 500mg',
+      description:
+        'Analgésico y antipirético para el alivio del dolor leve a moderado y fiebre',
+      price: 8500,
+      amount: 150,
+      category: '1',
+      conditions: 'Almacenar en lugar fresco y seco. Temperatura menor a 30°C',
+      expirationDate: expirationDateString,
+      batch: 'LOT-AC202312',
+      provider: '1',
+      deliveryTime: '24-48 horas',
     },
     {
-      "id": 2,
-      "name": "Ibuprofeno 400mg",
-      "description": "Antiinflamatorio no esteroideo para dolor, inflamación y fiebre",
-      "price": 12000,
-      "amount": 85,
-      "category": "2",
-      "conditions": "Proteger de la luz. Mantener en envase original",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-IB202401",
-      "provider": "2",
-      "deliveryTime": "48-72 horas"
+      id: 2,
+      name: 'Ibuprofeno 400mg',
+      description:
+        'Antiinflamatorio no esteroideo para dolor, inflamación y fiebre',
+      price: 12000,
+      amount: 85,
+      category: '2',
+      conditions: 'Proteger de la luz. Mantener en envase original',
+      expirationDate: expirationDateString,
+      batch: 'LOT-IB202401',
+      provider: '2',
+      deliveryTime: '48-72 horas',
     },
     {
-      "id": 3,
-      "name": "Amoxicilina 500mg",
-      "description": "Antibiótico de amplio espectro para infecciones bacterianas",
-      "price": 18500,
-      "amount": 60,
-      "category": "3",
-      "conditions": "Refrigerar entre 2°C y 8°C después de reconstituir",
-      "expirationDate": expirationDateString,
-      "batch": "LOT-AM202402",
-      "provider":  "3",
-      "deliveryTime": "72 horas"
-    }
+      id: 3,
+      name: 'Amoxicilina 500mg',
+      description:
+        'Antibiótico de amplio espectro para infecciones bacterianas',
+      price: 18500,
+      amount: 60,
+      category: '3',
+      conditions: 'Refrigerar entre 2°C y 8°C después de reconstituir',
+      expirationDate: expirationDateString,
+      batch: 'LOT-AM202402',
+      provider: '3',
+      deliveryTime: '72 horas',
+    },
   ];
 
   beforeEach(async () => {
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
-    const productServiceSpy = jasmine.createSpyObj('ProductoService', ['getAllProducts']);
+    const productServiceSpy = jasmine.createSpyObj('ProductoService', [
+      'getAllProducts',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [
         ListarProductosComponent,
-        RouterTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'productos', component: ListarProductosComponent },
+          { path: 'producto', component: ListarProductosComponent },
+        ]),
         NoopAnimationsModule,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatIconModule
-        ],
-        providers: [
-          { provide: Router, useValue: routerSpy },
-          { provide: MatDialog, useValue: dialogSpy },
-          { provide: ProductoService, useValue: productServiceSpy }
-        ]
-    })
-    .compileComponents();
+        MatIconModule,
+      ],
+      providers: [
+        { provide: MatDialog, useValue: dialogSpy },
+        { provide: ProductoService, useValue: productServiceSpy },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ListarProductosComponent);
 
-    productService = TestBed.inject(ProductoService) as jasmine.SpyObj<ProductoService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    productService = TestBed.inject(
+      ProductoService
+    ) as jasmine.SpyObj<ProductoService>;
+    router = TestBed.inject(Router);
     dialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+
+    // Crear spy en el router real
+    spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     productService.getAllProducts.and.returnValue(of(mockProducts));
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-    afterEach(() => {
+  afterEach(() => {
     // Limpiar cualquier spy o mock
-    if(productService && productService.getAllProducts) {
+    if (productService && productService.getAllProducts) {
       productService.getAllProducts.calls.reset();
     }
-    if(router && router.navigate) {
-      router.navigate.calls.reset();
-    }
-    if(fixture){
+    if (fixture) {
       fixture.destroy();
     }
   });
@@ -124,7 +137,14 @@ describe('ListarProductosComponent', () => {
     });
     it('should initialize with correct displayed columns', () => {
       fixture.detectChanges();
-      expect(component.displayedColumns()).toEqual(['id', 'name', 'description', 'price', 'amount', 'actions']);
+      expect(component.displayedColumns()).toEqual([
+        'id',
+        'name',
+        'description',
+        'price',
+        'amount',
+        'actions',
+      ]);
     });
     it('should initialize dataSource as MatTableDataSource', () => {
       expect(component.dataSource).toBeInstanceOf(MatTableDataSource);
@@ -152,14 +172,19 @@ describe('ListarProductosComponent', () => {
     it('should handle error when loading products fails', () => {
       // FALLO: Configurar el servicio para retornar un error
       const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(throwError(() => errorMessage));
+      productService.getAllProducts.and.returnValue(
+        throwError(() => errorMessage)
+      );
 
       const consoleSpy = spyOn(console, 'error');
 
       component.loadProducts();
 
       expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading products:', errorMessage);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error loading products:',
+        errorMessage
+      );
       expect(productService.getAllProducts).toHaveBeenCalled();
     });
   });
@@ -176,9 +201,13 @@ describe('ListarProductosComponent', () => {
 
       component.applyFilter(mockEvent);
 
-      expect(component.dataSource.filter).toBe(filterValue.trim().toLowerCase());
+      expect(component.dataSource.filter).toBe(
+        filterValue.trim().toLowerCase()
+      );
       expect(component.dataSource.filteredData.length).toBe(1);
-      expect(component.dataSource.filteredData[0].name).toBe('Amoxicilina 500mg');
+      expect(component.dataSource.filteredData[0].name).toBe(
+        'Amoxicilina 500mg'
+      );
     });
     it('should show all products when filter value is empty', () => {
       // ÉXITO: Filtro vacío
@@ -188,7 +217,9 @@ describe('ListarProductosComponent', () => {
       component.applyFilter(mockEvent);
 
       expect(component.dataSource.filter).toBe('');
-      expect(component.dataSource.filteredData.length).toBe(mockProducts.length);
+      expect(component.dataSource.filteredData.length).toBe(
+        mockProducts.length
+      );
     });
     it('should handle filter when paginator is not available', () => {
       // FALLO: Paginator no disponible
@@ -205,7 +236,9 @@ describe('ListarProductosComponent', () => {
     it('should handle error when loading products fails', () => {
       // FALLO: Error al cargar productos
       const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(throwError(() => errorMessage));
+      productService.getAllProducts.and.returnValue(
+        throwError(() => errorMessage)
+      );
 
       const consoleSpy = spyOn(console, 'error');
 
@@ -213,13 +246,18 @@ describe('ListarProductosComponent', () => {
       component.loadProducts();
 
       expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith('Error loading products:', errorMessage);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error loading products:',
+        errorMessage
+      );
       expect(productService.getAllProducts).toHaveBeenCalled();
     });
     it('should set loading to true when starting to load products', fakeAsync(() => {
       // Usar un Subject para controlar el momento de la emisión
       const productsSubject = new Subject<Product[]>();
-      productService.getAllProducts.and.returnValue(productsSubject.asObservable());
+      productService.getAllProducts.and.returnValue(
+        productsSubject.asObservable()
+      );
 
       component.loadProducts();
 
@@ -234,7 +272,7 @@ describe('ListarProductosComponent', () => {
       // Ahora loading debería ser false
       expect(component.loading()).toBeFalse();
     }));
-  })
+  });
 
   describe('Add Product - Success and Failure', () => {
     it('should navigate to product form for adding new product successfully', () => {
@@ -243,18 +281,20 @@ describe('ListarProductosComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
         queryParams: {
           action: 'new',
-          source: 'productos'
-        }
+          source: 'productos',
+        },
       });
     });
     it('should not break when router service fails', () => {
-      router.navigate.and.returnValue(Promise.reject('Navigation failed'));
+      (router.navigate as jasmine.Spy).and.returnValue(
+        Promise.reject('Navigation failed')
+      );
 
       component.addProduct();
 
       expect(router.navigate).toHaveBeenCalled();
     });
-  })
+  });
 
   describe('Edit Product - Success and Failure', () => {
     it('should navigate to product form for editing product successfully', () => {
@@ -264,20 +304,22 @@ describe('ListarProductosComponent', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith(mockProducts[0]);
       expect(router.navigate).toHaveBeenCalledWith(['/producto'], {
-        state: { 
+        state: {
           product: mockProducts[0],
-          action: 'edit'
-        } 
+          action: 'edit',
+        },
       });
     });
     it('should handle navigation failure when editing product', () => {
-      router.navigate.and.returnValue(Promise.reject('Edit navigation failed'));
+      (router.navigate as jasmine.Spy).and.returnValue(
+        Promise.reject('Edit navigation failed')
+      );
 
-      expect(() => component.editProduct( mockProducts[0])).not.toThrow();
+      expect(() => component.editProduct(mockProducts[0])).not.toThrow();
       expect(router.navigate).toHaveBeenCalled();
     });
-  })
-/*
+  });
+  /*
   describe('View Initialization - Success and Edge Cases', () => {
     it('should set paginator and sort after view init successfully', () => {
       const paginatorMock = {} as any;
@@ -294,4 +336,4 @@ describe('ListarProductosComponent', () => {
 
   })
     */
-})
+});

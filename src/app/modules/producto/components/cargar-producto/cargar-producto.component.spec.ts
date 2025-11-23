@@ -168,7 +168,7 @@ describe('CargarProductoComponent', () => {
   describe('Navigation Methods', () => {
     it('should navigate to productos on cancel', () => {
       component.onCancel();
-      expect(router.navigate).toHaveBeenCalledWith(['/productos']);
+      expect(router.navigate).toHaveBeenCalledWith(['/dashboard/productos']);
     });
   });
 
