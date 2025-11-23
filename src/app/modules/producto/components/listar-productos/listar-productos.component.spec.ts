@@ -264,4 +264,16 @@ describe('ListarProductosComponent', () => {
       expect(router.navigate).toHaveBeenCalled();
     });
   });
+
+  describe('applyFilter', () => {
+    it('debe aplicar el filtro en minúsculas y sin espacios', () => {
+      const event = {
+        target: { value: '  PRODUCTO 1  ' },
+      } as unknown as Event;
+
+      component.applyFilter(event);
+
+      expect(component.dataSource.filter).toBe('producto 1');
+    });
+  });
 });
