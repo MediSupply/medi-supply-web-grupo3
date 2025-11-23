@@ -60,7 +60,9 @@
       >
         <mat-icon>keyboard_double_arrow_left</mat-icon>
       </button>
-      <span class="page-indicator">{{ pageIndex + 1 }} de {{ totalPaginas() }}</span>
+      <span class="page-indicator"
+        >{{ pageIndex + 1 }} de {{ totalPaginas() }}</span
+      >
       <button
         mat-icon-button
         class="paginator-button"
@@ -108,20 +110,30 @@
           </div>
           <div class="info-item">
             <span class="info-label">Tiempo Estimado:</span>
-            <span class="info-value">{{ rutaGenerada.tiempoEstimado }} minutos</span>
+            <span class="info-value"
+              >{{ rutaGenerada.tiempoEstimado }} minutos</span
+            >
           </div>
         </div>
         <div class="ruta-pedidos">
           <h3>Secuencia de Entregas:</h3>
           <ol class="pedidos-lista">
-            <li *ngFor="let pedido of rutaGenerada.pedidos; let i = index" class="pedido-item">
+            <li
+              *ngFor="let pedido of rutaGenerada.pedidos; let i = index"
+              class="pedido-item"
+            >
               <div class="pedido-info">
                 <span class="pedido-numero">{{ i + 1 }}.</span>
                 <div class="pedido-details">
                   <span class="pedido-id">ID: {{ pedido.id }}</span>
                   <span class="pedido-cliente">{{ pedido.cliente }}</span>
-                  <span class="pedido-direccion">{{ pedido.direccionEntrega }}</span>
-                  <span class="pedido-observaciones" *ngIf="pedido.observaciones !== 'No aplica'">
+                  <span class="pedido-direccion">{{
+                    pedido.direccionEntrega
+                  }}</span>
+                  <span
+                    class="pedido-observaciones"
+                    *ngIf="pedido.observaciones !== 'No aplica'"
+                  >
                     {{ pedido.observaciones }}
                   </span>
                 </div>
@@ -136,4 +148,3 @@
     </mat-card>
   </div>
 </div>
-
