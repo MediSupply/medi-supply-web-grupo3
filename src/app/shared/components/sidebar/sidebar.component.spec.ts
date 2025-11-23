@@ -73,6 +73,40 @@ describe('SidebarComponent', () => {
     expect(typeof isActive).toBe('boolean');
   });
 
+  it('debería retornar true cuando item tiene children y la URL coincide con un child', () => {
+    const itemWithChildren = {
+      id: 'test',
+      label: 'Test',
+      icon: 'test',
+      path: '/test',
+      children: [
+        { id: 'child1', label: 'Child 1', icon: 'child', path: '/test/child1' },
+      ],
+      isExpanded: false,
+    };
+    urlSpy.and.returnValue('/test/child1');
+
+    const isActive = component.isActive(itemWithChildren);
+    expect(isActive).toBeTrue();
+  });
+
+  it('debería retornar false cuando item tiene children pero la URL no coincide', () => {
+    const itemWithChildren = {
+      id: 'test',
+      label: 'Test',
+      icon: 'test',
+      path: '/test',
+      children: [
+        { id: 'child1', label: 'Child 1', icon: 'child', path: '/test/child1' },
+      ],
+      isExpanded: false,
+    };
+    urlSpy.and.returnValue('/other/path');
+
+    const isActive = component.isActive(itemWithChildren);
+    expect(isActive).toBeFalse();
+  });
+
   it('debería expandir menús automáticamente', () => {
     const currentUrl = '/dashboard/productos';
     urlSpy.and.returnValue(currentUrl);
@@ -121,6 +155,12 @@ describe('SidebarComponent', () => {
     component.ngOnDestroy();
 
     expect(component['routerSubscription'].unsubscribe).toHaveBeenCalled();
+  });
+
+  it('debería no fallar cuando routerSubscription es undefined en ngOnDestroy', () => {
+    component['routerSubscription'] = undefined as any;
+
+    expect(() => component.ngOnDestroy()).not.toThrow();
   });
 
   it('debería manejar eventos de navegación', () => {
