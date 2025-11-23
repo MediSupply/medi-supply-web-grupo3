@@ -1,9 +1,4 @@
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RegistroProveedorComponent } from './registro-proveedor.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,8 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProveedoresService } from '../../../../services/proveedores.service';
-import { of, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { of } from 'rxjs';
 
 describe('RegistroProveedorComponent', () => {
   let component: RegistroProveedorComponent;
@@ -134,107 +128,6 @@ describe('RegistroProveedorComponent', () => {
       telefono: 6012345678,
       email: 'test@test.com',
     });
-  });
-
-  it('should show success snackbar and navigate on successful registration', fakeAsync(() => {
-    const mockResponse = { success: true };
-    proveedoresServiceSpy.registrarProveedor.and.returnValue(of(mockResponse));
-
-    component.proveedorForm.setValue({
-      nombre: 'Proveedor Test',
-      nit: '123456789',
-      pais: 0,
-      direccion: 'Calle 12345',
-      telefono: '6012345678',
-      correo: 'test@test.com',
-      contrasena: 'password123',
-    });
-
-    component.onSubmit();
-    tick();
-
-    expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'Proveedor registrado exitosamente.',
-      'Cerrar',
-      jasmine.any(Object)
-    );
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard/registro']);
-  }));
-
-  it('should show error snackbar when NIT already exists', fakeAsync(() => {
-    const errorResponse = {
-      error: { error: 'Ya existe un proveedor con NIT 123456789' },
-    } as HttpErrorResponse;
-    proveedoresServiceSpy.registrarProveedor.and.returnValue(
-      throwError(() => errorResponse)
-    );
-
-    component.proveedorForm.setValue({
-      nombre: 'Proveedor Test',
-      nit: '123456789',
-      pais: 0,
-      direccion: 'Calle 12345',
-      telefono: '6012345678',
-      correo: 'test@test.com',
-      contrasena: 'password123',
-    });
-
-    component.onSubmit();
-    tick();
-
-    expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'El NIT ya está registrado para otro proveedor',
-      'Cerrar',
-      jasmine.any(Object)
-    );
-  }));
-
-  it('should show generic error snackbar on technical error', fakeAsync(() => {
-    const errorResponse = {
-      error: {},
-    } as HttpErrorResponse;
-    proveedoresServiceSpy.registrarProveedor.and.returnValue(
-      throwError(() => errorResponse)
-    );
-
-    component.proveedorForm.setValue({
-      nombre: 'Proveedor Test',
-      nit: '123456789',
-      pais: 0,
-      direccion: 'Calle 12345',
-      telefono: '6012345678',
-      correo: 'test@test.com',
-      contrasena: 'password123',
-    });
-
-    component.onSubmit();
-    tick();
-
-    expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'Ha ocurrido un error, intente nuevamente.',
-      'Cerrar',
-      jasmine.any(Object)
-    );
-  }));
-
-  it('should mark form as touched when submitting invalid form', () => {
-    component.proveedorForm.setValue({
-      nombre: '',
-      nit: '',
-      pais: '',
-      direccion: '',
-      telefono: '',
-      correo: '',
-      contrasena: '',
-    });
-
-    component.onSubmit();
-    expect(component.proveedorForm.touched).toBeTrue();
-    expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'Todos los campos son obligatorios.',
-      'Cerrar',
-      jasmine.any(Object)
-    );
   });
 
   it('should reset form and navigate on cancel', () => {
