@@ -41,16 +41,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private routerSubscription!: Subscription;
   logoError = signal(false);
-  menuItems = signal<MenuItem[]>([
+  private isAdmin = signal<boolean>(this.authService.isAdmin());
+  private allMenuItems = signal<MenuItem[]>([
     {
       id: 'producto',
       label: 'Productos',
       icon: 'home',
       path: '/dashboard/productos',
-      /*children: [
-        { id: 'registro-ventas', label: 'Listar Productos', icon: '💰', path: '/registro/ventas' },
-        { id: 'registro-compras', label: 'Cargar Producto', icon: '🛒', path: '/registro/compras' },
-      ],*/
       isExpanded: false,
     },
     {
@@ -83,9 +80,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
     },
   ]);
 
+  // Computed signal que filtra los items del menú basándose en si el usuario es admin
+  menuItems = computed(() => {
+    return this.allMenuItems().filter(item => {
+      // Si el item es "Registro", solo mostrarlo si el usuario es admin
+      if (item.id === 'registro') {
+        return this.isAdmin();
+      }
+      return true;
+    });
+  });
+
   ngOnInit() {
     this.setupRouterListener();
     this.autoExpandMenus();
+    // Actualizar el estado de isAdmin al inicializar
+    this.isAdmin.set(this.authService.isAdmin());
   }
 
   ngOnDestroy() {
@@ -103,7 +113,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   toggleSubmenu(item: MenuItem): void {
-    this.menuItems.update(items =>
+    this.allMenuItems.update(items =>
       items.map(menuItem =>
         menuItem.id === item.id
           ? { ...menuItem, isExpanded: !menuItem.isExpanded }
@@ -125,7 +135,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private autoExpandMenus(): void {
     const currentUrl = this.router.url;
 
-    this.menuItems.update(items =>
+    this.allMenuItems.update(items =>
       items.map(item => {
         if (item.children) {
           const shouldExpand = item.children.some(child =>
