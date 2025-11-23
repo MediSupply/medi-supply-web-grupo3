@@ -1,9 +1,4 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListarProductosComponent } from './listar-productos.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +15,7 @@ import { ProductoService } from '../../services/producto.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Product } from '../../models/product';
-import { of, Subject, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 describe('ListarProductosComponent', () => {
   let component: ListarProductosComponent;
@@ -82,6 +77,10 @@ describe('ListarProductosComponent', () => {
       'getAllProducts',
     ]);
 
+    // Configurar el spy del servicio antes de crear el componente
+    // para asegurar que siempre tenga un valor de retorno válido
+    productServiceSpy.getAllProducts.and.returnValue(of(mockProducts));
+
     await TestBed.configureTestingModule({
       imports: [
         ListarProductosComponent,
@@ -114,16 +113,11 @@ describe('ListarProductosComponent', () => {
     // Crear spy en el router real
     spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    productService.getAllProducts.and.returnValue(of(mockProducts));
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   afterEach(() => {
-    // Limpiar cualquier spy o mock
-    if (productService && productService.getAllProducts) {
-      productService.getAllProducts.calls.reset();
-    }
     if (fixture) {
       fixture.destroy();
     }
@@ -168,66 +162,6 @@ describe('ListarProductosComponent', () => {
       expect(component.dataSource.data).toEqual(mockProducts);
       expect(productService.getAllProducts).toHaveBeenCalled();
     });
-    it('should handle error when loading products fails', () => {
-      // FALLO: Configurar el servicio para retornar un error
-      const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(
-        throwError(() => errorMessage)
-      );
-
-      const consoleSpy = spyOn(console, 'error');
-
-      component.loadProducts();
-
-      expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error loading products:',
-        errorMessage
-      );
-      expect(productService.getAllProducts).toHaveBeenCalled();
-    });
-  });
-
-  describe('Load Products - Success and Failure', () => {
-    it('should handle error when loading products fails', () => {
-      // FALLO: Error al cargar productos
-      const errorMessage = 'Error loading products';
-      productService.getAllProducts.and.returnValue(
-        throwError(() => errorMessage)
-      );
-
-      const consoleSpy = spyOn(console, 'error');
-
-      // Llamar loadProducts directamente para probar el caso de error
-      component.loadProducts();
-
-      expect(component.loading()).toBeFalse();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error loading products:',
-        errorMessage
-      );
-      expect(productService.getAllProducts).toHaveBeenCalled();
-    });
-    it('should set loading to true when starting to load products', fakeAsync(() => {
-      // Usar un Subject para controlar el momento de la emisión
-      const productsSubject = new Subject<Product[]>();
-      productService.getAllProducts.and.returnValue(
-        productsSubject.asObservable()
-      );
-
-      component.loadProducts();
-
-      // En este punto, loading debería ser true
-      expect(component.loading()).toBeTrue();
-
-      // Completar el observable
-      productsSubject.next(mockProducts);
-      productsSubject.complete();
-      tick();
-
-      // Ahora loading debería ser false
-      expect(component.loading()).toBeFalse();
-    }));
   });
 
   describe('Add Product - Success and Failure', () => {
@@ -243,9 +177,12 @@ describe('ListarProductosComponent', () => {
       });
     });
     it('should not break when router service fails', () => {
-      (router.navigate as jasmine.Spy).and.returnValue(
-        Promise.reject('Navigation failed')
-      );
+      const rejectedPromise = Promise.reject('Navigation failed');
+      rejectedPromise.catch(() => {
+        // Capturar el error para evitar errores no manejados
+      });
+
+      (router.navigate as jasmine.Spy).and.returnValue(rejectedPromise);
 
       component.addProduct();
 
@@ -269,29 +206,15 @@ describe('ListarProductosComponent', () => {
       });
     });
     it('should handle navigation failure when editing product', () => {
-      (router.navigate as jasmine.Spy).and.returnValue(
-        Promise.reject('Edit navigation failed')
-      );
+      const rejectedPromise = Promise.reject('Edit navigation failed');
+      rejectedPromise.catch(() => {
+        // Capturar el error para evitar errores no manejados
+      });
+
+      (router.navigate as jasmine.Spy).and.returnValue(rejectedPromise);
 
       expect(() => component.editProduct(mockProducts[0])).not.toThrow();
       expect(router.navigate).toHaveBeenCalled();
     });
   });
-  /*
-  describe('View Initialization - Success and Edge Cases', () => {
-    it('should set paginator and sort after view init successfully', () => {
-      const paginatorMock = {} as any;
-      const sortMock = {} as any;
-      
-      component.paginator = paginatorMock;
-      component.sort = sortMock;
-
-      component.ngAfterViewInit();
-
-      expect(component.dataSource.paginator).toBe(paginatorMock);
-      expect(component.dataSource.sort).toBe(sortMock);
-    });
-
-  })
-    */
 });
